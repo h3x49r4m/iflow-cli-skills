@@ -91,6 +91,26 @@ This document provides a protocol for handing off between development sessions.
 ### Workarounds
 - _____________
 
+## Changes Made This Session
+
+### Changes Implemented
+| Change ID | Type | Description | Status | Impact |
+|-----------|------|-------------|--------|--------|
+| C___ | [requirement/feature/architecture/testing] | _____________ | [pending/approved/implemented/rejected] | [none/minor/moderate/major] |
+
+### Change Requests Raised
+- [ ] C___: _____________ (Priority: high/medium/low)
+- [ ] C___: _____________ (Priority: high/medium/low)
+
+### Changes Pending Review
+- [ ] C___: _____________ (Submitted: YYYY-MM-DD)
+- [ ] C___: _____________ (Submitted: YYYY-MM-DD)
+
+### Change Impact on Next Session
+- [ ] _____________ will require [ ] hours to address
+- [ ] _____________ affects [feature/module]
+- [ ] _____________ may require rollback plan
+
 ## Files to Review
 
 Before starting next session, review:
@@ -98,6 +118,8 @@ Before starting next session, review:
 - [ ] `current-feature.md` - Current feature progress
 - [ ] `next-steps.md` - What to do next
 - [ ] `checkpoints/` - Phase-specific checkpoints
+- [ ] `change-log.md` - Change history and pending changes
+- [ ] `impact-analysis.md` - Impact analysis for pending changes
 - [ ] _____________ (any other relevant files)
 
 ## Resume Instructions
@@ -109,7 +131,9 @@ When resuming work:
 3. **Check Current Feature**: Review `current-feature.md` for feature progress
 4. **Read Next Steps**: Check `next-steps.md` for immediate tasks
 5. **Review Checkpoints**: Check relevant checkpoint files
-6. **Start Working**: Begin with the first immediate next step
+6. **Check for Changes**: Review `change-log.md` for pending changes
+7. **Assess Impact**: Review `impact-analysis.md` for change impact
+8. **Start Working**: Begin with the first immediate next step
 
 ## Session Notes
 
@@ -126,6 +150,8 @@ When resuming work:
 **Preparation for Next Session**:
 - [ ] Review completed work
 - [ ] Review blockers/issues
+- [ ] Review pending changes
+- [ ] Review change impact
 - [ ] Prepare questions
 - [ ] Review context files
 

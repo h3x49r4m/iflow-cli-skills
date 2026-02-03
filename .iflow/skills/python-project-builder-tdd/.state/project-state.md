@@ -42,3 +42,18 @@ This file tracks the overall state of the project for continuous development.
 **Next Steps**: _____________
 
 **Notes**: _____________
+
+## Change History
+
+| Change ID | Type | Status | Date | Impact |
+|-----------|------|--------|------|--------|
+| C001 | [requirement/feature/architecture/testing] | [pending/approved/implemented/rejected] | YYYY-MM-DD | [minor/moderate/major/critical] |
+| C002 | [requirement/feature/architecture/testing] | [pending/approved/implemented/rejected] | YYYY-MM-DD | [minor/moderate/major/critical] |
+
+### Pending Changes
+- [ ] C___: _____________ (Due: YYYY-MM-DD)
+- [ ] C___: _____________ (Due: YYYY-MM-DD)
+
+### Recent Changes
+- [x] C___: _____________ (Completed: YYYY-MM-DD)
+- [x] C___: _____________ (Completed: YYYY-MM-DD)

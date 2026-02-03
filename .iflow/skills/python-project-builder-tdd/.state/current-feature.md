@@ -80,6 +80,27 @@ This file tracks the feature currently being worked on.
 - [ ] None
 - [ ] _____________
 
+## Change Status
+
+### Changes Affecting This Feature
+| Change ID | Type | Status | Impact | Action Required |
+|-----------|------|--------|--------|----------------|
+| C___ | [requirement/feature/architecture/testing] | [pending/approved/implemented/rejected] | [none/minor/moderate/major] | _____________ |
+| C___ | [requirement/feature/architecture/testing] | [pending/approved/implemented/rejected] | [none/minor/moderate/major] | _____________ |
+
+### Feature Modification History
+| Date | Change Type | Description | Impact |
+|------|-------------|-------------|--------|
+| YYYY-MM-DD | [requirement/specification] | _____________ | [none/minor/moderate/major] |
+| YYYY-MM-DD | [implementation/testing] | _____________ | [none/minor/moderate/major] |
+
+### Pending Changes
+- [ ] C___: _____________ (Due: YYYY-MM-DD)
+- [ ] C___: _____________ (Due: YYYY-MM-DD)
+
+### Implemented Changes
+- [x] C___: _____________ (Implemented: YYYY-MM-DD)
+
 ## Last Updated
 
 **Date**: YYYY-MM-DD HH:MM

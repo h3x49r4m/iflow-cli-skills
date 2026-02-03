@@ -4,11 +4,18 @@ This file tracks what has been completed across all phases.
 
 ## Completed Features
 
-| Feature ID | Name | Status | Completed Date |
-|------------|------|--------|----------------|
-| F001 | _____________ | [completed/in_progress/pending] | YYYY-MM-DD |
-| F002 | _____________ | [completed/in_progress/pending] | YYYY-MM-DD |
-| F003 | _____________ | [completed/in_progress/pending] | YYYY-MM-DD |
+| Feature ID | Name | Status | Completed Date | Affected by Changes |
+|------------|------|--------|----------------|---------------------|
+| F001 | _____________ | [completed/in_progress/pending] | YYYY-MM-DD | [Yes/No] |
+| F002 | _____________ | [completed/in_progress/pending] | YYYY-MM-DD | [Yes/No] |
+| F003 | _____________ | [completed/in_progress/pending] | YYYY-MM-DD | [Yes/No] |
+
+## Completed Changes
+
+| Change ID | Type | Status | Implemented Date | Impact |
+|-----------|------|--------|------------------|--------|
+| C001 | [requirement/feature/architecture/testing] | [approved/implemented/rejected] | YYYY-MM-DD | [minor/moderate/major/critical] |
+| C002 | [requirement/feature/architecture/testing] | [approved/implemented/rejected] | YYYY-MM-DD | [minor/moderate/major/critical] |
 
 ## Completed Tasks
 
@@ -49,16 +56,23 @@ This file tracks what has been completed across all phases.
 - [ ] Deployed to staging
 - [ ] Deployed to production
 
+### Change Management
+- [ ] Change requests processed
+- [ ] Impact analysis completed
+- [ ] Changes implemented
+- [ ] Rollback plans tested
+
 ## Session History
 
-| Session | Date | Work Completed | Next Steps |
-|---------|------|----------------|------------|
-| Session 1 | YYYY-MM-DD | _____________ | _____________ |
-| Session 2 | YYYY-MM-DD | _____________ | _____________ |
-| Session 3 | YYYY-MM-DD | _____________ | _____________ |
+| Session | Date | Work Completed | Changes Made | Next Steps |
+|---------|------|----------------|--------------|------------|
+| Session 1 | YYYY-MM-DD | _____________ | _____________ | _____________ |
+| Session 2 | YYYY-MM-DD | _____________ | _____________ | _____________ |
+| Session 3 | YYYY-MM-DD | _____________ | _____________ | _____________ |
 
 ## Notes
 
 - Add completed items to this list
 - Update status as work progresses
 - Keep session history for context
+- Track changes that affect completed work

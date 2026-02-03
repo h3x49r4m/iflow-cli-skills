@@ -10,7 +10,8 @@ This skill should be automatically invoked when:
 - User asks to create a Python project
 - User requests Python development with testing requirements
 - User asks to "continue", "resume", or "continue working on" a project
-- Keywords: "python", "develop", "create project", "build app", "tdd", "test-driven", "continue", "resume"
+- User requests a change: "change", "modify", "update", "requirement change", "feature change"
+- Keywords: "python", "develop", "create project", "build app", "tdd", "test-driven", "continue", "resume", "change", "modify", "update"
 
 **Workflow Phases**:
 1. **Planning** (01-planning/) - Feature breakdown, dependency mapping, effort estimation
@@ -84,3 +85,58 @@ This skill should be automatically invoked when:
 - "what's next?" - Show next steps
 - "show progress" - Display project progress
 - "pause" - Save current state and pause
+
+### Change Management:
+When changes are requested during development:
+
+#### Change Detection
+- Check for requirement changes at phase start
+- Monitor for feature specification updates
+- Detect breaking changes in code
+- Identify dependency changes
+
+#### Change Workflow
+1. **Document Change**: Record in `.state/context/change-log.md`
+2. **Analyze Impact**: Update `.state/context/impact-analysis.md`
+3. **Assess State**: Check current progress in state files
+4. **Make Decision**: Decide approach (continue/adapt/replan/rollback)
+5. **Update State**: Modify all relevant state files
+6. **Implement Change**: Execute change following checkpoints
+7. **Verify Change**: Re-run tests and QA
+8. **Document Rollback**: Update `.state/context/rollback-plan.md`
+
+#### Change Commands:
+- "change [feature/requirement]" - Initiate change request
+- "impact [change]" - Analyze impact of change
+- "approve [change]" - Approve change for implementation
+- "reject [change]" - Reject change request
+- "rollback [change]" - Rollback implemented change
+- "show changes" - Display change history
+- "show impact [change]" - Show impact analysis
+
+#### Change Types:
+- **Minor Changes**: Small tweaks, continue work with adaptations
+- **Moderate Changes**: Feature modifications, adjust plan and implement
+- **Major Changes**: New requirements, replan and restructure
+- **Breaking Changes**: Architectural changes, may require rollback and restart
+
+#### Change Integration with Phases:
+- **Planning Phase**: Check for requirement changes before planning
+- **Architecture Phase**: Assess impact on architecture, update if needed
+- **Development Phase**: Adapt implementation to changes, update code and tests
+- **Testing Phase**: Update tests for changes, re-run validation
+- **QA Phase**: Re-verify changed features, update verification checklist
+- **Deployment Phase**: Ensure changes are deployed correctly, update deployment plan
+
+#### State Files for Changes:
+- **change-log.md**: Track all changes and their status
+- **impact-analysis.md**: Analyze and document impact of each change
+- **rollback-plan.md**: Document rollback procedures for each change
+- **project-state.md**: Update with change history
+- **current-feature.md**: Track change status for current feature
+- **next-steps.md**: Reprioritize based on changes
+
+#### Change Checkpoints:
+- **change-request-checkpoint.md**: Track change requests and approval
+- **change-impact-checkpoint.md**: Track impact analysis progress
+- **change-implementation-checkpoint.md**: Track change implementation progress
