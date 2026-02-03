@@ -174,15 +174,112 @@ Skills can handle requirement/feature changes through:
 Usage
 -----
 
+How to Use Skills in iFlow CLI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Skills are automatically loaded and triggered based on their defined conditions. Here's how to use them:
+
+**Automatic Loading**
+
 Skills are automatically loaded when:
 1. Placed in the ``.iflow/skills/`` directory
 2. iFlow CLI scans the skills directory
 3. User requests match trigger conditions
 
+**Triggering a Skill**
+
+Skills are triggered automatically when your request matches their trigger conditions. For example:
+
+.. code-block:: text
+
+    # Trigger the python-project-builder-tdd skill
+    User: I want to create a Python application
+    User: Develop a Python tool with TDD
+    User: Build a Python web API
+
+**Resuming Work**
+
+For skills that support continuous development, you can resume work:
+
+.. code-block:: text
+
+    # Resume working on a project
+    User: Continue working on my project
+    User: Resume feature authentication
+    User: What's next?
+
+**Change Management**
+
+For skills with change management support:
+
+.. code-block:: text
+
+    # Request a change
+    User: Change the user authentication flow
+    User: Update feature X to use OAuth
+
+    # Check impact
+    User: What's the impact of this change?
+
+    # Rollback if needed
+    User: Rollback the last change
+
+**Listing Available Skills**
+
+To see what skills are available:
+
+.. code-block:: text
+
+    User: Show available skills
+    User: List all skills
+
+**Skill-Specific Commands**
+
+Each skill may have specific commands. Refer to the skill's documentation for details.
+
+**Testing a Skill**
+
 To test a skill:
 - Use trigger keywords in your requests
 - Verify the skill activates correctly
 - Check that it follows the defined workflow
+
+**Example Workflow**
+
+Here's a complete example of using the ``python-project-builder-tdd`` skill:
+
+1. **Start a new project:**
+
+   .. code-block:: text
+
+       User: I want to create a Python REST API with TDD
+
+   The skill will:
+   - Initialize the project structure
+   - Set up uv and pytest
+   - Begin the planning phase
+
+2. **Continue development:**
+
+   .. code-block:: text
+
+       User: Continue working on my project
+
+   The skill will:
+   - Load the current state
+   - Show next steps
+   - Resume from where you left off
+
+3. **Handle changes:**
+
+   .. code-block:: text
+
+       User: Change the database from SQLite to PostgreSQL
+
+   The skill will:
+   - Analyze the impact
+   - Update the architecture
+   - Adjust the implementation plan
 
 Best Practices
 --------------
