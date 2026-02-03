@@ -43,3 +43,6 @@ venv.bak/
 # OS
 .DS_Store
 Thumbs.db
+
+# workspace
+_workspace
