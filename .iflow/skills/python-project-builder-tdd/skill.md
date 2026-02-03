@@ -9,7 +9,8 @@ This skill should be automatically invoked when:
 - User requests to develop a Python application, library, or tool
 - User asks to create a Python project
 - User requests Python development with testing requirements
-- Keywords: "python", "develop", "create project", "build app", "tdd", "test-driven"
+- User asks to "continue", "resume", or "continue working on" a project
+- Keywords: "python", "develop", "create project", "build app", "tdd", "test-driven", "continue", "resume"
 
 **Workflow Phases**:
 1. **Planning** (01-planning/) - Feature breakdown, dependency mapping, effort estimation
@@ -44,9 +45,42 @@ This skill should be automatically invoked when:
 - Edge cases must be identified and tested
 
 **Instructions**:
-When this skill is invoked:
-1. Read all phase files to understand the full workflow
-2. Follow each phase sequentially
-3. Use checklists to verify completion
-4. Update trackers to monitor progress
-5. Ensure all quality standards are met before deployment
+
+### When Starting a New Project:
+1. Initialize project state in `.state/` directory
+2. Create `project-state.md` with project information
+3. Follow each phase sequentially
+4. Use checklists to verify completion
+5. Update trackers to monitor progress
+6. Ensure all quality standards are met before deployment
+
+### When Resuming an Existing Project:
+1. **Check for Existing State**: Look for `.state/` directory
+2. **Read Project State**: Load `project-state.md` to understand current status
+3. **Read Current Feature**: Load `current-feature.md` to see what's being worked on
+4. **Read Next Steps**: Load `next-steps.md` to see what to do next
+5. **Check Checkpoints**: Review `checkpoints/` for any saved progress
+6. **Resume Work**: Continue from the last checkpoint or next step
+7. **Update State**: Update state files as progress is made
+
+### State Persistence:
+- **Project State**: `.state/project-state.md` - Overall project status
+- **Current Feature**: `.state/current-feature.md` - Feature being worked on
+- **Completed Checklist**: `.state/completed-checklist.md` - What's been done
+- **Next Steps**: `.state/next-steps.md` - What to do next
+- **Checkpoints**: `.state/checkpoints/` - Phase-specific checkpoints
+- **Context**: `.state/context/` - Saved context and decisions
+
+### Session Management:
+- **Start Session**: Create session entry in `completed-checklist.md`
+- **Save Checkpoint**: Save progress before pausing
+- **Update Next Steps**: Update `next-steps.md` before ending
+- **Document Context**: Save important context in `context/`
+- **Clear Handoff**: Provide clear resume instructions
+
+### Resume Commands:
+- "continue working on [project]" - Resume project work
+- "resume [feature]" - Resume specific feature
+- "what's next?" - Show next steps
+- "show progress" - Display project progress
+- "pause" - Save current state and pause
