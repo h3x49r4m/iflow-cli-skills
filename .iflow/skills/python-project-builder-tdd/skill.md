@@ -1,3 +1,9 @@
+---
+name: python-project-builder-tdd
+description: A comprehensive skill for building Python projects following Test-Driven Development (TDD) methodology. Covers the full project lifecycle from product design to deployment using uv for package management.
+license: Apache
+---
+
 # Python Project Builder (TDD)
 
 **Name**: python-project-builder-tdd
