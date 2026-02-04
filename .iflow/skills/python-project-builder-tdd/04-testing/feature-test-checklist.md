@@ -3,6 +3,22 @@
 ## Purpose
 This checklist ensures each feature is thoroughly tested before being marked as complete.
 
+## Test Structure Overview
+
+Before using this checklist, ensure your tests follow the correct structure:
+
+```
+tests/
+├── unit/                    # Unit tests (70%)
+│   └── test_<module>.py     # Mirrors src/ directory structure
+├── integration/             # Integration tests (20%)
+│   └── test_<workflow>.py   # Tests for component interactions
+└── e2e/                     # End-to-end tests (10%)
+    └── test_<api>.py        # Tests for complete workflows
+```
+
+**Important**: The `tests/unit/` directory mirrors the `src/` directory structure. For each module in `src/`, create a corresponding test file in `tests/unit/` with a `test_` prefix.
+
 ## Checklist Template
 
 Use this checklist for each feature to ensure comprehensive test coverage.

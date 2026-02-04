@@ -123,23 +123,27 @@ def test_create_task_with_various_titles(title):
 ```
 tests/
 ├── __init__.py
-├── conftest.py              # Shared fixtures
-├── unit/                    # Unit tests
+├── conftest.py              # Shared fixtures and markers
+├── unit/                    # Unit tests (70%)
 │   ├── __init__.py
-│   ├── test_models.py
-│   ├── test_service.py
-│   └── test_validators.py
-├── integration/             # Integration tests
+│   ├── test___init__.py     # Tests for src/__init__.py
+│   ├── test_models.py       # Tests for src/models.py
+│   ├── test_service.py      # Tests for src/service.py
+│   ├── test_validators.py   # Tests for src/validators.py
+│   └── ...                  # Mirrors src/ directory structure
+├── integration/             # Integration tests (20%)
 │   ├── __init__.py
 │   ├── test_task_workflow.py
 │   └── test_user_workflow.py
-├── e2e/                     # End-to-end tests
+├── e2e/                     # End-to-end tests (10%)
 │   ├── __init__.py
 │   └── test_api.py
-└── fixtures/                # Test data fixtures
+└── fixtures/                # Test data fixtures (optional)
     ├── __init__.py
     └── task_fixtures.py
 ```
+
+**Important**: The `tests/unit/` directory mirrors the `src/` directory structure. For each module in `src/`, create a corresponding test file in `tests/unit/` with a `test_` prefix. This makes it easy to locate tests for any given source module.
 
 ### Test File Naming
 - Use `test_` prefix

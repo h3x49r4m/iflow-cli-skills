@@ -343,6 +343,29 @@ def test_invalid_status_transitions():
 
 For each feature, test these edge cases:
 
+### Where to Write Edge Case Tests
+
+- **Unit Tests (`tests/unit/`)**: Write edge case tests for individual functions and methods
+  - Test boundary values for function parameters
+  - Test type mismatches in function arguments
+  - Test empty/null values in function inputs
+  - Test special characters in string inputs
+  - Test error handling in individual functions
+
+- **Integration Tests (`tests/integration/`)**: Write edge case tests for component interactions
+  - Test concurrent access to shared resources
+  - Test network issues in component communication
+  - Test database issues in data persistence
+  - Test invalid state transitions across components
+
+- **E2E Tests (`tests/e2e/`)**: Write edge case tests for complete workflows
+  - Test complete workflows with edge case inputs
+  - Test authentication/authorization edge cases
+  - Test rate limiting and throttling
+  - Test timeout scenarios in full workflows
+
+### Edge Case Types to Test
+
 ### Input Validation
 - [ ] Empty values (None, empty string, empty list)
 - [ ] Boundary values (min, max, min-1, max+1)

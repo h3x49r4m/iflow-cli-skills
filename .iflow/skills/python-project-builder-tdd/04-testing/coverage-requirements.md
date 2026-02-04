@@ -107,26 +107,43 @@ TOTAL                            116     11    91%
 - **Purpose**: Test individual functions in isolation
 - **Expected Coverage**: 90%+ line coverage for each module
 - **Branch Coverage**: 85%+ for conditional logic
+- **Location**: `tests/unit/` (mirrors `src/` directory structure)
 
 ```bash
 # Run only unit tests
 uv run pytest tests/unit/ --cov=src --cov-report=term-missing
+
+# Run with unit marker
+uv run pytest -m unit --cov=src --cov-report=term-missing
 ```
 
 ### Integration Test Coverage
 - **Purpose**: Test component interactions
 - **Expected Coverage**: 70%+ line coverage
 - **Focus**: Data flow and integration points
+- **Location**: `tests/integration/`
 
 ```bash
 # Run only integration tests
 uv run pytest tests/integration/ --cov=src --cov-report=term-missing
+
+# Run with integration marker
+uv run pytest -m integration --cov=src --cov-report=term-missing
 ```
 
 ### E2E Test Coverage
 - **Purpose**: Test complete workflows
 - **Expected Coverage**: Not measured (focus on scenario coverage)
 - **Focus**: Critical user workflows
+- **Location**: `tests/e2e/`
+
+```bash
+# Run only E2E tests
+uv run pytest tests/e2e/ --cov=src --cov-report=term-missing
+
+# Run with e2e marker
+uv run pytest -m e2e --cov=src --cov-report=term-missing
+```
 
 ## Handling Low Coverage
 

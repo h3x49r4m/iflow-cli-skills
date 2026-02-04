@@ -109,18 +109,22 @@ uv run pytest --lf
 ```
 tests/
 ├── __init__.py
-├── conftest.py              # Shared fixtures
-├── unit/                    # Unit tests
+├── conftest.py              # Shared fixtures and markers
+├── unit/                    # Unit tests (70%)
 │   ├── __init__.py
-│   ├── test_models.py
-│   └── test_service.py
-├── integration/             # Integration tests
+│   ├── test___init__.py
+│   ├── test_models.py       # Tests for src/models.py
+│   ├── test_service.py      # Tests for src/service.py
+│   └── ...                  # Mirrors src/ directory structure
+├── integration/             # Integration tests (20%)
 │   ├── __init__.py
-│   └── test_workflows.py
-└── e2e/                     # End-to-end tests
+│   └── test_workflows.py    # Tests for component interactions
+└── e2e/                     # End-to-end tests (10%)
     ├── __init__.py
-    └── test_api.py
+    └── test_api.py          # Tests for complete workflows
 ```
+
+**Important**: The `tests/unit/` directory mirrors the `src/` directory structure. For each module in `src/`, create a corresponding test file in `tests/unit/` with a `test_` prefix.
 
 ### Test Naming
 
