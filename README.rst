@@ -1,4 +1,4 @@
-iFlow CLI Skills Repository
+iFlow CLI Skills
 ============================
 
 A collection of custom skills for iFlow CLI.
@@ -38,16 +38,18 @@ The main skill definition file containing:
 - Workflow phases
 - Instructions for new and existing projects
 - Resume commands
+- Alignment commands for non-standard projects
 
-Phase Directories (01-phase-name/)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Phase Directories (00-phase-name/, 01-phase-name/)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Each phase contains guidance and instructions for that phase:
-- Feature breakdown and planning
-- Architecture design
-- Development workflows
-- Testing strategies
-- Quality assurance procedures
-- Deployment processes
+- **00-assessment**: Project analysis, compliance checking, gap analysis
+- 01-planning: Feature breakdown and planning
+- 02-architecture: Architecture design
+- 03-development: Development workflows
+- 04-testing: Testing strategies
+- 05-quality-assurance: Quality assurance procedures
+- 06-deployment: Deployment processes
 
 template/
 ~~~~~~~~~
@@ -63,6 +65,7 @@ Progress tracking templates:
 - Feature tracker
 - Test coverage tracker
 - Bug tracker
+- Alignment tracker (for non-standard projects)
 
 .state/
 ~~~~~~~
@@ -71,6 +74,9 @@ State management for continuous development:
 checkpoints/
 ~~~~~~~~~~~~
 Phase-specific checkpoints:
+- Assessment checkpoint
+- Migration planning checkpoint
+- Migration execution checkpoint
 - Planning checkpoint
 - Architecture checkpoint
 - Development checkpoint
@@ -108,10 +114,42 @@ A comprehensive skill for building Python projects following Test-Driven Develop
 - Continuous development support
 - Change management capabilities
 - Quality standards (80%+ test coverage)
+- **Project alignment for non-standard projects** - Automatically assesses, analyzes, and incrementally aligns existing projects with TDD standards
+
+**Workflow Phases:**
+
+0. **Assessment** - Project analysis, compliance check, gap identification
+1. **Planning** - Feature breakdown, dependency mapping, effort estimation
+2. **Architecture** - Module design, interface design, data flow
+3. **Development** - TDD workflow, feature implementation, code standards
+4. **Testing** - Test strategy, coverage requirements, edge cases
+5. **Quality Assurance** - Feature verification, integration checks, performance validation
+6. **Deployment** - Build process, deployment strategies
+
+**Alignment Capabilities:**
+
+For existing projects that don't follow TDD standards, the skill provides:
+
+- **Project Analysis**: Comprehensive assessment of structure, tools, and practices
+- **Compliance Check**: Verification against TDD standards with scoring (0-100)
+- **Gap Analysis**: Identification of deviations with prioritization (P0-P3)
+- **Migration Planning**: Phased alignment approach with effort estimates
+- **Incremental Execution**: Gradual alignment without disrupting ongoing work
+
+**Alignment Types:**
+
+- **Structural Alignment**: Fix directory structure (src/, tests/ organization)
+- **Testing Alignment**: Add pytest, reorganize tests, achieve 80% coverage
+- **Standards Alignment**: Apply PEP 8, type hints, docstrings
+- **Tooling Alignment**: Integrate ruff, black, mypy, pre-commit hooks
+- **Process Alignment**: Adopt TDD workflow for new features
+- **State Management Alignment**: Set up tracking and change management
 
 **Trigger Conditions:**
 - "python", "develop", "create project", "build app", "tdd", "test-driven"
 - "continue", "resume", "continue working on"
+- "align project", "fix project structure", "improve code quality", "migrate project"
+- "analyze project", "show gaps", "check compliance"
 
 **Usage Example:**
 
@@ -128,6 +166,15 @@ To continue working on an existing project:
     User: Continue working on my project
     User: Resume feature X
     User: What's next?
+
+To align an existing non-standard project:
+
+.. code-block:: text
+
+    User: Analyze my Python project
+    User: Show gaps in my project
+    User: Align my project with TDD standards
+    User: Check compliance status
 
 Creating a New Skill
 --------------------
@@ -170,6 +217,43 @@ Skills can handle requirement/feature changes through:
 - Rollback planning
 - Change implementation checkpoints
 - Integration with existing workflows
+
+Project Alignment for Non-Standard Projects
+--------------------------------------------
+
+Skills that support alignment can help existing projects conform to standards:
+
+**Alignment Process:**
+
+1. **Assessment**: Analyze project structure, tools, and practices
+2. **Compliance Check**: Verify alignment with standards (score 0-100)
+3. **Gap Analysis**: Identify deviations with priorities (P0-P3)
+4. **Migration Planning**: Create phased alignment plan
+5. **Incremental Execution**: Apply changes without disrupting work
+
+**Alignment Commands:**
+
+- ``analyze project`` - Assess current project state
+- ``show gaps`` - Display compliance gaps with priorities
+- ``check compliance`` - Verify current alignment status
+- ``migration plan`` - Show/modify migration plan
+- ``migration status`` - Show alignment progress
+- ``migrate [component]`` - Align specific component
+
+**Compliance Levels:**
+
+- **Fully Compliant (90-100)**: Project meets all standards
+- **Mostly Compliant (70-89)**: Minor gaps, can continue development
+- **Partially Compliant (50-69)**: Significant gaps, alignment needed
+- **Non-Compliant (0-49)**: Major gaps, alignment required before development
+
+**Alignment Phases:**
+
+- **Phase 0**: Assessment (1 day)
+- **Phase 1**: Critical Foundation (1 week) - Basic infrastructure
+- **Phase 2**: High Priority Alignment (1 week) - Critical practices
+- **Phase 3**: Medium Priority Alignment (2 weeks) - Complete standards
+- **Phase 4**: Low Priority Improvements (Ongoing) - Nice-to-have
 
 Usage
 -----
@@ -280,6 +364,35 @@ Here's a complete example of using the ``python-project-builder-tdd`` skill:
    - Analyze the impact
    - Update the architecture
    - Adjust the implementation plan
+
+4. **Align an existing non-standard project:**
+
+   .. code-block:: text
+
+       User: Analyze my Python project
+
+   The skill will:
+   - Analyze project structure and tools
+   - Check compliance with TDD standards
+   - Generate compliance score (e.g., 45/100)
+
+   .. code-block:: text
+
+       User: Show gaps in my project
+
+   The skill will:
+   - Display identified gaps with priorities
+   - Show impact and effort estimates
+   - Recommend migration plan
+
+   .. code-block:: text
+
+       User: Align my project with TDD standards
+
+   The skill will:
+   - Create migration plan with phases
+   - Execute alignment incrementally
+   - Track progress without disrupting work
 
 Best Practices
 --------------
