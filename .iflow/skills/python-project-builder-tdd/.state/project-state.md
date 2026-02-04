@@ -22,6 +22,22 @@ This file tracks the overall state of the project for continuous development.
 
 **Session Status**: [active/paused/completed]
 
+## Alignment Status
+
+**Compliance Level**: [none/partial/compliant]
+
+**Compliance Score**: __/100
+
+**Alignment Progress**: __%
+
+**Alignment Phase**: [Phase 0/Phase 1/Phase 2/Phase 3/Phase 4/Complete]
+
+**Last Compliance Check**: YYYY-MM-DD
+
+**Migration Status**: [not-started/in-progress/completed]
+
+**Alignment Notes**: _____________
+
 ## Phase Progress
 
 | Phase | Status | Progress | Last Updated |

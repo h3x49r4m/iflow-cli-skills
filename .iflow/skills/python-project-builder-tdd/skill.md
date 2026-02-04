@@ -17,9 +17,11 @@ This skill should be automatically invoked when:
 - User requests Python development with testing requirements
 - User asks to "continue", "resume", or "continue working on" a project
 - User requests a change: "change", "modify", "update", "requirement change", "feature change"
-- Keywords: "python", "develop", "create project", "build app", "tdd", "test-driven", "continue", "resume", "change", "modify", "update"
+- User requests project alignment: "align project", "fix project structure", "improve code quality", "migrate project"
+- Keywords: "python", "develop", "create project", "build app", "tdd", "test-driven", "continue", "resume", "change", "modify", "update", "align", "compliance", "standards", "refactor", "migrate"
 
 **Workflow Phases**:
+0. **Assessment** (00-assessment/) - Project analysis, compliance check, gap identification
 1. **Planning** (01-planning/) - Feature breakdown, dependency mapping, effort estimation
 2. **Architecture** (02-architecture/) - Module design, interface design, data flow
 3. **Development** (03-development/) - TDD workflow, feature implementation, code standards
@@ -53,6 +55,23 @@ This skill should be automatically invoked when:
 
 **Instructions**:
 
+### Initial Project Assessment:
+When skill is invoked:
+1. Check if project exists in current directory
+   - If NO → Initialize new project (follow standard workflow from Phase 1)
+   - If YES → Check for .state/ directory
+     - If .state/ exists → Load and resume existing project
+     - If .state/ not exists → Run project assessment:
+       1. Analyze project structure and tools (00-assessment/project-analysis.md)
+       2. Check compliance with standards (00-assessment/compliance-check.md)
+       3. Perform gap analysis (00-assessment/gap-analysis.md)
+       4. If compliant (≥80%) → Initialize state and start working
+       5. If not compliant (<80%) → Propose migration plan:
+          - Show gaps and priorities
+          - Ask user to confirm alignment approach
+          - Create migration plan in .state/
+          - Execute alignment incrementally
+
 ### When Starting a New Project:
 1. Initialize project state in `.state/` directory
 2. Create `project-state.md` with project information
@@ -69,6 +88,31 @@ This skill should be automatically invoked when:
 5. **Check Checkpoints**: Review `checkpoints/` for any saved progress
 6. **Resume Work**: Continue from the last checkpoint or next step
 7. **Update State**: Update state files as progress is made
+
+### When Aligning Existing Projects:
+1. **Analyze Project**: Run compliance check to identify gaps
+   - Use `00-assessment/project-analysis.md` to understand current state
+   - Use `00-assessment/compliance-check.md` to verify compliance
+2. **Gap Analysis**: Document deviations and their impact
+   - Use `00-assessment/gap-analysis.md` to create gap report
+   - Prioritize gaps based on impact and effort
+3. **Create Migration Plan**: Prioritize changes based on impact/effort
+   - Create alignment phases (P0 critical, P1 high, P2 medium, P3 low)
+   - Document dependencies between gaps
+   - Estimate effort for each phase
+4. **Execute Migration**: Apply changes incrementally
+   - Start with P0 critical gaps
+   - Make small, verifiable changes
+   - Run tests after each change
+   - Update alignment-tracker.md
+5. **Verify Compliance**: Re-check after each change
+   - Run compliance check
+   - Update compliance score
+   - Verify no regressions
+6. **Update State**: Track migration progress in state files
+   - Update `alignment-progress.md`
+   - Save checkpoints after each phase
+   - Document any blockers or issues
 
 ### State Persistence:
 - **Project State**: `.state/project-state.md` - Overall project status
@@ -91,6 +135,15 @@ This skill should be automatically invoked when:
 - "what's next?" - Show next steps
 - "show progress" - Display project progress
 - "pause" - Save current state and pause
+
+### Alignment Commands:
+- "analyze project" - Assess current project structure, tools, and compliance
+- "show gaps" - Display compliance gaps with priorities and impact
+- "check compliance" - Verify current alignment status and show compliance score
+- "migration plan" - Show/modify migration plan for alignment
+- "migration status" - Show progress of alignment efforts
+- "migrate [component]" - Align specific component (structure/tests/standards/tools)
+- "align project" - Start or continue project alignment process
 
 ### Change Management:
 When changes are requested during development:
@@ -126,6 +179,39 @@ When changes are requested during development:
 - **Major Changes**: New requirements, replan and restructure
 - **Breaking Changes**: Architectural changes, may require rollback and restart
 
+#### Alignment Types:
+When aligning existing projects, different areas may need attention:
+
+- **Structural Alignment**: Fix directory structure (src/, tests/ organization, config files)
+  - Impact: High - affects imports and tooling
+  - Effort: Medium - requires moving files and updating imports
+  - Priority: P0 (Critical) - Blocks many other improvements
+
+- **Testing Alignment**: Add pytest, reorganize tests, achieve coverage
+  - Impact: High - affects code quality and confidence
+  - Effort: High - requires writing tests and refactoring
+  - Priority: P1 (High) - Essential for TDD workflow
+
+- **Standards Alignment**: Apply PEP 8, type hints, docstrings
+  - Impact: Medium - improves code maintainability
+  - Effort: High - requires code changes across project
+  - Priority: P1 (High) - Important for long-term maintainability
+
+- **Tooling Alignment**: Integrate ruff, black, mypy, pre-commit hooks
+  - Impact: Medium - improves development experience
+  - Effort: Low - configuration and setup
+  - Priority: P1 (High) - Quick wins with high value
+
+- **Process Alignment**: Adopt TDD workflow for new features
+  - Impact: High - affects development approach
+  - Effort: Medium - requires behavior change
+  - Priority: P2 (Medium) - Can be adopted gradually
+
+- **State Management Alignment**: Set up .state/ tracking
+  - Impact: Low - improves project tracking
+  - Effort: Low - template setup
+  - Priority: P2 (Medium) - Nice to have for complex projects
+
 #### Change Integration with Phases:
 - **Planning Phase**: Check for requirement changes before planning
 - **Architecture Phase**: Assess impact on architecture, update if needed
@@ -142,7 +228,25 @@ When changes are requested during development:
 - **current-feature.md**: Track change status for current feature
 - **next-steps.md**: Reprioritize based on changes
 
+#### State Files for Alignment:
+- **compliance-report.md**: Current compliance status and score
+- **gap-analysis.md**: Identified gaps with priorities and impact analysis
+- **migration-plan.md**: Step-by-step alignment plan with phases
+- **migration-progress.md**: Track completed alignment steps and remaining work
+- **alignment-checklist.md**: Checklist of alignment tasks and their status
+
 #### Change Checkpoints:
 - **change-request-checkpoint.md**: Track change requests and approval
 - **change-impact-checkpoint.md**: Track impact analysis progress
 - **change-implementation-checkpoint.md**: Track change implementation progress
+
+#### Alignment Checkpoints:
+- **assessment-checkpoint.md**: Project analysis complete, compliance score calculated
+- **migration-planning-checkpoint.md**: Migration plan created and approved
+- **migration-execution-checkpoint.md**: Track progress of alignment phases
+- **phase-0-checkpoint.md**: Assessment phase complete
+- **phase-1-checkpoint.md**: Critical alignment complete
+- **phase-2-checkpoint.md**: High priority alignment complete
+- **phase-3-checkpoint.md**: Medium priority alignment complete
+- **phase-4-checkpoint.md**: Low priority alignment complete
+- **alignment-complete-checkpoint.md**: Project fully compliant
