@@ -105,16 +105,7 @@ Available Skills
 
 python-project-builder-tdd
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A comprehensive skill for building Python projects following Test-Driven Development (TDD) methodology.
-
-**Features:**
-- Full project lifecycle support (planning to deployment)
-- TDD workflow with pytest
-- uv for package management
-- Continuous development support
-- Change management capabilities
-- Quality standards (80%+ test coverage)
-- **Project alignment for non-standard projects** - Automatically assesses, analyzes, and incrementally aligns existing projects with TDD standards
+A comprehensive skill for building Python projects following Test-Driven Development (TDD) methodology. Covers the full project lifecycle from product design to deployment using uv for package management.
 
 **Workflow Phases:**
 
@@ -125,6 +116,34 @@ A comprehensive skill for building Python projects following Test-Driven Develop
 4. **Testing** - Test strategy, coverage requirements, edge cases
 5. **Quality Assurance** - Feature verification, integration checks, performance validation
 6. **Deployment** - Build process, deployment strategies
+
+**Project Setup:**
+- Use ``uv`` for package management
+- Standard structure: ``src/`` for source code, ``tests/`` for tests
+- Use ``pytest`` as the testing framework
+- Follow TDD: Write tests first, then implement
+
+**Key Commands:**
+- ``uv init`` - Initialize project
+- ``uv add pytest`` - Add pytest dependency
+- ``uv run pytest`` - Run tests
+- ``uv run pytest --cov`` - Run tests with coverage
+- ``uv build`` - Build project
+
+**Quality Standards:**
+- Minimum 80% test coverage per feature
+- All features must pass acceptance criteria
+- Integration tests required for feature interactions
+- Edge cases must be identified and tested
+
+**Trigger Conditions:**
+- User requests to develop a Python application, library, or tool
+- User asks to create a Python project
+- User requests Python development with testing requirements
+- User asks to "continue", "resume", or "continue working on" a project
+- User requests a change: "change", "modify", "update", "requirement change", "feature change"
+- User requests project alignment: "align project", "fix project structure", "improve code quality", "migrate project"
+- Keywords: "python", "develop", "create project", "build app", "tdd", "test-driven", "continue", "resume", "change", "modify", "update", "align", "compliance", "standards", "refactor", "migrate"
 
 **Alignment Capabilities:**
 
@@ -144,12 +163,6 @@ For existing projects that don't follow TDD standards, the skill provides:
 - **Tooling Alignment**: Integrate ruff, black, mypy, pre-commit hooks
 - **Process Alignment**: Adopt TDD workflow for new features
 - **State Management Alignment**: Set up tracking and change management
-
-**Trigger Conditions:**
-- "python", "develop", "create project", "build app", "tdd", "test-driven"
-- "continue", "resume", "continue working on"
-- "align project", "fix project structure", "improve code quality", "migrate project"
-- "analyze project", "show gaps", "check compliance"
 
 **Usage Example:**
 
@@ -175,6 +188,75 @@ To align an existing non-standard project:
     User: Show gaps in my project
     User: Align my project with TDD standards
     User: Check compliance status
+
+rst-writer
+~~~~~~~~~~
+A skill for writing articles in reStructuredText (RST) format with 100% syntax accuracy.
+
+**RST Syntax Support:**
+
+- **Section Headers**: Proper underlines/overlines with matching characters
+- **Text Formatting**: Italic, bold, monospace, emphasis, strong
+- **Lists**: Bullet, enumerated, and definition lists
+- **Code Blocks**: Literal blocks and code-block directives
+- **Tables**: Simple and grid tables
+- **Links and References**: External links, internal references, hyperlink targets
+- **Directives**: Notes, warnings, tips, includes, images
+- **Comments**: Inline and block comments
+- **Other**: Line blocks, field lists, substitutions, footnotes, citations
+
+**Validation Checklist:**
+
+- Section headers have matching underline/overline lengths
+- Header hierarchy uses distinct characters consistently
+- Code blocks use proper indentation (3 spaces minimum)
+- Lists use consistent indentation
+- Tables have proper column alignment
+- Links use correct syntax
+- Inline markup doesn't span multiple lines
+- All directives end with double colon and proper indentation
+- No unescaped special characters in text
+- Blank lines before and after directives/code blocks
+
+**Quality Standards:**
+- 100% RST syntax accuracy
+- Proper header hierarchy
+- Correct indentation for all blocks
+- Valid directive syntax
+- Proper table formatting
+- Correct link/reference syntax
+
+**Trigger Conditions:**
+- User requests to write an article in RST format
+- User asks to create RST documentation
+- User requests reStructuredText content generation
+- Keywords: "rst", "restructuredtext", "write article", "create documentation", ".rst file"
+
+**Resume Commands:**
+- "continue writing" - Resume current article
+- "what's next?" - Show next steps
+- "validate rst" - Validate current RST content
+
+**Usage Example:**
+
+To write an article in RST format:
+
+.. code-block:: text
+
+    User: Write an article about Python best practices in RST format
+
+To resume writing:
+
+.. code-block:: text
+
+    User: Continue writing
+    User: What's next?
+
+To validate RST syntax:
+
+.. code-block:: text
+
+    User: Validate my RST content
 
 Creating a New Skill
 --------------------
