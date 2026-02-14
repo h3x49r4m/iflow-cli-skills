@@ -1,11 +1,11 @@
 ---
 name: dev-team
-description: An autonomous development team that builds complete projects from requirements to deployment
-version: 2.0.0
+description: An autonomous development team that builds complete projects from requirements to deployment with integrated Karpathy guidelines for high-quality, maintainable code
+version: 2.1.0
 category: development-team
 ---
 
-# Dev-Team Skill v2.0
+# Dev-Team Skill v2.1
 
 An autonomous development team that builds complete projects from requirements to deployment with full automation.
 
@@ -15,13 +15,15 @@ This skill recruits and manages a specialized team of AI agents that collaborate
 
 **NEW in v2.0**: Fully automated workflow from requirements to delivery with intelligent task orchestration.
 
+**NEW in v2.1**: Integrated Karpathy guidelines (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution) to prevent common LLM coding pitfalls and ensure high-quality, maintainable code.
+
 ## Team Roles
 
 - **Project Manager**: Orchestrates workflow, manages dependencies, makes go/no-go decisions
-- **Tech Lead**: Architectural decisions, technology stack selection, code quality standards
+- **Tech Lead**: Architectural decisions, technology stack selection, code quality standards, enforces Think Before Coding and Simplicity First principles
 - **Frontend Developer**: UI/UX implementation, component development, styling
 - **Backend Developer**: API design, database modeling, server-side logic
-- **QA Engineer**: Test strategy, test implementation, bug detection
+- **QA Engineer**: Test strategy, test implementation, bug detection, enforces Surgical Changes principle
 - **DevOps Engineer**: CI/CD pipelines, deployment configuration, infrastructure
 
 ## Usage
@@ -82,7 +84,13 @@ Parse: Requirements into epics
 ↓
 Break: Epics into stories
 ↓
-Generate: Task list with dependencies
+Enforce: Think Before Coding principle (Tech Lead validation)
+  - Document explicit assumptions
+  - Present multiple interpretations if ambiguous
+  - Surface tradeoffs and clarifications
+  - Push back when simpler approach exists
+↓
+Generate: Task list with dependencies and success criteria
 ↓
 Output: sprint-planner.md + todo list created
 ```
@@ -93,11 +101,27 @@ For each task in todo list:
   ↓
   Check: Task type and assign to appropriate agent
   ↓
+  Enforce: Goal-Driven Execution principle (Agent Dispatcher)
+  - Transform imperative to declarative with success criteria
+  - Write tests first (TDD) to define success
+  - Loop independently until criteria verified
+  - Multi-step tasks require verification checkpoints
+  ↓
   Enforce: TDD workflow (tdd-enforce skill)
   ↓
   Execute: Implementation
   ↓
-  Verify: Tests pass
+  Verify: Tests pass and success criteria met
+  ↓
+  Enforce: Simplicity First principle (Tech Lead review)
+  - Check for overcomplication and bloat
+  - Remove speculative features
+  - Simplify if senior engineer would say it's overcomplicated
+  ↓
+  Enforce: Surgical Changes principle (QA Engineer review)
+  - Verify every changed line traces to user request
+  - Check for unrelated modifications
+  - Ensure matching existing style
   ↓
   Commit: git-manage skill with proper format
   ↓
@@ -205,14 +229,116 @@ Before each commit, automatically:
 2. ✅ Check coverage ≥80% lines, ≥70% branches
 3. ✅ Validate TDD compliance
 4. ✅ Run architecture checks
-5. ✅ Security vulnerability scan
-6. ✅ Accessibility compliance check
+5. ✅ Check code complexity (Simplicity First principle)
+6. ✅ Verify surgical changes (no unrelated modifications)
+7. ✅ Security vulnerability scan
+8. ✅ Accessibility compliance check
 
 If any gate fails:
 - Block commit
 - Return task to in_progress
 - Provide remediation guidance
 - Retry after fixes
+
+## Development Principles (Karpathy Guidelines)
+
+The dev-team skill enforces four core principles to prevent common LLM coding pitfalls and ensure high-quality, maintainable code.
+
+### Think Before Coding
+
+**Problem Addressed**: Wrong assumptions, hidden confusion, missing tradeoffs
+
+**Enforcement by Tech Lead during Planning Phase:**
+
+- **State assumptions explicitly** — If uncertain, ask rather than guess
+- **Present multiple interpretations** — Don't pick silently when ambiguity exists
+- **Push back when warranted** — If a simpler approach exists, say so
+- **Stop when confused** — Name what's unclear and ask for clarification
+
+**Integration with Sprint Planning:**
+- Each task must include explicit assumptions and clarifications
+- Tradeoffs must be documented before implementation
+- Ambiguous requirements trigger clarification loops with user
+
+### Simplicity First
+
+**Problem Addressed**: Overcomplication, bloated abstractions
+
+**Enforcement by Tech Lead during Code Review:**
+
+- No features beyond what was asked
+- No abstractions for single-use code
+- No "flexibility" or "configurability" that wasn't requested
+- No error handling for impossible scenarios
+- If 200 lines could be 50, rewrite it
+
+**The test:** Would a senior engineer say this is overcomplicated? If yes, simplify.
+
+**Integration with Quality Gates:**
+- Code complexity metrics added to pre-commit checks
+- Refactor tasks required if complexity exceeds thresholds
+- Simplicity criteria evaluated before commit approval
+
+### Surgical Changes
+
+**Problem Addressed**: Orthogonal edits, touching code you shouldn't
+
+**Enforcement by QA Engineer during Code Review:**
+
+- Don't "improve" adjacent code, comments, or formatting
+- Don't refactor things that aren't broken
+- Match existing style, even if you'd do it differently
+- If you notice unrelated dead code, mention it — don't delete it
+
+**When your changes create orphans:**
+- Remove imports/variables/functions that YOUR changes made unused
+- Don't remove pre-existing dead code unless asked
+
+**The test:** Every changed line should trace directly to the user's request.
+
+**Integration with git-manage:**
+- Diff analysis before commit to verify surgical changes
+- Block commits with unrelated modifications
+- Require justification for any changes beyond scope
+
+### Goal-Driven Execution
+
+**Problem Addressed**: Leverage through tests-first, verifiable success criteria
+
+**Enforcement by Agent Dispatcher during Task Assignment:**
+
+Transform imperative tasks into verifiable goals:
+
+| Instead of... | Transform to... |
+|---|---|
+| "Add validation" | "Write tests for invalid inputs, then make them pass" |
+| "Fix the bug" | "Write a test that reproduces it, then make them pass" |
+| "Refactor X" | "Ensure tests pass before and after" |
+
+For multi-step tasks, state a brief plan:
+
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+**Integration with TDD Workflow:**
+- Every task must have explicit success criteria before execution
+- Tests written first (TDD) define success criteria
+- Agent loops independently until criteria verified
+- Weak criteria ("make it work") rejected during task assignment
+
+**Principle Enforcement Summary:**
+
+| Principle | Enforced By | When |
+|---|---|---|
+| Think Before Coding | Tech Lead | Planning Phase |
+| Simplicity First | Tech Lead | Code Review |
+| Surgical Changes | QA Engineer | Code Review |
+| Goal-Driven Execution | Agent Dispatcher | Task Assignment |
+
+These principles bias toward **caution over speed**. For trivial tasks (simple typo fixes, obvious one-liners), agents use judgment — not every change needs the full rigor.
 
 ## Progress Tracking
 
@@ -225,10 +351,10 @@ The skill automatically updates:
 
 ## Integration with Other Skills
 
-- **tdd-enforce**: Automatically enforced for all development
-- **git-manage**: Automatically used for all commits
+- **tdd-enforce**: Automatically enforced for all development (supports Goal-Driven Execution)
+- **git-manage**: Automatically used for all commits (enforces Surgical Changes principle)
 - **frontend-tester**: Automatically invoked after frontend changes
-- **python-project-builder-tdd**: Template factory for new projects
+- **Karpathy Guidelines**: Integrated into dev-team workflow (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution)
 
 ## Completion Detection
 
@@ -255,14 +381,27 @@ User: dev-team build "Create a weather dashboard with 7-day forecast, location s
 Dev-Team:
   [INIT] Extracting requirements...
   [PLAN] Creating task breakdown (18 tasks identified)
+    [THINK] Documenting assumptions and tradeoffs for each task
   [EXEC] Starting development cycle...
-    [TDD] Task 1/18: Setup Next.js project
-    [TDD] Task 2/18: Create weather API integration
-    [TDD] Task 3/18: Build location search component
-    [TDD] Task 4/18: Implement 7-day forecast display
-    [TDD] Task 5/18: Add dark mode toggle
+    [GOAL] Task 1/18: Setup Next.js project
+      → Verify: Project builds and dev server starts
+      [TDD] Write tests → [PASS] Implement → [SIMPLIFY] Review → [SURGICAL] Validate
+    [GOAL] Task 2/18: Create weather API integration
+      → Verify: API returns weather data for given location
+      [TDD] Write tests → [PASS] Implement → [SIMPLIFY] Review → [SURGICAL] Validate
+    [GOAL] Task 3/18: Build location search component
+      → Verify: Search returns location suggestions
+      [TDD] Write tests → [PASS] Implement → [SIMPLIFY] Review → [SURGICAL] Validate
+    [GOAL] Task 4/18: Implement 7-day forecast display
+      → Verify: Forecast displays correctly with data
+      [TDD] Write tests → [PASS] Implement → [SIMPLIFY] Review → [SURGICAL] Validate
+    [GOAL] Task 5/18: Add dark mode toggle
+      → Verify: Theme switches between light/dark
+      [TDD] Write tests → [PASS] Implement → [SIMPLIFY] Review → [SURGICAL] Validate
     [QA] Running test suite... 45 tests passing
     [QA] Coverage: 82% lines, 75% branches ✓
+    [QA] Complexity check: All code within thresholds ✓
+    [QA] Surgical changes: No unrelated modifications ✓
     [COMMIT] feat: setup Next.js project
     [COMMIT] feat: integrate weather API
     [COMMIT] feat: build location search
@@ -274,13 +413,14 @@ Dev-Team:
   [DEPLOY] Smoke tests passed ✓
   [DEPLOY] Deploying to production...
   [REPORT] Project delivered successfully!
-  
+
   📊 Final Stats:
   - Tasks: 18/18 completed
   - Tests: 45 passing
   - Coverage: 82% lines, 75% branches
   - Build time: 47s
   - Total duration: 23 minutes
+  - Karpathy guidelines: 4/4 principles enforced ✓
 ```
 
 ## Exit Codes
