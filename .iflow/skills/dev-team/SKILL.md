@@ -340,6 +340,58 @@ For multi-step tasks, state a brief plan:
 
 These principles bias toward **caution over speed**. For trivial tasks (simple typo fixes, obvious one-liners), agents use judgment — not every change needs the full rigor.
 
+## File Operations Restriction
+
+**CRITICAL CONSTRAINT**: All file operations MUST be restricted to the current project directory.
+
+**Allowed Paths:**
+- Any path under the current working directory (project root)
+- Examples: `./src/`, `./tests/`, `./config/`, relative paths within project
+
+**Forbidden Paths:**
+- `/tmp/` - Temporary directory (use project temp dir instead)
+- `/var/` - System variable directory
+- System directories outside project root
+- Absolute paths outside the current working directory
+- Home directory paths outside project
+
+**Enforcement by All Agents:**
+
+Before any `write_file` or `replace` operation, every agent MUST:
+
+1. **Validate the file path**:
+   ```python
+   # Pseudo-code for path validation
+   if not file_path.startswith(project_root):
+       raise PermissionError("File operations restricted to project directory")
+   ```
+
+2. **Check for forbidden patterns**:
+   - Reject any path starting with `/tmp/`
+   - Reject any path starting with `/var/`
+   - Reject any absolute path outside project root
+
+3. **Block and report violations**:
+   - Stop the operation immediately
+   - Report the violation with clear error message
+   - Suggest using project directory instead
+
+**Integration with Quality Gates:**
+- Pre-commit validation ensures no files outside project directory were modified
+- Block commits if forbidden paths are detected in changes
+
+**Examples:**
+
+✅ **Allowed:**
+- `./src/components/Button.tsx`
+- `tests/integration/test_api.py`
+- Absolute paths within the project root directory
+
+❌ **Forbidden:**
+- `/tmp/test_file.txt`
+- `/var/log/app.log`
+- `/home/user/somefile.txt` (outside project)
+
 ## Progress Tracking
 
 The skill automatically updates:
