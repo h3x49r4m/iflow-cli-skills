@@ -1,7 +1,7 @@
 iFlow CLI Skills
 ================
 
-A collection of custom skills for iFlow CLI that extend its capabilities for specialized development workflows.
+A comprehensive skill set for iFlow CLI that extend its capabilities for specialized development workflows.
 
 About
 -----
@@ -151,6 +151,74 @@ Automatically enforced during development when ``dev-team`` skill is active. Als
 - Test coverage must be maintained at ≥90%
 - All tests must pass before commits
 - No implementation without corresponding tests
+
+talk
+~~~~
+A conversation-only skill for discussing ideas, brainstorming, getting advice, and exploring concepts without any file modifications or system changes.
+
+**Version:** 1.0.0
+
+**Purpose:**
+
+Pure conversational interaction - talk, discuss, analyze, explore. Nothing gets written or modified.
+
+**Features:**
+
+- **Read-Only Operations**: File reading, searching, and analysis for discussion purposes
+- **Web Research**: Search and fetch online resources for informed discussions
+- **Image Analysis**: Analyze images for discussion and insights
+- **Safe Exploration**: No file modifications, no system commands, no side effects
+
+**Agent Configuration:**
+
+**Agent Type:** ``talk-agent``
+
+**Available Tools:**
+
+- ``read_file`` - read code/files for discussion
+- ``glob`` - find files to discuss
+- ``search_file_content`` - search to discuss
+- ``list_directory`` - explore structure to discuss
+- ``web_search`` - research for discussion
+- ``web_fetch`` - look up references for discussion
+- ``image_read`` - analyze images for discussion
+
+**Excluded Tools:**
+
+- No file modification tools (write_file, replace, xml_escape)
+- No system command tools (run_shell_command)
+
+**Usage:**
+
+Automatically triggered when conversation-only interaction is needed:
+
+.. code-block:: text
+
+    # Discuss code architecture
+    "Let's talk about the best way to structure this module"
+
+    # Brainstorm ideas
+    "Help me brainstorm some approaches for solving this problem"
+
+    # Get advice
+    "What are the pros and cons of using this library?"
+
+    # Explore concepts
+    "Explain how microservices architecture works"
+
+**Behavior:**
+
+- Read and analyze for discussion purposes only
+- Never write, replace, or run commands
+- Pure conversational output: insights, analysis, recommendations
+
+**Use Cases:**
+
+- Architecture discussions
+- Code reviews without modifications
+- Technical planning sessions
+- Learning and exploration
+- Problem analysis and advice
 
 Skill Structure
 ---------------
