@@ -329,6 +329,53 @@ For multi-step tasks, state a brief plan:
 - Agent loops independently until criteria verified
 - Weak criteria ("make it work") rejected during task assignment
 
+### No Hardcoding
+
+**Problem Addressed**: Magic numbers, embedded configuration values, hardcoded thresholds that make code difficult to maintain and adapt
+
+**Enforcement by All Agents during Implementation and Code Review:**
+
+- **Externalize all configuration** — No magic numbers, thresholds, or constant values in implementation code
+- **Use configuration files** — All project settings, limits, and constants must be in config files (e.g., `config/*.json`, `.env`, `constants.ts`)
+- **Read from environment** — Use environment variables for deployment-specific values
+- **Define constants explicitly** — If a value must be in code, it must be a named constant at the top of the file with clear documentation
+- **Dynamic over static** — Prefer data-driven approaches (read from files/databases) over hardcoded logic
+
+**Examples of what NOT to do:**
+```typescript
+// ❌ Hardcoded threshold
+if (coverage.lines < 80) throw new Error('Coverage too low')
+
+// ❌ Magic number
+const timeout = 30000 // 30 seconds - what does this mean?
+
+// ❌ Hardcoded tech stack
+const techStack = { framework: 'React', language: 'TypeScript' }
+```
+
+**Examples of what TO do:**
+```typescript
+// ✅ Read from config
+const config = loadConfig('quality-gates.json')
+if (coverage.lines < config.thresholds.coverage.lines) throw new Error(config.errors.coverageTooLow)
+
+// ✅ Named constant with documentation
+const API_TIMEOUT_MS = 30000 // 30 seconds: maximum wait time for external API responses
+
+// ✅ Data-driven
+const techStack = recommendTechStack(projectType, features, constraints)
+```
+
+**Integration with Project Initialization:**
+- Auto-generate configuration files during project setup
+- Document all configuration options and their purposes
+- Provide validation schemas for configuration files
+
+**Integration with Code Review:**
+- Scan for magic numbers and hardcoded values
+- Verify all thresholds come from configuration
+- Check for embedded constants that should be externalized
+
 **Principle Enforcement Summary:**
 
 | Principle | Enforced By | When |
@@ -337,6 +384,7 @@ For multi-step tasks, state a brief plan:
 | Simplicity First | Tech Lead | Code Review |
 | Surgical Changes | QA Engineer | Code Review |
 | Goal-Driven Execution | Agent Dispatcher | Task Assignment |
+| No Hardcoding | All Agents | Implementation + Code Review |
 
 These principles bias toward **caution over speed**. For trivial tasks (simple typo fixes, obvious one-liners), agents use judgment — not every change needs the full rigor.
 

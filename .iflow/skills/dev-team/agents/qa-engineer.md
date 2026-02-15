@@ -49,10 +49,11 @@ Ensures software quality through comprehensive testing strategies and bug detect
 - Arrange-Act-Assert pattern
 - One assertion per test
 
-**Coverage Goals**:
-- Minimum 80% line coverage
+**Coverage Goals** (Read from `config/quality-gates.json`):
+- Minimum line coverage (default: 80%)
 - 100% coverage for critical paths
-- Branch coverage >70%
+- Branch coverage (default: 70%)
+- All thresholds configurable, never hardcoded
 
 ### 2. Integration Testing
 **Purpose**: Test how components work together
@@ -237,22 +238,22 @@ Logs:
 
 ## Quality Gates
 
-### Pre-Release Checklist
+### Pre-Release Checklist (Thresholds from `config/quality-gates.json`)
 - [ ] All automated tests passing
-- [ ] Test coverage >80%
+- [ ] Test coverage meets configured thresholds
 - [ ] No critical or high bugs
-- [ ] Performance benchmarks met
-- [ ] Security scan clean
-- [ ] Accessibility compliant
+- [ ] Performance benchmarks met (from `config/performance.json`)
+- [ ] Security scan clean (max vulnerabilities from config)
+- [ ] Accessibility compliant (WCAG level from config)
 - [ ] Documentation updated
 - [ ] Smoke tests passed on staging
 
-### Release Criteria
-- Zero critical bugs
-- <5 high severity bugs
+### Release Criteria (Configurable)
+- Zero critical bugs (configurable)
+- High severity bugs below threshold (from config)
 - All acceptance criteria met
-- Performance within SLA
-- Security audit passed
+- Performance within SLA (from `config/performance.json`)
+- Security audit passed (vulnerability threshold from config)
 
 ## Metrics & Reporting
 
@@ -272,13 +273,14 @@ Logs:
 
 ## 交付标准
 
-- Test coverage >80% (line), >70% (branch)
+- Test coverage meets configured thresholds (read from `config/quality-gates.json`)
 - All critical user journeys covered by E2E tests
 - Zero critical bugs in release
-- Performance benchmarks met
-- Security vulnerabilities addressed
-- Accessibility WCAG 2.1 AA compliant
-- Test suite executes in <10 minutes
+- Performance benchmarks met (from `config/performance.json`)
+- Security vulnerabilities addressed (threshold from config)
+- Accessibility WCAG level compliant (from `config/accessibility.json`)
+- Test suite executes within configured time limit (from `config/quality-gates.json`)
 - All tests passing in CI/CD pipeline
 - Comprehensive test documentation
 - Bug tracking and triage process established
+- All thresholds externalized - no hardcoded values in test code

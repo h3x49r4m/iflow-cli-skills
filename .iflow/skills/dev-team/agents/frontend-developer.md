@@ -55,11 +55,13 @@ Implements UI/UX, components, and styling for web applications.
 
 ## Responsive Design
 
-### Breakpoints
-- **Mobile**: <640px
-- **Tablet**: 640px - 1024px
-- **Desktop**: >1024px
-- **Large Desktop**: >1440px
+### Breakpoints (Read from `config/responsive.json`)
+- **Mobile**: <640px (configurable)
+- **Tablet**: 640px - 1024px (configurable)
+- **Desktop**: >1024px (configurable)
+- **Large Desktop**: >1440px (configurable)
+
+All breakpoint values externalized to configuration - never hardcoded in CSS or JavaScript.
 
 ### Strategies
 - Mobile-first approach
@@ -97,11 +99,13 @@ Implements UI/UX, components, and styling for web applications.
 - Virtual scrolling for long lists
 - Service worker caching
 
-### Metrics
-- First Contentful Paint (FCP) < 1.8s
-- Largest Contentful Paint (LCP) < 2.5s
-- Time to Interactive (TTI) < 3.8s
-- Cumulative Layout Shift (CLS) < 0.1
+### Metrics (Read from `config/performance.json`)
+- First Contentful Paint (FCP) < 1.8s (configurable)
+- Largest Contentful Paint (LCP) < 2.5s (configurable)
+- Time to Interactive (TTI) < 3.8s (configurable)
+- Cumulative Layout Shift (CLS) < 0.1 (configurable)
+
+All performance thresholds externalized to configuration - never hardcoded in monitoring code.
 
 ## API Integration
 
@@ -161,10 +165,11 @@ Implements UI/UX, components, and styling for web applications.
 
 ##交付标准
 
-- All components responsive across breakpoints
-- WCAG 2.1 AA compliant
-- Lighthouse performance score >90
+- All components responsive across breakpoints (from `config/responsive.json`)
+- WCAG 2.1 AA compliant (level from `config/accessibility.json`)
+- Lighthouse performance score meets threshold (from `config/performance.json`)
 - No console errors or warnings
-- Cross-browser tested (Chrome, Firefox, Safari, Edge)
-- Mobile tested on iOS and Android
+- Cross-browser tested (browsers from `config/browsers.json`)
+- Mobile tested on iOS and Android (versions from config)
 - Accessibility verified with screen readers
+- All thresholds externalized - no hardcoded values in code

@@ -63,6 +63,22 @@ Makes architectural decisions and ensures code quality standards.
 
 ## Code Quality Standards
 
+### No Hardcoding Principle
+**Mandatory**: All configuration values, thresholds, and constants must be externalized to configuration files.
+
+**Enforcement During Code Review**:
+- [ ] No magic numbers in implementation code
+- [ ] No hardcoded thresholds (e.g., timeout values, retry counts)
+- [ ] All limits read from `config/*.json` or environment variables
+- [ ] Named constants at file top for any inline values
+- [ ] Configuration files documented with schema
+- [ ] Tech stack choices data-driven, not hardcoded
+
+**Examples**:
+- ✅ Read timeout from `config/api.json` → `config.timeout`
+- ✅ Define constant: `const MAX_RETRIES = 3` with comment
+- ❌ Hardcoded: `if (attempts > 3)` (what is 3?)
+
 ### Code Review Checklist
 - [ ] Code follows project conventions
 - [ ] Proper error handling
@@ -71,13 +87,14 @@ Makes architectural decisions and ensures code quality standards.
 - [ ] Performance considerations
 - [ ] Test coverage maintained
 - [ ] Documentation updated
+- [ ] No hardcoded values (No Hardcoding principle)
 
 ### Code Metrics
-- **Cyclomatic Complexity**: <10 per function
-- **Function Length**: <50 lines
-- **File Length**: <500 lines
-- **Test Coverage**: >80%
-- **Code Duplication**: <5%
+- **Cyclomatic Complexity**: <10 per function (configurable in `config/quality-gates.json`)
+- **Function Length**: <50 lines (configurable)
+- **File Length**: <500 lines (configurable)
+- **Test Coverage**: >80% (configurable)
+- **Code Duplication**: <5% (configurable)
 
 ## Security Considerations
 

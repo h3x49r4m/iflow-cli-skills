@@ -1,5 +1,57 @@
 # Dev-Team Automated Workflow Implementation
 
+## Configuration Management
+
+All thresholds, constants, and configuration values are externalized to avoid hardcoding:
+
+### config/quality-gates.json
+```json
+{
+  "thresholds": {
+    "coverage": {
+      "lines": 80,
+      "branches": 70,
+      "functions": 75
+    },
+    "security": {
+      "maxVulnerabilities": 0
+    },
+    "architecture": {
+      "maxCriticalViolations": 0
+    }
+  },
+  "remediation": {
+    "testSuite": "Fix failing tests before proceeding",
+    "coverageThresholds": "Increase test coverage to meet thresholds",
+    "tddCompliance": "Ensure test-first workflow is followed",
+    "architecture": "Fix critical architecture violations",
+    "security": "Address security vulnerabilities",
+    "accessibility": "Fix accessibility issues to meet WCAG 2.1 AA"
+  }
+}
+```
+
+### config/project.json
+```json
+{
+  "techStackPreferences": {
+    "web": {
+      "frontend": "React",
+      "backend": "Node.js",
+      "styling": "Bootstrap"
+    },
+    "cli": {
+      "language": "Python"
+    }
+  },
+  "defaults": {
+    "port": 3000,
+    "timeout": 30000,
+    "retries": 3
+  }
+}
+```
+
 ## Core Orchestration Logic
 
 ### 1. Auto-Initialize Project State
@@ -10,14 +62,17 @@ When project requirements are received:
 async function initializeProject(requirements: string): Promise<ProjectSpec> {
   // Extract project type (web, mobile, cli, library, game)
   const projectType = detectProjectType(requirements)
-  
+
   // Parse features and constraints
   const features = extractFeatures(requirements)
   const constraints = extractConstraints(requirements)
-  
-  // Generate tech stack recommendation
-  const techStack = recommendTechStack(projectType, features, constraints)
-  
+
+  // Load project configuration
+  const projectConfig = loadConfig('config/project.json')
+
+  // Generate tech stack recommendation (data-driven, not hardcoded)
+  const techStack = recommendTechStack(projectType, features, constraints, projectConfig)
+
   // Create project specification
   const spec: ProjectSpec = {
     status: 'initialized',
@@ -29,10 +84,10 @@ async function initializeProject(requirements: string): Promise<ProjectSpec> {
     scope: estimateScope(features),
     deliverables: generateDeliverables(features)
   }
-  
+
   // Persist to state file
   await writeStateFile('project-spec.md', spec)
-  
+
   return spec
 }
 ```
@@ -123,42 +178,46 @@ class AgentDispatcher {
   private async enforceTDD(task: Task): Promise<void> {
     // Check if test exists
     const testExists = await checkTestFile(task)
-    
+
     if (!testExists) {
       throw new Error('TDD violation: Test must be written before implementation')
     }
-    
+
     // Run test to ensure it fails (red phase)
     const testResult = await runTest(task.testFile)
     if (testResult.status !== 'failed') {
       throw new Error('TDD violation: Test must fail before implementation')
     }
-    
+
     // Proceed with implementation (green phase)
   }
   
   private async verifyQualityGates(task: Task, result: TaskResult): Promise<void> {
+    // Load quality gate configuration
+    const qualityConfig = loadConfig('config/quality-gates.json')
+
     // Run test suite
     const testResults = await runFullTestSuite()
     if (!testResults.allPassed) {
       throw new Error('Quality gate failed: Tests not passing')
     }
-    
-    // Check coverage
+
+    // Check coverage (read thresholds from config)
     const coverage = await getCoverageReport()
-    if (coverage.lines < 80 || coverage.branches < 70) {
-      throw new Error('Quality gate failed: Coverage below threshold')
+    if (coverage.lines < qualityConfig.thresholds.coverage.lines ||
+        coverage.branches < qualityConfig.thresholds.coverage.branches) {
+      throw new Error(`Quality gate failed: Coverage below threshold (${qualityConfig.thresholds.coverage.lines}% lines, ${qualityConfig.thresholds.coverage.branches}% branches)`)
     }
-    
+
     // Check TDD compliance
     const tddCompliant = await checkTDDCompliance()
     if (!tddCompliant) {
       throw new Error('Quality gate failed: TDD violation detected')
     }
-    
+
     // Security scan
     const securityScan = await runSecurityScan()
-    if (securityScan.vulnerabilities.length > 0) {
+    if (securityScan.vulnerabilities.length > qualityConfig.thresholds.security.maxVulnerabilities) {
       throw new Error('Quality gate failed: Security vulnerabilities found')
     }
   }
@@ -251,15 +310,17 @@ const qualityGates: QualityGate[] = [
       const results = await runFullTestSuite()
       return results.allPassed
     },
-    remediation: 'Fix failing tests before proceeding'
+    remediation: loadConfig('config/quality-gates.json').remediation.testSuite
   },
   {
     name: 'Coverage Thresholds',
     check: async () => {
+      const config = loadConfig('config/quality-gates.json')
       const coverage = await getCoverageReport()
-      return coverage.lines >= 80 && coverage.branches >= 70
+      return coverage.lines >= config.thresholds.coverage.lines &&
+             coverage.branches >= config.thresholds.coverage.branches
     },
-    remediation: 'Increase test coverage to meet thresholds (80% lines, 70% branches)'
+    remediation: loadConfig('config/quality-gates.json').remediation.coverageThresholds
   },
   {
     name: 'TDD Compliance',
@@ -267,31 +328,34 @@ const qualityGates: QualityGate[] = [
       const compliant = await checkTDDCompliance()
       return compliant
     },
-    remediation: 'Ensure test-first workflow is followed'
+    remediation: loadConfig('config/quality-gates.json').remediation.tddCompliance
   },
   {
     name: 'Architecture',
     check: async () => {
+      const config = loadConfig('config/quality-gates.json')
       const violations = await checkArchitectureViolations()
-      return violations.critical === 0
+      return violations.critical <= config.thresholds.architecture.maxCriticalViolations
     },
-    remediation: 'Fix critical architecture violations'
+    remediation: loadConfig('config/quality-gates.json').remediation.architecture
   },
   {
     name: 'Security',
     check: async () => {
+      const config = loadConfig('config/quality-gates.json')
       const scan = await runSecurityScan()
-      return scan.vulnerabilities.length === 0
+      return scan.vulnerabilities.length <= config.thresholds.security.maxVulnerabilities
     },
-    remediation: 'Address security vulnerabilities'
+    remediation: loadConfig('config/quality-gates.json').remediation.security
   },
   {
     name: 'Accessibility',
     check: async () => {
+      const config = loadConfig('config/quality-gates.json')
       const a11y = await runAccessibilityCheck()
       return a11y.compliant
     },
-    remediation: 'Fix accessibility issues to meet WCAG 2.1 AA'
+    remediation: loadConfig('config/quality-gates.json').remediation.accessibility
   }
 ]
 
