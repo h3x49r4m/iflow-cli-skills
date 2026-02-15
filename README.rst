@@ -14,6 +14,8 @@ Available Skills
 ----------------
 
 dev-team
+evaluator
+git-manage
 ~~~~~~~~
 An autonomous development team that builds complete projects from requirements to deployment with full automation.
 
@@ -220,6 +222,124 @@ Automatically triggered when conversation-only interaction is needed:
 - Learning and exploration
 - Problem analysis and advice
 
+evaluator
+~~~~~~~~~
+Guides users through systematic, feature-by-feature testing and evaluation of any project with comprehensive reporting.
+
+**Version:** 1.0.0
+
+**Purpose:**
+
+Provides a structured, user-guided approach to thoroughly test and evaluate any project - web applications, CLI tools, libraries, mobile apps, or any other software project.
+
+**Features:**
+
+- **Project Discovery**: Auto-detects project type and technology stack
+- **Feature Extraction**: Builds comprehensive feature checklist from documentation, tests, and code
+- **Testing Guidance**: Provides structured testing instructions by project type
+- **Progress Tracking**: Maintains state in ``.state/evaluation.md`` for session continuity
+- **Issue Tracking**: Categorizes discovered issues by severity with locations
+- **Comprehensive Reporting**: Generates detailed evaluation reports with quality metrics
+- **Prioritized Recommendations**: Actionable recommendations grouped by priority
+
+**Agent Configuration:**
+
+**Agent Type:** ``evaluator-agent``
+
+**Available Tools:**
+
+- ``read_file`` - Read project files for analysis
+- ``list_directory`` - Explore project structure
+- ``glob`` - Find specific file patterns
+- ``search_file_content`` - Search for feature indicators
+- ``web_search`` - Look up public project documentation
+- ``web_fetch`` - Fetch reference documentation
+- ``image_read`` - Analyze screenshots provided by user
+
+**Excluded Tools:**
+
+- No file modification tools (write_file, replace, xml_escape)
+- No system command tools (run_shell_command)
+
+**Note:** The skill only writes to ``.state/evaluation.md`` and ``.state/evaluation-report.md`` for state persistence and report generation.
+
+**Usage:**
+
+.. code-block:: text
+
+    # Start evaluation
+    evaluator start
+
+    # Test specific feature
+    evaluator test feature 1
+
+    # Report test result
+    evaluator pass feature 1
+    evaluator fail feature 1: description of issue
+    evaluator partial feature 1: partial functionality issue
+    evaluator skip feature 1: reason for skipping
+
+    # View status
+    evaluator status
+    evaluator show checklist
+
+    # Generate report
+    evaluator generate report
+
+    # List issues
+    evaluator list issues
+    evaluator list issues critical
+
+    # Resume evaluation
+    evaluator resume
+
+**Workflow Phases:**
+
+1. **Discovery**: Analyzes project structure, detects project type and technology stack
+2. **Feature Extraction**: Builds feature checklist from documentation, tests, and code
+3. **Testing Guidance**: Provides structured testing instructions for each feature
+4. **State Tracking**: Maintains progress and results in ``.state/evaluation.md``
+5. **Report Generation**: Creates comprehensive evaluation reports with metrics and recommendations
+
+**Project Types Supported:**
+
+- Web Applications (React, Vue, Angular, Next.js, etc.)
+- CLI Tools (Node.js, Python, Rust, Go, etc.)
+- Libraries (JavaScript, Python, Rust, etc.)
+- Mobile Apps (React Native, Flutter, etc.)
+- Desktop Applications (Electron, Tauri, etc.)
+- Custom/Hybrid projects
+
+**Quality Metrics:**
+
+- **Feature Completeness**: Percentage of features tested
+- **Test Coverage**: Percentage of features with existing tests
+- **Reliability**: Percentage of fully working features
+- **UX Assessment**: Qualitative assessment based on usability issues
+- **Overall Quality Score**: Weighted composite score
+
+**Issue Severity Levels:**
+
+- **Critical**: Feature completely broken, security issue, data loss risk
+- **High**: Major functionality broken, significant usability issue
+- **Medium**: Feature partially working, minor usability issue
+- **Low**: Cosmetic issues, minor enhancements
+
+**Integration:**
+
+- Can use ``git-manage`` to check if issues are in recent commits
+- Can use ``tdd-enforce`` to validate if failing features have corresponding tests
+- Can use ``dev-team`` skill to fix discovered issues after evaluation
+- Uses ``talk`` skill for discussing evaluation results and recommendations
+
+**Exit Codes:**
+
+- ``0`` - Evaluation completed successfully
+- ``1`` - Evaluation in progress
+- ``2`` - No state file found (use ``evaluator start``)
+- ``3`` - Invalid feature number
+- ``4`` - Report generation failed
+
 Skill Structure
 ---------------
 
@@ -314,6 +434,11 @@ Skills are automatically loaded when:
     /git-manage status
     /git-manage commit feat: add user authentication
 
+    # Trigger evaluator skill
+    evaluator start
+    evaluator test feature 1
+    evaluator generate report
+
 **Skill Integration:**
 
 Skills work together seamlessly:
@@ -324,11 +449,17 @@ Skills work together seamlessly:
     # - tdd-enforce for development workflow
     # - git-manage for version control
 
+    # evaluator can use:
+    # - git-manage to check recent commits
+    # - tdd-enforce to validate test coverage
+    # - dev-team to fix discovered issues
+
 **Best Practices:**
 
 - Use conventional commit messages with git-manage
 - Follow TDD workflow enforced by tdd-enforce
 - Leverage dev-team for complex, multi-phase projects
+- Use evaluator for systematic project testing and evaluation
 - Check skill status before committing changes
 
 License
