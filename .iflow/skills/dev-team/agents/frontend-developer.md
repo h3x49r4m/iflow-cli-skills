@@ -163,7 +163,7 @@ All performance thresholds externalized to configuration - never hardcoded in mo
 - Route parameters
 - 404 handling
 
-##交付标准
+## Delivery Standards
 
 - All components responsive across breakpoints (from `config/responsive.json`)
 - WCAG 2.1 AA compliant (level from `config/accessibility.json`)

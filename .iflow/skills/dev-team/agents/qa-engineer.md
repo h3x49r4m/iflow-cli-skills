@@ -271,7 +271,7 @@ Logs:
 - Sprint: Bug reports and test coverage
 - Release: Quality summary and risks
 
-## 交付标准
+## Delivery Standards
 
 - Test coverage meets configured thresholds (read from `config/quality-gates.json`)
 - All critical user journeys covered by E2E tests
