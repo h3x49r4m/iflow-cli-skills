@@ -218,17 +218,10 @@ class GitManage:
         
         message = [header]
         
-        # Body
+        # Body (can include Changes section if provided)
         if body:
             message.append('')
             message.append(body)
-        
-        # Changes section
-        if files_changed:
-            message.append('')
-            message.append('Changes:')
-            for file_path in files_changed:
-                message.append(f'- {file_path}')
         
         # Separator and metadata
         if files_changed or test_results or coverage is not None:
