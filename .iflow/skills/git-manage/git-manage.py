@@ -95,17 +95,20 @@ class GitManage:
     def get_current_branch(self) -> str:
         """Get current branch name."""
         code, stdout, _ = self.run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'])
-        return stdout.strip() if code == 0 else 'unknown'
+        output = stdout.strip() if isinstance(stdout, str) else stdout.decode('utf-8').strip()
+        return output if code == 0 else 'unknown'
     
     def get_staged_files(self) -> List[str]:
         """Get list of staged files."""
         code, stdout, _ = self.run_git_command(['diff', '--name-only', '--cached'])
-        return stdout.strip().split('\n') if stdout.strip() else []
+        output = stdout.strip() if isinstance(stdout, str) else stdout.decode('utf-8').strip()
+        return output.split('\n') if output else []
     
     def get_unstaged_files(self) -> List[str]:
         """Get list of unstaged files."""
         code, stdout, _ = self.run_git_command(['diff', '--name-only'])
-        return stdout.strip().split('\n') if stdout.strip() else []
+        output = stdout.strip() if isinstance(stdout, str) else stdout.decode('utf-8').strip()
+        return output.split('\n') if output else []
     
     def detect_secrets(self, files: List[str]) -> Tuple[bool, List[str]]:
         """Scan files for potential secrets."""
@@ -220,11 +223,21 @@ class GitManage:
             message.append('')
             message.append(body)
         
-        # Files changed
+        # Changes section
         if files_changed:
+            message.append('')
+            message.append('Changes:')
+            for file_path in files_changed:
+                message.append(f'- {file_path}')
+        
+        # Separator and metadata
+        if files_changed or test_results or coverage is not None:
             message.append('')
             message.append('---')
             message.append('Branch: ' + self.get_current_branch())
+        
+        # Files changed list
+        if files_changed:
             message.append('')
             message.append('Files changed:')
             for file_path in files_changed:
