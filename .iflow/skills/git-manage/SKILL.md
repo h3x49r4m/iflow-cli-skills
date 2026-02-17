@@ -43,11 +43,22 @@ Create a commit with conventional commit format.
 - `docs` - Documentation
 - `chore` - Maintenance tasks
 
+**Options:**
+- `--scope SCOPE` - Add scope to commit type
+- `--body BODY` - Add detailed body with "Changes:" section
+- `--no-verify` - Skip pre-commit checks
+
 **Examples:**
 ```
 /git-manage commit feat: implement memory system
 /git-manage commit fix: correct safety constraint check
 /git-manage commit test: add integration tests for decision engine
+/git-manage commit feat auth: add JWT authentication --body "Implement secure authentication.
+
+Changes:
+- Add JWT token generation
+- Implement password hashing
+- Add auth middleware"
 ```
 
 ### Commit with Auto-Detection
@@ -163,17 +174,18 @@ Before any commit (unless `--no-verify` is used), the skill runs:
 ```
 <type>[<scope>]: <description>
 
-[optional body]
+[optional body with detailed description]
 
 Changes:
-- <description 1>
-- <description 2>
+- <description of change 1>
+- <description of change 2>
+- <description of change 3>
 - ...
 
 ---
 Branch: <branch name>
 
-Files changed: 
+Files changed:
 - <file1>
 - <file2>
 - ...
@@ -184,6 +196,8 @@ Verification:
 - Architecture: ✓ compliant
 - TDD: ✓ compliant
 ```
+
+**Note:** The "Changes:" section with bullet points should be included in the body parameter when committing, describing the specific changes made in detail. The "Files changed:" section is automatically generated from the staged files.
 
 ## Safety Mechanisms
 
@@ -294,6 +308,23 @@ Before `reset --hard` or `clean -fd`:
 
 # Push to remote
 /git-manage push origin feat/memory-system
+```
+
+### Commit with Detailed Changes
+```bash
+# Stage files
+/git-manage add file1.py file2.py
+
+# Commit with body containing detailed changes
+/git-manage commit feat "add user authentication" --body "Implement secure user authentication with JWT tokens and password hashing.
+
+Changes:
+- Add JWT token generation and validation
+- Implement bcrypt password hashing
+- Add authentication middleware
+- Update user model with auth fields
+- Add login and logout endpoints
+- Implement refresh token rotation"
 ```
 
 ### Feature Branch Workflow
