@@ -35,25 +35,33 @@ This workflow describes the day-to-day development process, from picking up task
 **Owner**: Developer
 
 **Actions**:
-1. Write failing tests for the feature
-2. Implement minimal code to pass tests
-3. Refactor for code quality
+1. **RED Phase**: Write failing tests for the feature
+   - Create test file if not exists
+   - Write test that fails
+   - Verify test fails (enforced by workflow)
+2. **GREEN Phase**: Implement minimal code to pass tests
+   - Write minimal implementation only
+   - No extra features or optimizations
+   - Verify test passes (enforced by workflow)
+3. **REFACTOR Phase**: Improve code quality
+   - Refactor for readability and maintainability
+   - Ensure tests still pass (enforced by workflow)
+   - Ensure complexity decreases (enforced by workflow)
 4. Add documentation as needed
 5. Run tests locally
 6. Commit changes with descriptive messages
+
+**TDD Enforcement**:
+```
+RED → Write failing test → Check: test fails ✓
+GREEN → Write minimal code → Check: test passes ✓ + Check: minimal implementation ✓
+REFACTOR → Improve code → Check: tests pass ✓ + Check: complexity decreased ✓
+```
 
 **Deliverables**:
 - Working code with tests
 - Documentation updates
 - Commits to feature branch
-
-**TDD Cycle**:
-```
-Red → Write failing test
-Green → Write minimal code to pass
-Refactor → Improve code quality
-Repeat → Until feature complete
-```
 
 ---
 

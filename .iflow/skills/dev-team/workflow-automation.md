@@ -148,11 +148,8 @@ class AgentDispatcher {
       throw new Error(`No agent found for task type: ${agentType}`)
     }
     
-    // Enforce TDD workflow
-    await this.enforceTDD(task)
-    
-    // Execute task
-    const result = await agent.execute(task)
+    // Execute task with TDD cycle enforcement
+    const result = await this.executeWithTDD(task, agent)
     
     // Verify quality gates
     await this.verifyQualityGates(task, result)
@@ -164,6 +161,97 @@ class AgentDispatcher {
     await this.updateProgress(task)
     
     return result
+  }
+  
+  private async executeWithTDD(task: Task, agent: Agent): Promise<TaskResult> {
+    // RED Phase: Write failing test
+    await this.enforceRedPhase(task, agent)
+    
+    // GREEN Phase: Write minimal implementation
+    await this.enforceGreenPhase(task, agent)
+    
+    // REFACTOR Phase: Improve code quality
+    await this.enforceRefactorPhase(task, agent)
+    
+    // Verify tests still pass after refactoring
+    const testResult = await runTest(task.testFile)
+    if (testResult.status !== 'passed') {
+      throw new Error('TDD violation: Refactoring broke tests - tests must still pass after refactoring')
+    }
+    
+    return task.result
+  }
+  
+  private async enforceRedPhase(task: Task, agent: Agent): Promise<void> {
+    // Check if test file exists
+    const testExists = await checkTestFile(task)
+    if (!testExists) {
+      // Agent must write test first
+      await agent.writeTest(task)
+    }
+    
+    // Run test to ensure it fails (red phase)
+    const testResult = await runTest(task.testFile)
+    if (testResult.status !== 'failed') {
+      throw new Error('TDD violation: Test must fail before implementation (RED phase)')
+    }
+    
+    // Store initial test state for green phase validation
+    task.initialTestLines = await getFileLineCount(task.testFile)
+  }
+  
+  private async enforceGreenPhase(task: Task, agent: Agent): Promise<void> {
+    // Agent writes minimal implementation
+    const implementationLinesBefore = await getImplementationLineCount(task)
+    
+    await agent.implementMinimal(task)
+    
+    const implementationLinesAfter = await getImplementationLineCount(task)
+    const linesAdded = implementationLinesAfter - implementationLinesBefore
+    
+    // Verify minimal implementation (no over-engineering)
+    if (linesAdded > task.expectedImplementationLines * 1.5) {
+      throw new Error(`TDD violation: Implementation too large (${linesAdded} lines). Write minimal code to pass test only.`)
+    }
+    
+    // Run test to ensure it passes (green phase)
+    const testResult = await runTest(task.testFile)
+    if (testResult.status !== 'passed') {
+      throw new Error('TDD violation: Test must pass after implementation (GREEN phase)')
+    }
+    
+    // Verify only necessary code was added (no extra features)
+    const testLinesAfter = await getFileLineCount(task.testFile)
+    if (testLinesAfter > task.initialTestLines * 1.2) {
+      throw new Error('TDD violation: Tests were modified in GREEN phase - only implement, do not change tests')
+    }
+  }
+  
+  private async enforceRefactorPhase(task: Task, agent: Agent): Promise<void> {
+    // Agent refactors code
+    const codeBefore = await getImplementationCode(task)
+    
+    await agent.refactor(task)
+    
+    const codeAfter = await getImplementationCode(task)
+    
+    // Verify refactoring happened (code changed)
+    if (codeBefore === codeAfter) {
+      throw new Error('TDD violation: No refactoring performed - code must be improved after GREEN phase')
+    }
+    
+    // Verify behavior unchanged (tests still pass)
+    const testResult = await runTest(task.testFile)
+    if (testResult.status !== 'passed') {
+      throw new Error('TDD violation: Refactoring changed behavior - tests must still pass')
+    }
+    
+    // Verify complexity decreased or stayed same
+    const complexityBefore = await calculateComplexity(codeBefore)
+    const complexityAfter = await calculateComplexity(codeAfter)
+    if (complexityAfter > complexityBefore) {
+      throw new Error('TDD violation: Refactoring increased complexity - refactoring should improve code quality')
+    }
   }
   
   private determineAgentType(task: Task): string {

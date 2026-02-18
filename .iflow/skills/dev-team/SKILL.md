@@ -107,9 +107,19 @@ For each task in todo list:
   - Loop independently until criteria verified
   - Multi-step tasks require verification checkpoints
   ↓
-  Enforce: TDD workflow (tdd-enforce skill)
+  Execute: RED phase (write failing test)
+  - Enforce: Test file exists
+  - Enforce: Test fails (red phase confirmed)
   ↓
-  Execute: Implementation
+  Execute: GREEN phase (minimal implementation)
+  - Enforce: Minimal code to pass test
+  - Enforce: No over-engineering
+  - Enforce: Test passes (green phase achieved)
+  ↓
+  Execute: REFACTOR phase (improve code quality)
+  - Enforce: Code is refactored
+  - Enforce: Tests still pass
+  - Enforce: Complexity decreased or unchanged
   ↓
   Verify: Tests pass and success criteria met
   ↓
