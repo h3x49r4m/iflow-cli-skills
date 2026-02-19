@@ -115,11 +115,22 @@ For each task in todo list:
   - Enforce: Minimal code to pass test
   - Enforce: No over-engineering
   - Enforce: Test passes (green phase achieved)
+  - Enforce: Simplicity First principle (automatic checks)
+    - Function length ≤50 lines
+    - File length ≤300 lines
+    - Nesting depth ≤4
+    - Cyclomatic complexity ≤10
+    - No over-engineering
   ↓
   Execute: REFACTOR phase (improve code quality)
   - Enforce: Code is refactored
   - Enforce: Tests still pass
   - Enforce: Complexity decreased or unchanged
+  - Enforce: Clean code standards (automatic validation)
+    - DRY principle (no duplication)
+    - Single responsibility
+    - Descriptive naming
+    - No magic numbers
   ↓
   Verify: Tests pass and success criteria met
   ↓
@@ -132,6 +143,12 @@ For each task in todo list:
   - Verify every changed line traces to user request
   - Check for unrelated modifications
   - Ensure matching existing style
+  ↓
+  Verify: Code complexity and quality gates pass
+  - Coverage thresholds (≥80% lines, ≥70% branches)
+  - Complexity metrics within limits
+  - Code duplication <3%
+  - Security vulnerabilities below thresholds
   ↓
   Commit: git-manage skill with proper format
   ↓
@@ -284,10 +301,41 @@ The dev-team skill enforces four core principles to prevent common LLM coding pi
 
 **The test:** Would a senior engineer say this is overcomplicated? If yes, simplify.
 
+**Automatic Enforcement (during TDD cycle):**
+
+Complexity checks with configurable thresholds (from `config/quality-gates.json`):
+- **Function length**: ≤50 lines (break down larger functions)
+- **File length**: ≤300 lines (split into smaller modules)
+- **Nesting depth**: ≤4 (flatten with early returns/guard clauses)
+- **Cyclomatic complexity**: ≤10 (simplify logic, extract methods)
+- **Cognitive complexity**: ≤15 (reduce mental effort to understand)
+
+Clean code validation:
+- **DRY principle**: No duplicated code blocks >3 lines
+- **Single responsibility**: Functions do one thing only
+- **Descriptive naming**: No abbreviations, meaningful names
+- **No magic numbers**: Extract to named constants
+
+Over-engineering detection:
+- Abstractions for single-use code
+- "Flexible" patterns without requirements
+- Unnecessary error handling for impossible scenarios
+- Configurability that wasn't requested
+
 **Integration with Quality Gates:**
-- Code complexity metrics added to pre-commit checks
+- Code complexity metrics enforced in pre-commit checks
+- Clean code validation after REFACTOR phase
 - Refactor tasks required if complexity exceeds thresholds
-- Simplicity criteria evaluated before commit approval
+- Block commits if clean code violations detected
+- Simplicity criteria evaluated automatically at each phase
+
+**Examples of violations:**
+- ❌ Function with 75 lines (max: 50) → Split into 3 smaller functions
+- ❌ Nesting depth 6 (max: 4) → Use early returns or extract to helper
+- ❌ Cyclomatic complexity 15 (max: 10) → Extract complex logic
+- ❌ Same 5-line code block in 3 places → Extract to function
+- ❌ Function called `proc` → Rename to `processPayment`
+- ❌ Magic number `3000` → `const MAX_RETRY_DELAY_MS = 3000`
 
 ### Surgical Changes
 
