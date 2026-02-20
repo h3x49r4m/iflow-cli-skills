@@ -170,6 +170,9 @@ class AgentDispatcher {
     // GREEN Phase: Write minimal implementation
     await this.enforceGreenPhase(task, agent)
     
+    // Enforce Simplicity First principle
+    await this.enforceSimplicityFirst(task)
+    
     // REFACTOR Phase: Improve code quality
     await this.enforceRefactorPhase(task, agent)
     
@@ -178,6 +181,9 @@ class AgentDispatcher {
     if (testResult.status !== 'passed') {
       throw new Error('TDD violation: Refactoring broke tests - tests must still pass after refactoring')
     }
+    
+    // Validate clean code standards
+    await this.validateCleanCode(task)
     
     return task.result
   }
@@ -252,6 +258,95 @@ class AgentDispatcher {
     if (complexityAfter > complexityBefore) {
       throw new Error('TDD violation: Refactoring increased complexity - refactoring should improve code quality')
     }
+    
+    // Verify code is cleaner (reduced duplication, better structure)
+    await this.validateRefactoringQuality(codeBefore, codeAfter)
+  }
+  
+  private async enforceSimplicityFirst(task: Task): Promise<void> {
+    const qualityConfig = loadConfig('config/quality-gates.json')
+    const implementationCode = await getImplementationCode(task)
+    
+    // Check function length (must be ≤50 lines)
+    const functions = await extractFunctions(implementationCode)
+    for (const func of functions) {
+      if (func.length > qualityConfig.codeComplexity.maxFunctionLength) {
+        throw new Error(`Simplicity First violation: Function "${func.name}" is ${func.length} lines (max: ${qualityConfig.codeComplexity.maxFunctionLength}). Break it down into smaller functions.`)
+      }
+    }
+    
+    // Check file length (must be ≤300 lines)
+    const fileLines = await getFileLineCount(task.implementationFile)
+    if (fileLines > qualityConfig.codeComplexity.maxFileLength) {
+      throw new Error(`Simplicity First violation: File is ${fileLines} lines (max: ${qualityConfig.codeComplexity.maxFileLength}). Split into smaller modules.`)
+    }
+    
+    // Check nesting depth (must be ≤4)
+    const maxNesting = await calculateMaxNesting(implementationCode)
+    if (maxNesting > qualityConfig.codeComplexity.maxNestingDepth) {
+      throw new Error(`Simplicity First violation: Nesting depth is ${maxNesting} (max: ${qualityConfig.codeComplexity.maxNestingDepth}). Flatten the structure using early returns or guard clauses.`)
+    }
+    
+    // Check cyclomatic complexity (must be ≤10)
+    const complexity = await calculateComplexity(implementationCode)
+    if (complexity > qualityConfig.codeComplexity.cyclomaticComplexity) {
+      throw new Error(`Simplicity First violation: Cyclomatic complexity is ${complexity} (max: ${qualityConfig.codeComplexity.cyclomaticComplexity}). Simplify logic by extracting methods or reducing conditionals.`)
+    }
+    
+    // Check for over-engineering (abstractions for single-use)
+    const overEngineering = await detectOverEngineering(implementationCode)
+    if (overEngineering.detected) {
+      throw new Error(`Simplicity First violation: Over-engineering detected - ${overEngineering.reason}. Keep it simple: if you're using it once, don't abstract it.`)
+    }
+  }
+  
+  private async validateCleanCode(task: Task): Promise<void> {
+    const implementationCode = await getImplementationCode(task)
+    
+    // Check DRY principle (no duplicated code blocks >3 lines)
+    const duplicates = await detectCodeDuplication(implementationCode)
+    if (duplicates.length > 0) {
+      throw new Error(`Clean code violation: Code duplication detected. Extract repeated code into functions. Duplicates: ${duplicates.map(d => d.name).join(', ')}`)
+    }
+    
+    // Check naming conventions (descriptive names, no abbreviations)
+    const namingIssues = await validateNaming(implementationCode)
+    if (namingIssues.length > 0) {
+      throw new Error(`Clean code violation: Poor naming detected. Use descriptive names: ${namingIssues.join(', ')}`)
+    }
+    
+    // Check single responsibility (functions do one thing)
+    const srpViolations = await validateSingleResponsibility(implementationCode)
+    if (srpViolations.length > 0) {
+      throw new Error(`Clean code violation: Functions with multiple responsibilities detected: ${srpViolations.join(', ')}. Split into separate functions.`)
+    }
+    
+    // Check magic numbers/constants
+    const magicNumbers = await detectMagicNumbers(implementationCode)
+    if (magicNumbers.length > 0) {
+      throw new Error(`No Hardcoding violation: Magic numbers found. Extract to named constants: ${magicNumbers.join(', ')}`)
+    }
+  }
+  
+  private async validateRefactoringQuality(codeBefore: string, codeAfter: string): Promise<void> {
+    // Check if refactoring reduced duplication
+    const dupBefore = await detectCodeDuplication(codeBefore)
+    const dupAfter = await detectCodeDuplication(codeAfter)
+    
+    if (dupAfter.length > dupBefore.length) {
+      throw new Error('Refactoring violation: Code duplication increased. Refactoring should reduce duplication, not increase it.')
+    }
+    
+    // Check if function length decreased
+    const funcsBefore = await extractFunctions(codeBefore)
+    const funcsAfter = await extractFunctions(codeAfter)
+    
+    const avgLenBefore = funcsBefore.reduce((sum, f) => sum + f.length, 0) / funcsBefore.length
+    const avgLenAfter = funcsAfter.reduce((sum, f) => sum + f.length, 0) / funcsAfter.length
+    
+    if (avgLenAfter > avgLenBefore * 1.1) {
+      throw new Error('Refactoring violation: Average function length increased. Refactoring should make functions shorter, not longer.')
+    }
   }
   
   private determineAgentType(task: Task): string {
@@ -292,9 +387,9 @@ class AgentDispatcher {
 
     // Check coverage (read thresholds from config)
     const coverage = await getCoverageReport()
-    if (coverage.lines < qualityConfig.thresholds.coverage.lines ||
-        coverage.branches < qualityConfig.thresholds.coverage.branches) {
-      throw new Error(`Quality gate failed: Coverage below threshold (${qualityConfig.thresholds.coverage.lines}% lines, ${qualityConfig.thresholds.coverage.branches}% branches)`)
+    if (coverage.lines < qualityConfig.codeCoverage.lines ||
+        coverage.branches < qualityConfig.codeCoverage.branches) {
+      throw new Error(`Quality gate failed: Coverage below threshold (${qualityConfig.codeCoverage.lines}% lines, ${qualityConfig.codeCoverage.branches}% branches)`)
     }
 
     // Check TDD compliance
@@ -303,9 +398,30 @@ class AgentDispatcher {
       throw new Error('Quality gate failed: TDD violation detected')
     }
 
+    // Check code complexity (Simplicity First principle)
+    const complexity = await calculateCodeComplexity(task)
+    if (complexity.cyclomatic > qualityConfig.codeComplexity.cyclomaticComplexity) {
+      throw new Error(`Quality gate failed: Cyclomatic complexity ${complexity.cyclomatic} exceeds threshold ${qualityConfig.codeComplexity.cyclomaticComplexity}`)
+    }
+    if (complexity.maxFunctionLength > qualityConfig.codeComplexity.maxFunctionLength) {
+      throw new Error(`Quality gate failed: Function length ${complexity.maxFunctionLength} exceeds threshold ${qualityConfig.codeComplexity.maxFunctionLength}`)
+    }
+    if (complexity.maxFileLength > qualityConfig.codeComplexity.maxFileLength) {
+      throw new Error(`Quality gate failed: File length ${complexity.maxFileLength} exceeds threshold ${qualityConfig.codeComplexity.maxFileLength}`)
+    }
+    if (complexity.maxNestingDepth > qualityConfig.codeComplexity.maxNestingDepth) {
+      throw new Error(`Quality gate failed: Nesting depth ${complexity.maxNestingDepth} exceeds threshold ${qualityConfig.codeComplexity.maxNestingDepth}`)
+    }
+
+    // Check code duplication (DRY principle)
+    const duplication = await calculateCodeDuplication(task)
+    if (duplication.percentage > qualityConfig.architecture.maxDuplicateCodePercentage) {
+      throw new Error(`Quality gate failed: Code duplication ${duplication.percentage}% exceeds threshold ${qualityConfig.architecture.maxDuplicateCodePercentage}%`)
+    }
+
     // Security scan
     const securityScan = await runSecurityScan()
-    if (securityScan.vulnerabilities.length > qualityConfig.thresholds.security.maxVulnerabilities) {
+    if (securityScan.vulnerabilities.length > qualityConfig.security.maxVulnerabilities) {
       throw new Error('Quality gate failed: Security vulnerabilities found')
     }
   }
