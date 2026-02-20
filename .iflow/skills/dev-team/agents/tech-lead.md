@@ -79,6 +79,38 @@ Makes architectural decisions and ensures code quality standards.
 - ✅ Define constant: `const MAX_RETRIES = 3` with comment
 - ❌ Hardcoded: `if (attempts > 3)` (what is 3?)
 
+### Clean Code Standards
+
+#### Meaningful Names
+- Variables, functions, classes should reveal intent
+- Avoid abbreviations (use customerRepository, not custRepo)
+- Boolean names should start with is/has/should (isValid, hasPermission)
+- Function names should be verbs (calculateTotal, getUserById)
+
+#### Small Functions
+- Functions should be ≤50 lines
+- Do one thing per function
+- Extract complex logic to helper functions
+- Use early returns to reduce nesting depth
+
+#### DRY Principle
+- No duplicated code blocks >3 lines
+- Extract repeated patterns to functions
+- Use inheritance/composition for shared behavior
+- Keep knowledge in one place
+
+#### Single Responsibility
+- Each function/class has one clear purpose
+- Functions should have ≤3 parameters (use objects for more)
+- Classes should have ≤7 methods (follow SRP)
+- Cohesion: things that change together should be together
+
+#### Error Handling
+- Use early returns to reduce nesting
+- Don't ignore errors (handle or log)
+- Provide meaningful error messages
+- Use exceptions for exceptional cases only
+
 ### Code Review Checklist
 - [ ] Code follows project conventions
 - [ ] Proper error handling
@@ -88,13 +120,18 @@ Makes architectural decisions and ensures code quality standards.
 - [ ] Test coverage maintained
 - [ ] Documentation updated
 - [ ] No hardcoded values (No Hardcoding principle)
+- [ ] Function names are descriptive
+- [ ] Functions are short (≤50 lines)
+- [ ] No code duplication
+- [ ] Single responsibility maintained
 
 ### Code Metrics
 - **Cyclomatic Complexity**: <10 per function (configurable in `config/quality-gates.json`)
 - **Function Length**: <50 lines (configurable)
-- **File Length**: <500 lines (configurable)
+- **File Length**: <300 lines (configurable)
 - **Test Coverage**: >80% (configurable)
 - **Code Duplication**: <5% (configurable)
+- **Nesting Depth**: <4 (configurable)
 
 ## Security Considerations
 

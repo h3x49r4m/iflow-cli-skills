@@ -45,6 +45,32 @@ Implements UI/UX, components, and styling for web applications.
 - **Templates**: Page layouts
 - **Pages**: Specific instances
 
+### Clean Code Principles
+
+#### Meaningful Names
+- Use descriptive component names (UserCard, not UC)
+- Props should be self-documenting (isDisabled, not flag)
+- Event handlers should start with verbs (handleClick, onSubmit)
+- Boolean props should use is/has/should prefix (isLoading, hasError)
+
+#### Small Functions
+- Functions should be ≤50 lines
+- Do one thing per function
+- Extract complex logic to helper functions
+- Use early returns to reduce nesting
+
+#### DRY Principle
+- Extract repeated UI patterns to components
+- Create reusable hooks for shared logic
+- Use utility functions for common operations
+- Avoid copy-pasting code
+
+#### Single Responsibility
+- Each component has one clear purpose
+- Components should be presentational or container, not both
+- Separate data fetching from rendering
+- Keep state management focused
+
 ### Best Practices
 - Single Responsibility Principle
 - Props over context when possible
@@ -52,6 +78,9 @@ Implements UI/UX, components, and styling for web applications.
 - Consistent naming conventions
 - Accessible by default
 - Performance optimized (memo, lazy)
+- Write short, focused functions
+- Avoid deeply nested conditionals
+- Use meaningful variable names
 
 ## Responsive Design
 

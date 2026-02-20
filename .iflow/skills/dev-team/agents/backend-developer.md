@@ -78,6 +78,32 @@ DELETE /api/v1/resources/:id      # Delete resource
 - Set up cascading rules
 - Plan for scaling (sharding, partitioning)
 
+### Clean Code Principles
+
+#### Meaningful Names
+- Functions should describe what they do (getUserById, not get)
+- Variables should be self-documenting (userProfile, not data)
+- Use domain language in names (Customer, not Entity)
+- Boolean functions should start with is/has/should (isValid, hasPermission)
+
+#### Small Functions
+- Functions should be ≤50 lines
+- Do one thing per function
+- Extract complex business logic to service layer
+- Use early returns to reduce nesting
+
+#### DRY Principle
+- Extract repeated SQL queries to query builders
+- Create reusable validation utilities
+- Use middleware for shared request/response handling
+- Avoid code duplication across endpoints
+
+#### Single Responsibility
+- Controllers handle HTTP concerns only
+- Services contain business logic
+- Repositories handle data access
+- Validators contain input validation only
+
 ### Common Patterns
 - **Users/Authentication**: Separate auth service
 - **Audit Logging**: Track all changes

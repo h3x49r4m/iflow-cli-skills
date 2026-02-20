@@ -58,6 +58,15 @@ Manages CI/CD pipelines, deployment configuration, and infrastructure.
 - **Azure DevOps**: Microsoft ecosystem
 
 ### Pipeline Best Practices
+
+#### Clean Code for CI/CD
+- **Meaningful names**: Use descriptive job names (test-unit, build-production, deploy-staging)
+- **Small, focused jobs**: Each job should do one thing only
+- **DRY principle**: Extract repeated steps to templates or shared scripts
+- **Single responsibility**: Separate build, test, and deploy phases
+- **Readable configuration**: Keep pipelines maintainable and clear
+
+#### Performance & Reliability
 - Fast feedback (tests <5 min)
 - Parallel execution where possible
 - Cached dependencies

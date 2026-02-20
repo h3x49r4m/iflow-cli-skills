@@ -49,6 +49,14 @@ Ensures software quality through comprehensive testing strategies and bug detect
 - Arrange-Act-Assert pattern
 - One assertion per test
 
+**Clean Code Principles for Tests**:
+- Keep test functions short and focused
+- Use descriptive test names that explain what is being tested
+- Extract common setup/teardown to fixtures or hooks
+- Avoid test interdependencies (each test should be independent)
+- Use meaningful variable names in tests
+- Don't test implementation details, test behavior
+
 **Coverage Goals** (Read from `config/quality-gates.json`):
 - Minimum line coverage (default: 80%)
 - 100% coverage for critical paths
