@@ -253,11 +253,11 @@ The skill includes an intelligent agent dispatcher that:
 Before each commit, automatically:
 
 1. ✅ Run test suite
-2. ✅ Check coverage ≥80% lines, ≥70% branches
+2. ✅ Check coverage ≥80% lines, ≥70% branches (configurable)
 3. ✅ Validate TDD compliance
-4. ✅ Run architecture checks
-5. ✅ Check code complexity (Simplicity First principle)
-6. ✅ Verify surgical changes (no unrelated modifications)
+4. ✅ Check code complexity (Simplicity First principle)
+5. ✅ Verify surgical changes (no unrelated modifications)
+6. ✅ Check for hardcoded values (No Hardcoding principle)
 7. ✅ Security vulnerability scan
 8. ✅ Accessibility compliance check
 
@@ -399,6 +399,15 @@ For multi-step tasks, state a brief plan:
 - **Define constants explicitly** — If a value must be in code, it must be a named constant at the top of the file with clear documentation
 - **Dynamic over static** — Prefer data-driven approaches (read from files/databases) over hardcoded logic
 
+**Quality Gate Enforcement:**
+Before each commit, automatically scan for:
+- Numeric literals that aren't defined constants
+- String literals used as configuration values
+- Threshold values embedded in conditionals
+- URLs, API endpoints, or service addresses
+- File paths outside the project directory
+- Magic numbers without context (comments not sufficient)
+
 **Examples of what NOT to do:**
 ```typescript
 // ❌ Hardcoded threshold
@@ -409,30 +418,52 @@ const timeout = 30000 // 30 seconds - what does this mean?
 
 // ❌ Hardcoded tech stack
 const techStack = { framework: 'React', language: 'TypeScript' }
+
+// ❌ Hardcoded API endpoint
+const API_URL = 'https://api.example.com/v1'
+
+// ❌ Hardcoded file path
+const logFile = '/var/log/app.log'
+
+// ❌ Magic number in loop
+for (let i = 0; i < 100; i++) { /* what is 100? */ }
 ```
 
 **Examples of what TO do:**
 ```typescript
 // ✅ Read from config
 const config = loadConfig('quality-gates.json')
-if (coverage.lines < config.thresholds.coverage.lines) throw new Error(config.errors.coverageTooLow)
+if (coverage.lines < config.coverage.lines) throw new Error(config.errors.coverageTooLow)
 
 // ✅ Named constant with documentation
 const API_TIMEOUT_MS = 30000 // 30 seconds: maximum wait time for external API responses
 
 // ✅ Data-driven
 const techStack = recommendTechStack(projectType, features, constraints)
+
+// ✅ Environment variable
+const API_URL = process.env.API_URL || 'https://api.example.com/v1'
+
+// ✅ Project-relative path
+const logFile = path.join(process.cwd(), 'logs', 'app.log')
+
+// ✅ Named constant
+const MAX_RETRY_ATTEMPTS = 100
+for (let i = 0; i < MAX_RETRY_ATTEMPTS; i++) { /* ... */ }
 ```
 
 **Integration with Project Initialization:**
 - Auto-generate configuration files during project setup
 - Document all configuration options and their purposes
 - Provide validation schemas for configuration files
+- Create `.env.example` template for environment variables
 
 **Integration with Code Review:**
 - Scan for magic numbers and hardcoded values
 - Verify all thresholds come from configuration
 - Check for embedded constants that should be externalized
+- Validate file paths are project-relative
+- Block commits with hardcoded values detected
 
 **Principle Enforcement Summary:**
 
@@ -460,6 +491,7 @@ These principles bias toward **caution over speed**. For trivial tasks (simple t
 - System directories outside project root
 - Absolute paths outside the current working directory
 - Home directory paths outside project
+- User configuration directories outside project
 
 **Enforcement by All Agents:**
 
@@ -468,35 +500,50 @@ Before any `write_file` or `replace` operation, every agent MUST:
 1. **Validate the file path**:
    ```python
    # Pseudo-code for path validation
-   if not file_path.startswith(project_root):
-       raise PermissionError("File operations restricted to project directory")
+   import os
+   project_root = os.getcwd()
+   abs_path = os.path.abspath(file_path)
+
+   if not abs_path.startswith(project_root):
+       raise PermissionError(
+           f"File operations restricted to project directory. "
+           f"Attempted: {abs_path}, Project root: {project_root}"
+       )
    ```
 
 2. **Check for forbidden patterns**:
    - Reject any path starting with `/tmp/`
    - Reject any path starting with `/var/`
+   - Reject any path starting with `/home/` (unless within project)
+   - Reject any path starting with `/Users/` (unless within project)
    - Reject any absolute path outside project root
 
 3. **Block and report violations**:
    - Stop the operation immediately
    - Report the violation with clear error message
    - Suggest using project directory instead
+   - Log the attempted operation for audit
 
-**Integration with Quality Gates:**
-- Pre-commit validation ensures no files outside project directory were modified
-- Block commits if forbidden paths are detected in changes
+4. **Quality Gate Validation**:
+   - Pre-commit validation ensures no files outside project directory were modified
+   - Block commits if forbidden paths are detected in changes
+   - Scan git diff for absolute paths outside project root
 
 **Examples:**
 
 ✅ **Allowed:**
 - `./src/components/Button.tsx`
 - `tests/integration/test_api.py`
-- Absolute paths within the project root directory
+- `/Users/inu/project/src/app.tsx` (within project root)
+- `/path/to/project/config/settings.json` (within project root)
 
 ❌ **Forbidden:**
 - `/tmp/test_file.txt`
 - `/var/log/app.log`
 - `/home/user/somefile.txt` (outside project)
+- `/Users/inu/somefile.txt` (outside project)
+- `~/.bashrc` (user config)
+- `/etc/hosts` (system config)
 
 ## Progress Tracking
 
