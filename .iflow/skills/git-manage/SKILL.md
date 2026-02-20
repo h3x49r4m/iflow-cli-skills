@@ -148,16 +148,33 @@ Push commits with pre-push validation.
 
 Before any commit (unless `--no-verify` is used), the skill runs:
 
-1. **Test Suite** - `uv run pytest tests/ -v --cov`
-2. **Architecture Check** - Invokes `architecture-check` skill
-3. **TDD Enforcement** - Invokes `tdd-enforce` skill
-4. **Coverage Verification** - Ensures ≥90% coverage
+1. **Test Suite** - `pytest tests/ -v --cov` (or project-specific test command)
+2. **TDD Enforcement** - Invokes `tdd-enforce` skill
+3. **Coverage Verification** - Ensures coverage meets configured thresholds
 
 **Blocking Rules:**
 - Any test failure → Block commit
-- Critical architecture violations → Block commit
 - Critical TDD violations → Block commit
-- Coverage below 90% → Block commit
+- Coverage below configured threshold → Block commit
+
+**Configurable Thresholds:**
+Coverage thresholds can be configured in `config.json`:
+```json
+{
+  "preCommit": {
+    "testCommand": "pytest tests/ -v --cov",
+    "coverageThreshold": {
+      "lines": 90,
+      "branches": 80
+    },
+    "runTddCheck": true
+  }
+}
+```
+
+If `config.json` is not found, defaults to:
+- Coverage threshold: 90% lines, 80% branches
+- TDD check: enabled
 
 ## Commit Standards
 
@@ -193,7 +210,6 @@ Files changed:
 Verification:
 - Tests: <count> passed
 - Coverage: <percentage>%
-- Architecture: ✓ compliant
 - TDD: ✓ compliant
 ```
 
@@ -221,11 +237,6 @@ Before `reset --hard` or `clean -fd`:
 
 ## Integration with Existing Skills
 
-### Architecture Check
-- Automatically invoked before each commit
-- Blocks commits if critical violations found
-- Report included in commit message
-
 ### TDD Enforcement
 - Automatically invoked before each commit
 - Blocks commits if TDD cycle incomplete
@@ -235,15 +246,14 @@ Before `reset --hard` or `clean -fd`:
 
 - `0` - Success
 - `1` - Tests failed
-- `2` - Architecture violations detected
-- `3` - TDD violations detected
-- `4` - No changes to commit
-- `5` - Secrets detected
-- `6` - Coverage below threshold
-- `7` - Branch protection violation
-- `8` - No stash to pop
-- `9` - Invalid commit hash
-- `10` - Tag not found
+- `2` - TDD violations detected
+- `3` - No changes to commit
+- `4` - Secrets detected
+- `5` - Coverage below threshold
+- `6` - Branch protection violation
+- `7` - No stash to pop
+- `8` - Invalid commit hash
+- `9` - Tag not found
 
 ## Examples
 
@@ -340,12 +350,47 @@ Changes:
 /git-manage push origin feat/capability-registry
 ```
 
+## Custom Commit Hooks
+
+The git-manage skill supports custom pre-commit hooks via configuration:
+
+```json
+{
+  "preCommit": {
+    "hooks": [
+      {
+        "name": "lint",
+        "command": "npm run lint",
+        "blocking": true
+      },
+      {
+        "name": "type-check",
+        "command": "npm run type-check",
+        "blocking": true
+      },
+      {
+        "name": "format-check",
+        "command": "npm run format:check",
+        "blocking": false
+      }
+    ]
+  }
+}
+```
+
+**Hook Configuration:**
+- `name`: Hook identifier for logging
+- `command`: Shell command to execute
+- `blocking`: If `true`, commit is blocked on failure; if `false`, only warnings shown
+
+Hooks are executed in order after test suite and before final commit.
+
 ## Implementation Notes
 
 This skill uses:
 - `git` command for all git operations
-- `pytest` for test execution
-- `architecture-check` skill for compliance verification
+- `pytest` or project-specific test command for test execution
 - `tdd-enforce` skill for TDD compliance verification
 - Pattern matching for secrets detection
 - Conventional commits parser for message validation
+- `config.json` for customizable thresholds and hooks
