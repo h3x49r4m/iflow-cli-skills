@@ -25,10 +25,28 @@ Prevents implementation without corresponding tests:
 - Requires refactoring step (refactor phase)
 
 ### 2. Test Coverage Gates
-Enforces coverage thresholds:
-- Component coverage must be ≥ 90% before proceeding
-- Integration flow coverage must be 100%
-- Safety constraint coverage must be 100%
+Enforces coverage thresholds (configurable in `config.json`):
+```json
+{
+  "tddEnforce": {
+    "coverageThresholds": {
+      "lines": 90,
+      "branches": 80,
+      "functions": 90,
+      "statements": 90
+    },
+    "criticalCoverage": {
+      "integrationFlow": 100,
+      "safetyConstraints": 100
+    }
+  }
+}
+```
+
+Default thresholds:
+- Component coverage: ≥90% lines, ≥80% branches
+- Integration flow coverage: 100%
+- Safety constraint coverage: 100%
 - Blocks commits if coverage drops below thresholds
 
 ### 3. Red-Green-Refactor Cycle Verification
@@ -169,6 +187,55 @@ Add to your CI pipeline:
     fi
 ```
 
+## IDE Integration
+
+### VS Code
+Create `.vscode/settings.json`:
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "files.associations": {
+    "*.test.ts": "typescript"
+  }
+}
+```
+
+### Vim/Neovim
+Add to `.vimrc`:
+```vim
+autocmd BufWritePost *.test.ts :!tdd-enforce check %
+```
+
+### Real-Time Feedback
+
+The skill provides real-time feedback during development:
+
+**Red Phase Detection:**
+- Monitors test file creation
+- Validates test fails before implementation
+- Alert: "Test must fail before implementation (TDD red phase)"
+
+**Green Phase Detection:**
+- Monitors implementation file creation
+- Validates minimal implementation only
+- Alert: "Implementation exceeds minimal required code"
+
+**Refactor Phase Detection:**
+- Monitors code changes after green phase
+- Validates refactoring improves code quality
+- Alert: "Refactoring step required (TDD refactor phase)"
+
+**Integration with Watch Mode:**
+```bash
+# Run TDD enforcement in watch mode
+/tdd-enforce watch
+```
+
+This monitors file changes and provides instant feedback on TDD compliance.
+
 ## Implementation Notes
 
 This skill uses:
@@ -185,5 +252,33 @@ This skill uses:
 3. Write minimal implementation to pass
 4. Refactor after green phase
 5. Keep tests independent and focused
-6. Maintain high coverage (≥90%)
+6. Maintain high coverage (≥90% by default, configurable)
 7. Update tests when behavior changes
+
+## Property-Based Testing
+
+The skill supports property-based testing for edge case coverage:
+
+```json
+{
+  "tddEnforce": {
+    "enablePropertyBasedTesting": true,
+    "propertyTestFrameworks": ["hypothesis", "fast-check", "jsverify"]
+  }
+}
+```
+
+**Property Test Validation:**
+- Ensures property tests exist for critical functions
+- Validates property test coverage (≥80% of critical paths)
+- Checks for invariant preservation
+- Validates edge case generation
+
+**Example Property Test Requirements:**
+```python
+# Required property tests for critical functions
+@pytest.mark.parametrize("input, expected", property_test_cases)
+def test_property_preserves_invariant(input, expected):
+    result = function_under_test(input)
+    assert invariant_holds(result)
+```
