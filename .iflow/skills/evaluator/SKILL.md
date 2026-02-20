@@ -66,6 +66,21 @@ Guides user through testing a specific feature:
 - Offers testing instructions based on project type
 - Collects test results (pass/fail/partial with details)
 
+### Automated Testing
+```
+evaluator test auto [--parallel] [--coverage]
+```
+
+Runs automated tests for all features:
+- `--parallel`: Run tests in parallel for faster execution
+- `--coverage`: Generate coverage report alongside results
+
+**Automated Test Execution:**
+- Discovers existing test files for each feature
+- Runs test suite automatically
+- Captures test results and coverage data
+- Generates pass/fail status without manual intervention
+
 ### Skip Feature
 ```
 evaluator skip feature <number> [reason]
@@ -391,12 +406,59 @@ The skill automatically detects project type based on file patterns:
 
 ## Issue Severity Levels
 
-| Severity | Definition | Examples |
-|----------|------------|----------|
-| **Critical** | Feature completely broken, security issue, data loss risk | Crash on startup, authentication bypass, data corruption |
-| **High** | Major functionality broken, significant usability issue | Core feature not working, critical path blocked |
-| **Medium** | Feature partially working, minor usability issue | Edge case failure, incorrect error messages |
-| **Low** | Cosmetic issues, minor enhancements | Spacing issues, inconsistent styling |
+| Severity | Definition | Examples | Triage Priority |
+|----------|------------|----------|-----------------|
+| **Critical** | Feature completely broken, security issue, data loss risk | Crash on startup, authentication bypass, data corruption | P0 - Immediate (24h) |
+| **High** | Major functionality broken, significant usability issue | Core feature not working, critical path blocked | P1 - Urgent (72h) |
+| **Medium** | Feature partially working, minor usability issue | Edge case failure, incorrect error messages | P2 - High (1 week) |
+| **Low** | Cosmetic issues, minor enhancements | Spacing issues, inconsistent styling | P3 - Normal (next sprint) |
+
+## Severity-Based Triage Workflow
+
+### Automatic Issue Creation
+```
+evaluator triage create-issues
+```
+
+Creates GitHub issues for discovered problems with appropriate severity labels:
+- Critical issues: `bug`, `critical`, `p0`
+- High issues: `bug`, `high`, `p1`
+- Medium issues: `bug`, `medium`, `p2`
+- Low issues: `enhancement`, `low`, `p3`
+
+### Triage Dashboard
+```
+evaluator triage dashboard
+```
+
+Shows triage status:
+```
+🔴 CRITICAL (2) - P0 - Must fix within 24h
+   [ ] Issue #1: Authentication bypass
+   [ ] Issue #2: Data corruption on delete
+
+🟠 HIGH (5) - P1 - Must fix within 72h
+   [ ] Issue #3: Core feature not working
+   ...
+
+🟡 MEDIUM (8) - P2 - High priority
+   ...
+
+🟢 LOW (12) - P3 - Normal priority
+   ...
+```
+
+### Issue Assignment
+```
+evaluator triage assign <severity> <assignee>
+```
+
+Auto-assign issues by severity:
+```
+evaluator triage critical @senior-dev
+evaluator triage high @team-lead
+evaluator triage medium @junior-dev
+```
 
 ## Quality Metrics
 
@@ -441,6 +503,58 @@ State is maintained in `.state/evaluation.md` at the **project root**:
 - **tdd-enforce**: Could validate if failing features have corresponding tests
 - **dev-team**: Could be invoked to fix discovered issues after evaluation
 - **talk**: Useful for discussing evaluation results and recommendations
+
+## CI/CD Integration
+
+### Automated Regression Testing
+
+Add to CI pipeline for continuous evaluation:
+
+```yaml
+- name: Run Evaluator
+  run: |
+    iflow evaluator test auto --parallel --coverage
+    iflow evaluator generate report
+    # Upload report as artifact
+    iflow evaluator upload report
+```
+
+### Scheduled Evaluations
+
+Run evaluator on schedule to detect regressions:
+
+```yaml
+# .github/workflows/nightly-evaluation.yml
+name: Nightly Evaluation
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 2 AM daily
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run full evaluation
+        run: |
+          iflow evaluator test auto --parallel --coverage
+          iflow evaluator generate report
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: evaluation-report
+          path: .state/evaluation-report.md
+```
+
+### Issue Tracking Integration
+
+Automatically create issues for discovered problems:
+
+```yaml
+- name: Create Issues
+  run: |
+    iflow evaluator list issues critical | xargs -I {} gh issue create --title "{}" --body "Auto-detected by evaluator"
+```
 
 ## Exit Codes
 
