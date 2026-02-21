@@ -114,6 +114,13 @@ IMPLEMENTATION RESTRICTION
 ✓ All functions are tested (PASS)
 ✗ Behavior changes have test updates (FAIL) - Modified goal_engine without test update
 
+RECURSION AND INFINITE LOOPS
+-----------------------------
+✗ Recursive function detected (FAIL) - Function calls itself
+✓ All loops have explicit termination (PASS)
+✓ Loop bounds defined with constants (PASS)
+✗ Infinite loop pattern detected (FAIL) - while(true) found
+
 VIOLATIONS
 ----------
 1. Refactoring Phase (evo/src/decision_engine.rs)
@@ -133,6 +140,16 @@ VIOLATIONS
    Modified goal_engine without test update
    Suggested: Update evo/tests/goal_engine_test.rs to reflect changes
 
+5. Recursive Function (evo/src/tree_utils.rs)
+   Function traverseTree calls itself recursively
+   Suggested: Convert to iterative solution using stack or queue
+
+6. Infinite Loop (evo/src/event_loop.rs)
+   Pattern while(true) detected at line 42
+   Suggested: Add explicit condition and timeout limit
+   Modified goal_engine without test update
+   Suggested: Update evo/tests/goal_engine_test.rs to reflect changes
+
 CRITICAL VIOLATIONS: 2 (Build will FAIL)
 WARNINGS: 2
 
@@ -144,6 +161,72 @@ Commit 4de2892: Test created → Test failed → Implementation → Test passed 
 ```
 
 ## Enforcement Rules
+
+### Recursion Detection
+
+**AST Analysis:**
+- Detect direct recursion: function calling itself
+- Detect indirect recursion: mutual recursion between functions
+- Detect tail recursion: still prohibited, use iteration
+
+**Pattern Matching:**
+```typescript
+// Direct recursion detected
+function factorial(n) {
+  return n * factorial(n - 1)
+}
+
+// Indirect recursion detected
+function isEven(n) { return isOdd(n - 1) }
+function isOdd(n) { return isEven(n - 1) }
+```
+
+**Enforcement:**
+```
+Attempting to commit: src/utils/tree.ts
+VIOLATION: Recursive function detected
+  Function: traverse(node)
+  Line: 12
+  Calls: traverse(node.left), traverse(node.right)
+ACTION: Convert to iterative solution using stack/queue
+```
+
+### Infinite Loop Detection
+
+**Pattern Matching:**
+- `while(true)` - Always infinite
+- `while(1)` - Always infinite
+- `for(;;)` - Always infinite
+- Unbounded loops without termination conditions
+
+**Enforcement:**
+```
+Attempting to commit: src/core/event_loop.ts
+VIOLATION: Infinite loop detected
+  Pattern: while(true)
+  Line: 42
+ACTION: Add explicit condition and maximum iteration limit
+```
+
+### Loop Bounding Requirements
+
+**Required for all loops:**
+1. Explicit termination condition
+2. Maximum iteration limit or timeout
+3. Early exit on error/timeout
+
+**Examples:**
+```typescript
+// ✅ Bounded loop
+const MAX_ITERATIONS = 1000
+const TIMEOUT_MS = 5000
+const startTime = Date.now()
+
+while (!isDone() && iterations < MAX_ITERATIONS && (Date.now() - startTime) < TIMEOUT_MS) {
+  processItem()
+  iterations++
+}
+```
 
 ### File Creation
 ```
@@ -254,6 +337,77 @@ This skill uses:
 5. Keep tests independent and focused
 6. Maintain high coverage (≥90% by default, configurable)
 7. Update tests when behavior changes
+8. Never use recursive algorithms - use iterative solutions
+9. Always bound loops with explicit conditions and limits
+10. Avoid while(true), for(;;), and infinite loops
+
+## Iterative Over Recursive
+
+**Why Iteration:**
+- Predictable memory usage (no stack growth)
+- No stack overflow risk
+- Better performance (no function call overhead)
+- Easier to debug and test
+- More resource-efficient
+
+**Common Patterns:**
+
+**Factorial:**
+```typescript
+// ❌ Recursive
+function factorial(n) { return n <= 1 ? 1 : n * factorial(n-1) }
+
+// ✅ Iterative
+function factorial(n) {
+  let result = 1
+  for (let i = 2; i <= n; i++) result *= i
+  return result
+}
+```
+
+**Tree Traversal:**
+```typescript
+// ❌ Recursive
+function traverse(node) {
+  if (!node) return
+  console.log(node.value)
+  traverse(node.left)
+  traverse(node.right)
+}
+
+// ✅ Iterative (stack-based)
+function traverse(root) {
+  const stack = [root]
+  while (stack.length > 0) {
+    const node = stack.pop()
+    console.log(node.value)
+    if (node.right) stack.push(node.right)
+    if (node.left) stack.push(node.left)
+  }
+}
+```
+
+**DFS/BFS:**
+```typescript
+// ❌ Recursive DFS
+function dfs(node, target) {
+  if (!node) return false
+  if (node.value === target) return true
+  return dfs(node.left, target) || dfs(node.right, target)
+}
+
+// ✅ Iterative DFS
+function dfs(root, target) {
+  const stack = [root]
+  while (stack.length > 0) {
+    const node = stack.pop()
+    if (node.value === target) return true
+    if (node.right) stack.push(node.right)
+    if (node.left) stack.push(node.left)
+  }
+  return false
+}
+```
 
 ## Property-Based Testing
 
