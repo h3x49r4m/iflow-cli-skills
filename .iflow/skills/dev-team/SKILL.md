@@ -387,6 +387,139 @@ For multi-step tasks, state a brief plan:
 - Agent loops independently until criteria verified
 - Weak criteria ("make it work") rejected during task assignment
 
+### No Recursive Algorithms and Infinite Loops
+
+**Problem Addressed**: Stack overflow risks, unpredictable performance, difficult debugging, resource exhaustion
+
+**Enforcement by Tech Lead during Code Review:**
+
+- **Reject all recursive implementations** — Use iterative solutions instead
+- **Require explicit loop termination** — All loops must have clear exit conditions
+- **Verify bounded iteration** — No infinite loops (while true, for (;;))
+- **Check for recursion patterns** — Self-referential function calls are prohibited
+- **Validate loop safety** — Ensure loops have maximum iteration limits or timeouts
+
+**Quality Gate Enforcement:**
+Before each commit, automatically scan for:
+- Recursive function calls (function calling itself directly or indirectly)
+- Infinite loop patterns (`while(true)`, `while(1)`, `for(;;)`)
+- Unbounded loops without explicit termination conditions
+- Mutual recursion between functions
+- Tail recursion (still prohibited - use iteration)
+
+**Examples of what NOT to do:**
+```typescript
+// ❌ Recursive function - stack overflow risk
+function factorial(n: number): number {
+  if (n <= 1) return 1
+  return n * factorial(n - 1)
+}
+
+// ❌ Recursive tree traversal
+function traverse(node: Node) {
+  console.log(node.value)
+  if (node.left) traverse(node.left)
+  if (node.right) traverse(node.right)
+}
+
+// ❌ Infinite loop - never terminates
+while (true) {
+  processMessages()
+}
+
+// ❌ Infinite loop - unbounded
+for (;;) {
+  waitForEvent()
+}
+
+// ❌ Mutual recursion
+function isEven(n: number): boolean {
+  if (n === 0) return true
+  return isOdd(n - 1)
+}
+
+function isOdd(n: number): boolean {
+  if (n === 0) return false
+  return isEven(n - 1)
+}
+
+// ❌ Unbounded while loop
+while (!isDone()) {
+  processItem(items.pop())
+}
+```
+
+**Examples of what TO do:**
+```typescript
+// ✅ Iterative factorial
+function factorial(n: number): number {
+  let result = 1
+  for (let i = 2; i <= n; i++) {
+    result *= i
+  }
+  return result
+}
+
+// ✅ Iterative tree traversal
+function traverse(root: Node) {
+  const stack: Node[] = [root]
+  while (stack.length > 0) {
+    const node = stack.pop()
+    console.log(node.value)
+    if (node.right) stack.push(node.right)
+    if (node.left) stack.push(node.left)
+  }
+}
+
+// ✅ Bounded loop with timeout
+const MAX_ITERATIONS = 1000
+const startTime = Date.now()
+const TIMEOUT_MS = 5000
+
+while (!isDone() && iterationCount < MAX_ITERATIONS && (Date.now() - startTime) < TIMEOUT_MS) {
+  processItem(items.pop())
+  iterationCount++
+}
+
+// ✅ Explicit condition
+while (hasMoreMessages()) {
+  const message = getNextMessage()
+  if (!message) break
+  processMessage(message)
+}
+
+// ✅ Iterative solution for mutual recursion
+function isEven(n: number): boolean {
+  return n % 2 === 0
+}
+
+function isOdd(n: number): boolean {
+  return n % 2 !== 0
+}
+
+// ✅ Queue-based processing
+function processQueue(queue: QueueItem[]) {
+  for (const item of queue) {
+    if (item.shouldProcess) {
+      processItem(item)
+    }
+  }
+}
+```
+
+**Integration with Code Review:**
+- AST analysis to detect recursive function calls
+- Pattern matching for infinite loop constructs
+- Control flow analysis to verify loop termination
+- Block commits containing recursive implementations
+- Flag infinite loops as critical violations
+
+**Integration with Quality Gates:**
+- Pre-commit validation scans for recursion patterns
+- Block commits with unbounded loops
+- Require maximum iteration limits for all loops
+- Validate all while/for loops have explicit conditions
+
 ### No Hardcoding
 
 **Problem Addressed**: Magic numbers, embedded configuration values, hardcoded thresholds that make code difficult to maintain and adapt
@@ -474,6 +607,7 @@ for (let i = 0; i < MAX_RETRY_ATTEMPTS; i++) { /* ... */ }
 | Surgical Changes | QA Engineer | Code Review |
 | Goal-Driven Execution | Agent Dispatcher | Task Assignment |
 | No Hardcoding | All Agents | Implementation + Code Review |
+| No Recursive Algorithms | Tech Lead + Quality Gates | Code Review + Pre-commit |
 
 These principles bias toward **caution over speed**. For trivial tasks (simple typo fixes, obvious one-liners), agents use judgment — not every change needs the full rigor.
 
