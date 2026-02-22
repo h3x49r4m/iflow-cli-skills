@@ -14,6 +14,97 @@ Available Skills
 ----------------
 
 dev-team
+refactor
+~~~~~~~~
+Automated code refactoring and improvement skill that analyzes codebases to identify and suggest refactoring opportunities.
+
+**Version:** 1.0.0
+
+**Purpose:**
+
+Systematically reviews codebases to identify code quality issues and provide actionable refactoring suggestions for clean, maintainable, and efficient code.
+
+**Features:**
+
+- **Duplicate Code Detection**: Identifies identical or similar code blocks and suggests extraction
+- **Magic Literal Extraction**: Converts hardcoded numbers and strings to named constants
+- **Function Decomposition**: Breaks down long, complex functions into smaller units
+- **Naming Improvements**: Identifies poor naming conventions and suggests improvements
+- **Dead Code Elimination**: Finds and suggests removal of unused imports, variables, and functions
+- **Complexity Reduction**: Simplifies nested conditionals and complex boolean expressions
+- **Code Smell Detection**: Identifies anti-patterns like God Functions, Feature Envy, Data Clumps
+- **Import Organization**: Sorts and deduplicates imports
+- **10 Language Support**: JavaScript, TypeScript, Python, Java, Go, Rust, C, C++, Ruby
+
+**Capabilities:**
+
+1. **Code Quality Analysis**
+   - Comprehensive codebase analysis across multiple dimensions
+   - Language-specific pattern matching and anti-pattern detection
+   - Configurable thresholds for refactoring decisions
+
+2. **Workflows**
+   - `code-analysis.md`: Main codebase analysis workflow
+   - `duplicate-detection.md`: Duplicate code identification
+   - `constant-extraction.md`: Magic literal extraction
+   - `function-decomposition.md`: Complex function analysis
+   - `dead-code-elimination.md`: Unused code detection
+   - `complexity-reduction.md`: Conditional simplification
+   - `refactoring-report.md`: Report generation
+
+3. **Configuration**
+   - `refactor-rules.json`: Overall refactoring rules and priorities
+   - `language-patterns.json`: Language-specific patterns and anti-patterns
+   - `thresholds.json`: Configurable thresholds (function length, complexity, etc.)
+
+**Usage:**
+
+.. code-block:: text
+
+    # Analyze codebase for refactoring opportunities
+    refactor analyze
+
+    # Detect duplicate code
+    refactor duplicates
+
+    # Extract magic literals
+    refactor constants
+
+    # Decompose complex functions
+    refactor decompose
+
+    # Generate refactoring report
+    refactor report
+
+**Refactoring Categories:**
+
+- **High Priority**: Duplicates, magic literals (3+ occurrences), complex conditionals
+- **Medium Priority**: Long functions, poor naming, dead code, code smells
+- **Low Priority**: Import organization, single-occurrence literals
+
+**Output:**
+
+- Prioritized refactoring suggestions with before/after examples
+- Impact and effort scores for each suggestion
+- Phased action plan (quick wins, medium impact, complex refactorings)
+- Risk assessment with mitigation strategies
+- Multiple report formats (Markdown, JSON, HTML)
+
+**Integration:**
+
+- Uses `explore-agent` for codebase understanding
+- Uses `general-purpose` agent for applying refactoring suggestions
+- Leverages `search_file_content` and `glob` for pattern matching
+- Integrates with `git-manage` for version control during refactoring
+
+**Safety:**
+
+- Provides before/after code examples for review
+- Highlights potential risks and dependencies
+- Groups related refactorings to avoid breaking changes
+- Allows selective application of suggestions
+- Maintains backward compatibility where possible
+
 evaluator
 git-manage
 ~~~~~~~~
