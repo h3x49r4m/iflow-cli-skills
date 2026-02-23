@@ -208,7 +208,9 @@ class GitManage:
                                 description: str, body: Optional[str] = None,
                                 files_changed: Optional[List[str]] = None,
                                 test_results: Optional[str] = None,
-                                coverage: Optional[float] = None) -> str:
+                                coverage: Optional[float] = None,
+                                architecture_check: bool = False,
+                                tdd_check: bool = False) -> str:
         """Generate formatted commit message."""
         # Header
         if scope:
@@ -223,29 +225,36 @@ class GitManage:
             message.append('')
             message.append(body)
         
-        # Separator and metadata
-        if files_changed or test_results or coverage is not None:
+        # Always add separator and metadata when there are files to commit
+        if files_changed:
             message.append('')
             message.append('---')
             message.append('Branch: ' + self.get_current_branch())
-        
-        # Files changed list
-        if files_changed:
+            
+            # Files changed list
             message.append('')
             message.append('Files changed:')
             for file_path in files_changed:
                 message.append(f'- {file_path}')
-        
-        # Verification section
-        if test_results or coverage is not None:
+            
+            # Verification section - always include when there are files
             message.append('')
             message.append('Verification:')
             if test_results:
                 message.append(f'- Tests: {test_results}')
+            else:
+                message.append('- Tests: N/A')
+            
             if coverage is not None:
                 message.append(f'- Coverage: {coverage:.1f}%')
-            message.append('- Architecture: ✓ compliant')
-            message.append('- TDD: ✓ compliant')
+            else:
+                message.append('- Coverage: N/A')
+            
+            # Only show Architecture/TDD compliance when checks are actually run
+            if architecture_check:
+                message.append('- Architecture: ✓ compliant')
+            if tdd_check:
+                message.append('- TDD: ✓ compliant')
         
         return '\n'.join(message)
     
@@ -276,6 +285,8 @@ class GitManage:
         # Run pre-commit checks
         test_status = 'skipped'
         coverage = None
+        architecture_check = False
+        tdd_check = False
         
         if not no_verify and self.config['pre_commit_checks']:
             # Run tests
@@ -291,13 +302,19 @@ class GitManage:
                 if line_cov < self.config['coverage_threshold']:
                     return 6, f'Coverage below threshold: {line_cov:.1f}% < {self.config["coverage_threshold"]}%'
                 coverage = line_cov
+            
+            # Track whether checks were actually run
+            architecture_check = self.config.get('run_architecture_check', False)
+            tdd_check = self.config.get('run_tdd_check', False)
         
         # Generate commit message
         message = self.generate_commit_message(
             type_, scope, description, body,
             files_changed=staged_files,
             test_results=test_status,
-            coverage=coverage
+            coverage=coverage,
+            architecture_check=architecture_check,
+            tdd_check=tdd_check
         )
         
         # Create commit
