@@ -770,3 +770,211 @@ Dev-Team:
 - `3` - Deployment failed
 - `4` - Requirements invalid
 - `5` - Timeout exceeded
+
+## Current Limitations
+
+**IMPORTANT**: The dev-team skill is currently in a documentation-only state. While the SKILL.md and workflows provide comprehensive specifications for an autonomous development team, the actual implementation does not yet exist.
+
+### What's Missing
+
+1. **No Agent Implementation** - The skill has agent definitions (Project Manager, Tech Lead, Frontend Developer, Backend Developer, QA Engineer, DevOps Engineer) in markdown files, but there's no actual code to execute these agents or orchestrate their work.
+
+2. **No Task Execution Engine** - The workflows are documented but there's no mechanism to actually run them, track progress, or hand off between agents.
+
+3. **No State Management System** - While it mentions persistent state tracking at project root, there's no actual implementation for storing/retrieving state between sessions.
+
+4. **No Integration with Build Tools** - The skill mentions "quality gates" and "CI/CD pipeline" but doesn't actually integrate with build systems, test runners, or deployment tools.
+
+5. **Manual Workflow** - The current implementation relies on the user to invoke different agents manually rather than having an autonomous orchestration system.
+
+## Roadmap to Full Autonomy
+
+To transform dev-team from documentation to a fully autonomous development pipeline, the following components need to be implemented:
+
+### 1. Agent Orchestration Engine
+
+A central dispatcher that can:
+- Analyze requirements and break them into tasks
+- Assign tasks to appropriate specialized agents
+- Track task completion and dependencies
+- Handle failures and retries
+- Coordinate handoffs between agents
+
+**Implementation Approach**:
+- Create a Python-based orchestration engine
+- Use task queue system (Celery, RQ, or custom)
+- Implement dependency graph for task scheduling
+- Add retry mechanism with exponential backoff
+- Support parallel execution of independent tasks
+
+### 2. State Persistence Layer
+
+A robust state management system that:
+- Stores project context, decisions, and progress
+- Enables session continuity
+- Tracks handoffs between agents
+- Maintains project specification and sprint plans
+
+**Implementation Approach**:
+- Use SQLite or JSON-based storage at project root
+- Implement versioning for state files
+- Add automatic state snapshots
+- Support state recovery from interruptions
+- Provide query interface for state inspection
+
+### 3. Automated Quality Gates
+
+Actual integration with:
+- Test runners (pytest, jest, vitest, etc.)
+- Linters and formatters (ESLint, Prettier, Black, etc.)
+- Static analysis tools (SonarQube, ESLint, Ruff)
+- Coverage reporters (Coverage.py, Istanbul)
+- TDD enforcement (tdd-enforce skill integration)
+- Complexity analysis (maintainability index, cyclomatic complexity)
+
+**Implementation Approach**:
+- Create adapter layer for different tools
+- Implement configurable quality thresholds
+- Add blocking/non-blocking checks
+- Generate quality reports
+- Integrate with git-manage pre-commit hooks
+
+### 4. CI/CD Integration
+
+Connect to actual CI/CD platforms:
+- GitHub Actions, GitLab CI, CircleCI, Jenkins
+- Automated deployment to staging/production
+- Rollback mechanisms
+- Environment configuration management
+- Infrastructure as Code (Terraform, AWS CDK)
+
+**Implementation Approach**:
+- Support multiple CI/CD platforms via adapters
+- Auto-generate CI/CD configuration files
+- Implement deployment pipeline templates
+- Add rollback capabilities
+- Support multi-environment deployments
+
+### 5. Project Template System
+
+Create scaffolding for:
+- Different project types (web, CLI, library, mobile)
+- Pre-configured build systems (Vite, Webpack, Rollup, Cargo)
+- Standardized testing setup
+- Documentation templates
+- Configuration management
+
+**Implementation Approach**:
+- Create template registry with metadata
+- Implement template selection based on requirements
+- Add template customization capabilities
+- Support project initialization from templates
+- Maintain template versioning
+
+### 6. Autonomous Decision Making
+
+Implement:
+- Architecture decision logging (ADR format)
+- Technology selection heuristics
+- Conflict resolution between agents
+- Automatic refactoring suggestions
+- Tradeoff analysis and documentation
+
+**Implementation Approach**:
+- Create decision framework with criteria
+- Implement scoring system for alternatives
+- Add decision logging with rationale
+- Support manual override of decisions
+- Provide decision audit trail
+
+### 7. Communication Protocol
+
+Define:
+- Standard message format between agents
+- Task completion confirmation
+- Error handling and escalation
+- Progress reporting
+- Agent handoff protocol
+
+**Implementation Approach**:
+- Design JSON-based message schema
+- Implement message bus/event system
+- Add message validation and type checking
+- Support async communication
+- Provide logging and debugging tools
+
+### 8. Monitoring and Observability
+
+Add:
+- Real-time progress tracking dashboard
+- Agent health monitoring
+- Performance metrics (execution time, success rate)
+- Debugging tools and logs
+- Alert system for failures
+
+**Implementation Approach**:
+- Create web-based dashboard (Streamlit, Gradio)
+- Implement metrics collection and aggregation
+- Add log aggregation and search
+- Support real-time progress updates
+- Provide alerting via multiple channels
+
+## Implementation Phases
+
+### Phase 1: Core Infrastructure (Foundation)
+- Implement Agent Orchestration Engine
+- Create State Persistence Layer
+- Define Communication Protocol
+- Add basic monitoring
+
+### Phase 2: Quality Integration
+- Implement Automated Quality Gates
+- Integrate with build tools
+- Add test runner adapters
+- Implement coverage reporting
+
+### Phase 3: Agent Development
+- Implement Project Manager agent
+- Implement Tech Lead agent
+- Implement Frontend Developer agent
+- Implement Backend Developer agent
+- Implement QA Engineer agent
+- Implement DevOps Engineer agent
+
+### Phase 4: CI/CD and Deployment
+- Add CI/CD platform integration
+- Implement deployment pipelines
+- Add rollback mechanisms
+- Support multi-environment deployments
+
+### Phase 5: Project Templates
+- Create project template system
+- Build template registry
+- Add template customization
+- Support project initialization
+
+### Phase 6: Advanced Features
+- Implement autonomous decision making
+- Add refactoring automation
+- Integrate with refactor skill
+- Add performance optimization
+
+### Phase 7: User Experience
+- Create monitoring dashboard
+- Add progress visualization
+- Implement interactive debugging
+- Support manual intervention
+
+## Next Steps
+
+To begin implementing the autonomous dev-team skill:
+
+1. **Phase 1 Start**: Implement the Agent Orchestration Engine as a Python module
+2. **Define Protocol**: Create the Communication Protocol specification
+3. **State Management**: Implement the State Persistence Layer
+4. **Agent Skeletons**: Create basic agent implementations with placeholders
+5. **Integration**: Connect with existing skills (tdd-enforce, git-manage, refactor)
+6. **Testing**: Create comprehensive test suite for all components
+7. **Documentation**: Update SKILL.md as implementations are completed
+
+The roadmap is designed to build incrementally, with each phase building on the previous one, allowing for iterative development and testing.
