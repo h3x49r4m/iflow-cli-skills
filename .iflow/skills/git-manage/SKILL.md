@@ -208,10 +208,13 @@ Files changed:
 - ...
 
 Verification:
-- Tests: <count> passed
-- Coverage: <percentage>%
-- TDD: ✓ compliant
+- Tests: passed/skipped/N/A
+- Coverage: <percentage>%/N/A
+- Architecture: ✓ compliant (only shown when architecture check runs)
+- TDD: ✓ compliant (only shown when TDD check runs)
 ```
+
+**Note:** The "Changes:" section with bullet points should be included in the body parameter when committing, describing the specific changes made in detail. The "Files changed:" section is automatically generated from the staged files. The Verification section shows test results, coverage (when checked), and Architecture/TDD compliance (only when those checks are actually run).
 
 **Note:** The "Changes:" section with bullet points should be included in the body parameter when committing, describing the specific changes made in detail. The "Files changed:" section is automatically generated from the staged files.
 
