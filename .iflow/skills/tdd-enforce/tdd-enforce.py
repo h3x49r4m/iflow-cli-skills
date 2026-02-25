@@ -27,7 +27,8 @@ class ProjectAnalyzer:
             'structure': defaultdict(list),
             'imports': defaultdict(list),
             'functions': defaultdict(list),
-            'docstrings': Counter()
+            'docstrings': Counter(),
+            'quality': defaultdict(int)
         }
         self._analyzed = False
 
@@ -94,7 +95,11 @@ class ProjectAnalyzer:
                     self.patterns['naming']['function'][name_style] += 1
 
                     # Function structure
-                    self.patterns['structure']['function_lines'].append(len(ast.get_source_segment(content, node) or '').split('\n'))
+                    source_segment = ast.get_source_segment(content, node)
+                    func_lines = 0
+                    if source_segment and isinstance(source_segment, str):
+                        func_lines = len(source_segment.split('\n'))
+                    self.patterns['structure']['function_lines'].append(func_lines)
                     self.patterns['structure']['function_params'].append(len(node.args.args))
 
                     # Check for docstring
@@ -241,13 +246,17 @@ class ProjectAnalyzer:
                         })
 
                     # Check function size
-                    func_lines = len(ast.get_source_segment(content, node) or '').split('\n')
+                    source_segment = ast.get_source_segment(content, node)
+                    if source_segment and isinstance(source_segment, str):
+                        func_lines = len(source_segment.split('\n'))
+                    else:
+                        func_lines = 0
                     avg_lines = patterns.get('avg_function_lines', 50)
-                    if len(func_lines) > avg_lines * 1.5:
+                    if func_lines > avg_lines * 1.5:
                         violations.append({
                             'type': 'structure',
                             'severity': 'warning',
-                            'message': f"Function '{node.name}' is {len(func_lines)} lines (project avg: {avg_lines})",
+                            'message': f"Function '{node.name}' is {func_lines} lines (project avg: {avg_lines})",
                             'line': node.lineno,
                             'file': str(file_path)
                         })
@@ -283,6 +292,43 @@ class ProjectAnalyzer:
                 'message': f"Syntax error in file",
                 'file': str(file_path)
             })
+
+        # Check refactoring principles: duplicate code and verbose patterns
+        # Check for duplicate code (simple heuristic)
+        lines = content.split('\n')
+        line_counts = {}
+        for line in lines:
+            stripped = line.strip()
+            if len(stripped) > 20 and not stripped.startswith('#'):
+                line_counts[stripped] = line_counts.get(stripped, 0) + 1
+        
+        for line, count in line_counts.items():
+            if count > 2:
+                violations.append({
+                    'type': 'duplicate_code',
+                    'severity': 'warning',
+                    'message': f'Duplicate code detected (appears {count} times)',
+                    'file': str(file_path),
+                    'suggestion': 'Extract to a shared function or constant'
+                })
+                break  # Only report first occurrence
+        
+        # Check for verbose patterns
+        verbose_patterns = [
+            (r'for\s+\w+\s+in\s+range\(len\([^)]+\)\):', 'Use enumerate() or direct iteration'),
+            (r'if\s+\w+\s+==\s+True:', 'Use "if value:" instead'),
+            (r'if\s+\w+\s+!=\s+True:', 'Use "if not value:" instead'),
+        ]
+        
+        for pattern, suggestion in verbose_patterns:
+            if re.search(pattern, content):
+                violations.append({
+                    'type': 'verbose_code',
+                    'severity': 'info',
+                    'message': 'Verbose pattern detected',
+                    'file': str(file_path),
+                    'suggestion': suggestion
+                })
 
         return violations
 
