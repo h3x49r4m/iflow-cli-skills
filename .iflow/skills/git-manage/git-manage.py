@@ -525,23 +525,27 @@ Generate the commit message now. Remember: The "Changes:" section MUST be detail
         return commit_type, description, scope, body
     
     def _fallback_commit_detection(self, files: List[str]) -> Tuple[str, str, Optional[str], Optional[str]]:
-        """Fallback pattern-based detection when LLM is not available."""
+        """Fallback detection when LLM is not available - generates basic commit info."""
         # Simple pattern-based detection
         commit_type = 'chore'
         scope = None
         description = f'update {len(files)} file(s)'
+        changes = []
         
         for file_path in files:
             if any(doc in file_path for doc in ['SKILL.md', 'README.rst', 'README.md']):
                 commit_type = 'docs'
                 if 'README' in file_path:
                     description = 'update README documentation'
+                    changes.append('- Update README documentation')
                 else:
                     description = 'update skill documentation'
+                    changes.append('- Update skill documentation')
                 break
             elif any(test in file_path for test in ['.test.', 'test_', '_test.', 'tests/']):
                 commit_type = 'test'
                 description = f'update tests ({len(files)} files)'
+                changes.append(f'- Update tests ({len(files)} files)')
                 break
             elif '/skills/' in file_path:
                 parts = file_path.split('/skills/')
@@ -549,9 +553,19 @@ Generate the commit message now. Remember: The "Changes:" section MUST be detail
                     scope = parts[1].split('/')[0]
                     commit_type = 'feat'
                     description = f'update {scope} skill'
+                    changes.append(f'- Update {scope} skill')
                 break
+            elif file_path.endswith('.py'):
+                changes.append(f'- Update {Path(file_path).name}')
+            elif file_path.endswith('.json'):
+                changes.append(f'- Update configuration in {Path(file_path).name}')
+            elif file_path.endswith('.md'):
+                changes.append(f'- Update documentation in {Path(file_path).name}')
         
-        return commit_type, description, scope, None
+        # Build body with changes section
+        body = 'Changes:\n' + '\n'.join(changes) if changes else None
+        
+        return commit_type, description, scope, body
     
     def status(self) -> Tuple[int, str]:
         """Show git status with additional information."""
