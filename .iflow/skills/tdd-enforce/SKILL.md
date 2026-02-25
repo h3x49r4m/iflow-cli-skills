@@ -1,13 +1,13 @@
 ---
 name: tdd-enforce
-description: Ensures Test-Driven Development (TDD) workflow is followed throughout the development process
-version: 1.0.0
+description: Comprehensive enforcement of TDD workflow, project conventions, code conciseness, and code quality
+version: 2.0.0
 category: development-process
 ---
 
 # TDD Enforcement Skill
 
-Ensures Test-Driven Development (TDD) workflow is followed throughout the development process.
+Comprehensive enforcement system that ensures Test-Driven Development (TDD) workflow, project convention compliance, code conciseness, and code quality standards are maintained throughout the development process.
 
 ## Usage
 
@@ -327,6 +327,604 @@ This skill uses:
 - Coverage analysis tools for threshold checking
 - Dependency analysis for test independence verification
 - File modification tracking for implementation restriction
+
+## Convention Enforcement
+
+### Naming Conventions
+
+**Enforced Rules:**
+- Functions: snake_case (calculate_total_price)
+- Classes: PascalCase (UserAuthentication)
+- Constants: UPPER_SNAKE_CASE (MAX_LOGIN_ATTEMPTS)
+- Private methods: _leading_underscore
+- Minimum 3 characters for names
+- Forbidden names: temp, data, info, obj, var, item
+
+**Configuration:**
+```json
+{
+  "conventions": {
+    "naming": {
+      "enforceSnakeCase": true,
+      "enforcePascalCase": true,
+      "enforceUpperSnakeCase": true,
+      "minNameLength": 3,
+      "forbiddenNames": ["temp", "data", "info", "obj", "var", "item"]
+    }
+  }
+}
+```
+
+### Code Structure
+
+**Enforced Rules:**
+- Maximum 50 lines per function
+- Maximum 10 cyclomatic complexity
+- Maximum 5 parameters per function
+- Maximum 4 levels of nesting
+- Single responsibility per function
+- Pure functions preferred (no side effects)
+
+**Configuration:**
+```json
+{
+  "conventions": {
+    "structure": {
+      "maxFunctionLines": 50,
+      "maxComplexity": 10,
+      "maxParameters": 5,
+      "maxNestingDepth": 4
+    }
+  }
+}
+```
+
+### Import Organization
+
+**Enforced Rules:**
+1. Standard library imports
+2. Third-party imports
+3. Local project imports
+- Alphabetically sorted within each group
+- No unused imports
+- No duplicate imports
+
+**Configuration:**
+```json
+{
+  "conventions": {
+    "imports": {
+      "enforceOrganization": true,
+      "checkUnused": true,
+      "checkDuplicates": true,
+      "groupOrder": ["stdlib", "third_party", "local"]
+    }
+  }
+}
+```
+
+### Type Hints
+
+**Enforced Rules:**
+- All functions must have type hints
+- Use project's type conventions
+- Proper typing for complex types
+- Type checking enabled
+
+**Configuration:**
+```json
+{
+  "conventions": {
+    "typeHints": {
+      "required": true,
+      "strictMode": true
+    }
+  }
+}
+```
+
+### Docstrings
+
+**Enforced Rules:**
+- Google-style or NumPy-style (based on project)
+- All public functions documented
+- Parameters and returns documented
+- Raises documented
+- Examples included where appropriate
+
+**Configuration:**
+```json
+{
+  "conventions": {
+    "docstrings": {
+      "style": "google",
+      "requiredForPublic": true
+    }
+  }
+}
+```
+
+## Code Conciseness Enforcement
+
+### Clean Code Principles
+
+**Enforced Principles:**
+- **DRY** (Don't Repeat Yourself): No duplicate code
+- **KISS** (Keep It Simple, Stupid): Prefer simple solutions
+- **YAGNI** (You Aren't Gonna Need It): Avoid over-engineering
+- **Single Responsibility**: One function = one purpose
+- **Early Returns**: Reduce nesting depth with guard clauses
+- **Expressive Code**: Code should be self-documenting
+
+### Conciseness Rules
+
+**Enforced Rules:**
+- Prefer list comprehensions over for loops when appropriate
+- Use built-in functions (map, filter, reduce, any, all) instead of manual implementations
+- Avoid redundant code and unnecessary intermediate variables
+- Prefer one-liners for simple operations without sacrificing readability
+- Use ternary operators for simple conditional assignments
+- Leverage language idioms and patterns
+
+**Configuration:**
+```json
+{
+  "conciseness": {
+    "enabled": true,
+    "preferComprehensions": true,
+    "preferBuiltins": true,
+    "maxIntermediateVariables": 3,
+    "suggestOneLiners": true,
+    "avoidOverEngineering": true,
+    "enforceEarlyReturns": true,
+    "preferTernaryOperators": true,
+    "detectVerbosePatterns": true
+  }
+}
+```
+
+### Enforcement Examples
+
+```
+❌ Verbose - Can be simplified
+result = []
+for item in items:
+    if item > 0:
+        result.append(item)
+
+✓ Concise - List comprehension
+result = [item for item in items if item > 0]
+```
+
+```
+❌ Verbose - Unnecessary intermediate variable
+total = 0
+for number in numbers:
+    total = total + number
+return total
+
+✓ Concise - Built-in function
+return sum(numbers)
+```
+
+```
+❌ Verbose - Nested conditions
+if x > 0:
+    if y > 0:
+        return True
+    else:
+        return False
+else:
+    return False
+
+✓ Concise - Single expression
+return x > 0 and y > 0
+```
+
+### Anti-Patterns Detection
+
+**Detected Anti-Patterns:**
+- Excessive intermediate variables (>3 per function)
+- Verbose loops that could use comprehensions
+- Manual implementations of built-in functionality
+- Over-engineered solutions for simple problems
+- Redundant conditional checks
+- Unnecessary function wrapping
+
+## Code Quality Enforcement
+
+### Duplicate Code Detection
+
+**Detection Rules:**
+- Identical code blocks (100% match)
+- Similar code blocks (≥80% similarity)
+- Minimum 5 lines for duplicate consideration
+- Suggests extraction to shared functions
+
+**Configuration:**
+```json
+{
+  "quality": {
+    "duplicateCode": {
+      "enabled": true,
+      "minSimilarityScore": 0.8,
+      "minLinesForDuplicate": 5,
+      "ignoreTestFiles": true,
+      "ignoreComments": true,
+      "ignoreWhitespace": true
+    }
+  }
+}
+```
+
+### Magic Literals
+
+**Detection Rules:**
+- Hardcoded numbers (excluding 0, 1, -1)
+- Hardcoded strings (excluding empty string)
+- Repeated literals (2+ occurrences)
+- Requires extraction to named constants
+
+**Configuration:**
+```json
+{
+  "quality": {
+    "magicLiterals": {
+      "enabled": true,
+      "minOccurrences": 2,
+      "ignoreValues": [0, 1, -1, "", "null", "false", "true"],
+      "extractNumbers": true,
+      "extractStrings": true,
+      "extractBooleans": false
+    }
+  }
+}
+```
+
+### Dead Code Elimination
+
+**Detection Rules:**
+- Unused imports
+- Unused variables
+- Unused functions
+- Unreachable code blocks
+
+**Configuration:**
+```json
+{
+  "quality": {
+    "deadCode": {
+      "enabled": true,
+      "checkUnusedImports": true,
+      "checkUnusedVariables": true,
+      "checkUnusedFunctions": true,
+      "checkUnusedClasses": true,
+      "ignoreUnderscored": true
+    }
+  }
+}
+```
+
+### Code Smells
+
+**Detection Rules:**
+- God functions (>200 lines, >15 complexity)
+- Feature envy (using other object's data)
+- Data clumps (variables appearing together)
+- Primitive obsession (use domain objects)
+
+**Configuration:**
+```json
+{
+  "quality": {
+    "codeSmells": {
+      "enabled": true,
+      "detectGodFunctions": true,
+      "detectFeatureEnvy": true,
+      "detectDataClumps": true,
+      "detectPrimitiveObsession": true,
+      "godFunctionThreshold": {
+        "maxLines": 200,
+        "maxComplexity": 15
+      }
+    }
+  }
+}
+```
+
+### Complex Conditionals
+
+**Detection Rules:**
+- Nested if/else (>3 levels)
+- Complex boolean expressions (>3 conditions)
+- Suggests guard clauses or early returns
+
+**Configuration:**
+```json
+{
+  "quality": {
+    "complexConditionals": {
+      "enabled": true,
+      "maxNestingDepth": 3,
+      "maxBooleanConditions": 3
+    }
+  }
+}
+```
+
+## Enhanced Output Format
+
+```
+TDD Compliance Report
+=====================
+
+Overall Score: 87% (52/60 checks passed)
+
+TDD CYCLE
+---------
+✓ Test Creation Phase (PASS)
+✓ Test Failure (Red) (PASS)
+✓ Minimal Implementation (Green) (PASS)
+✗ Refactoring Phase (FAIL) - No refactoring detected after green
+
+TEST COVERAGE
+-------------
+Component Coverage: 92% (Required: ≥90%) ✓
+Integration Flow Coverage: 100% (Required: 100%) ✓
+Safety Constraint Coverage: 95% (Required: 100%) ✗
+
+CONVENTION COMPLIANCE
+----------------------
+Naming Conventions: 95% ✓
+  ✓ Functions use snake_case
+  ✓ Classes use PascalCase
+  ✓ Constants use UPPER_SNAKE_CASE
+  ✗ Found forbidden name 'temp' in utils.py:42
+
+Code Structure: 88% ✓
+  ✓ Functions within size limits
+  ✓ Complexity acceptable
+  ✗ Function process_data has 6 parameters (max: 5)
+  ✗ Function validate_input has nesting depth 5 (max: 4)
+
+Import Organization: 100% ✓
+  ✓ Imports properly organized
+  ✓ No unused imports
+  ✓ No duplicate imports
+
+Type Hints: 100% ✓
+  ✓ All functions have type hints
+
+Docstrings: 90% ✓
+  ✓ Most public functions documented
+  ✗ Missing docstring for helper_function
+
+CODE CONCISENESS
+----------------
+Overall Score: 92% ✓
+  ✓ Uses comprehensions appropriately
+  ✓ Leverages built-in functions
+  ✓ Minimal intermediate variables
+  ✗ Verbose loop detected in data_processor.py:67
+    Suggestion: Replace with list comprehension
+
+CODE QUALITY
+------------
+Duplicate Code: 100% ✓
+  ✓ No duplicate code detected
+
+Magic Literals: 95% ✓
+  ✓ Most constants extracted
+  ✗ Magic number '3600' found in timer.py:23
+    Suggestion: Extract to TIMEOUT_SECONDS constant
+
+Dead Code: 100% ✓
+  ✓ No unused imports
+  ✓ No unused variables
+  ✓ No unused functions
+
+Code Smells: 98% ✓
+  ✓ No god functions
+  ✓ No feature envy
+  ✓ No data clumps
+  ✗ Primitive obsession detected in user.py
+    Suggestion: Create User domain object
+
+Complex Conditionals: 90% ✓
+  ✓ Nesting depth acceptable
+  ✗ Complex boolean expression found in validator.py:45
+    Suggestion: Extract to named variable
+
+RECURSION AND INFINITE LOOPS
+-----------------------------
+✗ Recursive function detected (FAIL) - Function calls itself
+✓ All loops have explicit termination (PASS)
+✓ Loop bounds defined with constants (PASS)
+✗ Infinite loop pattern detected (FAIL) - while(true) found
+
+VIOLATIONS
+----------
+1. Refactoring Phase (evo/src/decision_engine.rs)
+   No refactoring detected after green phase
+   Suggested: Review and refactor for code quality
+
+2. Safety Constraint Coverage (evo/tests/safety_test.rs)
+   Coverage: 95% (Required: 100%)
+   Missing: storage_limit_enforcement
+   Suggested: Add test for storage limit enforcement
+
+3. Naming Convention (utils.py:42)
+   Forbidden name 'temp' detected
+   Suggested: Rename to descriptive name like 'buffer'
+
+4. Code Structure (process_data)
+   Too many parameters: 6 (max: 5)
+   Suggested: Create parameter object or data class
+
+5. Code Structure (validate_input)
+   Excessive nesting: 5 levels (max: 4)
+   Suggested: Use guard clauses to flatten
+
+6. Docstrings (helper_function)
+   Missing docstring for public function
+   Suggested: Add Google-style docstring
+
+7. Code Conciseness (data_processor.py:67)
+   Verbose loop detected
+   Suggested: Replace with list comprehension
+
+8. Magic Literal (timer.py:23)
+   Magic number '3600' found
+   Suggested: Extract to TIMEOUT_SECONDS constant
+
+9. Code Smell (user.py)
+   Primitive obsession detected
+   Suggested: Create User domain object
+
+10. Complex Conditional (validator.py:45)
+    Complex boolean expression
+    Suggested: Extract to named variable
+
+CRITICAL VIOLATIONS: 2 (Build will FAIL)
+WARNINGS: 8
+```
+
+## Configuration
+
+### Full Configuration Example
+
+```json
+{
+  "tdd": {
+    "enforceTestFirst": true,
+    "requireTestFailure": true,
+    "requireMinimalImplementation": true,
+    "requireRefactoring": true,
+    "testStructure": {
+      "enforceArrangeActAssert": true,
+      "maxAssertionsPerTest": 1,
+      "minTestNameLength": 10
+    },
+    "coverageThresholds": {
+      "lines": 90,
+      "branches": 80,
+      "functions": 90,
+      "statements": 90
+    },
+    "criticalCoverage": {
+      "integrationFlow": 100,
+      "safetyConstraints": 100
+    },
+    "propertyBasedTesting": {
+      "enabled": true,
+      "frameworks": ["hypothesis", "fast-check", "jsverify"]
+    }
+  },
+  "recursionDetection": {
+    "enabled": true,
+    "detectDirectRecursion": true,
+    "detectIndirectRecursion": true,
+    "detectTailRecursion": true,
+    "blockRecursiveFunctions": true
+  },
+  "loopBounding": {
+    "enabled": true,
+    "requireExplicitTermination": true,
+    "requireMaxIterationLimit": true,
+    "requireTimeoutLimit": true,
+    "defaultMaxIterations": 1000,
+    "defaultTimeoutMs": 5000
+  },
+  "conventions": {
+    "naming": {
+      "enforceSnakeCase": true,
+      "enforcePascalCase": true,
+      "enforceUpperSnakeCase": true,
+      "minNameLength": 3,
+      "forbiddenNames": ["temp", "data", "info", "obj", "var", "item"]
+    },
+    "structure": {
+      "maxFunctionLines": 50,
+      "maxComplexity": 10,
+      "maxParameters": 5,
+      "maxNestingDepth": 4
+    },
+    "imports": {
+      "enforceOrganization": true,
+      "checkUnused": true,
+      "checkDuplicates": true,
+      "groupOrder": ["stdlib", "third_party", "local"]
+    },
+    "typeHints": {
+      "required": true,
+      "strictMode": true
+    },
+    "docstrings": {
+      "style": "google",
+      "requiredForPublic": true
+    }
+  },
+  "conciseness": {
+    "enabled": true,
+    "preferComprehensions": true,
+    "preferBuiltins": true,
+    "maxIntermediateVariables": 3,
+    "suggestOneLiners": true,
+    "avoidOverEngineering": true,
+    "enforceEarlyReturns": true,
+    "preferTernaryOperators": true,
+    "detectVerbosePatterns": true
+  },
+  "quality": {
+    "duplicateCode": {
+      "enabled": true,
+      "minSimilarityScore": 0.8,
+      "minLinesForDuplicate": 5,
+      "ignoreTestFiles": true,
+      "ignoreComments": true,
+      "ignoreWhitespace": true
+    },
+    "magicLiterals": {
+      "enabled": true,
+      "minOccurrences": 2,
+      "ignoreValues": [0, 1, -1, "", "null", "false", "true"],
+      "extractNumbers": true,
+      "extractStrings": true,
+      "extractBooleans": false
+    },
+    "deadCode": {
+      "enabled": true,
+      "checkUnusedImports": true,
+      "checkUnusedVariables": true,
+      "checkUnusedFunctions": true,
+      "checkUnusedClasses": true,
+      "ignoreUnderscored": true
+    },
+    "codeSmells": {
+      "enabled": true,
+      "detectGodFunctions": true,
+      "detectFeatureEnvy": true,
+      "detectDataClumps": true,
+      "detectPrimitiveObsession": true,
+      "godFunctionThreshold": {
+        "maxLines": 200,
+        "maxComplexity": 15
+      }
+    },
+    "complexConditionals": {
+      "enabled": true,
+      "maxNestingDepth": 3,
+      "maxBooleanConditions": 3
+    }
+  },
+  "reporting": {
+    "includeAllCategories": true,
+    "showViolationsByCategory": true,
+    "provideFixSuggestions": true,
+    "generateScore": true
+  }
+}
+```
 
 ## Best Practices
 
