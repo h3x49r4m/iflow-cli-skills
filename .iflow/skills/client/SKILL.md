@@ -17,6 +17,15 @@ The Client role represents the stakeholder who provides requirements, defines ac
 
 ### Write
 - `project-spec.md` - Requirements, features, and acceptance criteria
+- `pipeline-status.md` - Pipeline execution status
+
+## Project Initialization
+
+When starting a new project, the Client role:
+
+1. Checks if `project_path/.state/` directory exists
+2. If not, creates `project_path/.state/` and copies all templates from `.iflow/skills/.shared-state/templates/`
+3. Initializes `pipeline-status.md` with project name and pipeline type
 
 ## Skills
 - Domain expertise
@@ -28,15 +37,32 @@ The Client role represents the stakeholder who provides requirements, defines ac
 - `requirements-gathering.md` - Gather and document project requirements
 
 ## Execution Flow
-1. Receive project request
-2. Define business requirements
-3. Specify acceptance criteria
-4. Identify stakeholders
-5. Document constraints
-6. Update `project-spec.md`
-7. Commit changes using git with full metadata:
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+- `project_name` - Name of the project (required)
+- `pipeline_type` - Type of pipeline: new-project, new-feature, fix-bug (required)
+
+1. **Initialize Project State**
    ```bash
-   git add .iflow/skills/.shared-state/project-spec.md
+   if [ ! -d "$project_path/.state" ]; then
+       mkdir -p "$project_path/.state"
+       cp .iflow/skills/.shared-state/templates/*.template.md "$project_path/.state/"
+       cd "$project_path/.state" && for f in *.template.md; do mv "$f" "${f%.template.md}.md"; done
+   fi
+   ```
+
+2. Initialize `pipeline-status.md` with project context
+
+3. Receive project request
+4. Define business requirements
+5. Specify acceptance criteria
+6. Identify stakeholders
+7. Document constraints
+8. Update `$project_path/.state/project-spec.md`
+9. Commit changes using git with full metadata:
+   ```bash
+   git add "$project_path/.state/project-spec.md"
    git commit -m "docs[client]: document project requirements
 
 Changes:
@@ -49,11 +75,11 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/project-spec.md
+- $project_path/.state/project-spec.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
    ```
-8. Update `pipeline-status.md` with completion status
+10. Update `$project_path/.state/pipeline-status.md` with completion status

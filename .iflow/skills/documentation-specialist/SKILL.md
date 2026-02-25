@@ -33,19 +33,23 @@ The Documentation Specialist creates and maintains API documentation, user guide
 - `documentation-creation.md` - Create comprehensive documentation
 
 ## Execution Flow
-1. Read all state documents
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read all state documents from `$project_path/.state/`
 2. Review API specifications
 3. Document API endpoints
 4. Create user guides and tutorials
 5. Write technical documentation
 6. Create diagrams
 7. Document changes in changelog
-8. Update `api-docs.md`
-9. Update `user-guide.md`
-10. Update `changelog.md`
+8. Update `$project_path/.state/api-docs.md`
+9. Update `$project_path/.state/user-guide.md`
+10. Update `$project_path/.state/changelog.md`
 11. Commit changes using git with full metadata:
     ```bash
-    git add .iflow/skills/.shared-state/api-docs.md .iflow/skills/.shared-state/user-guide.md .iflow/skills/.shared-state/changelog.md
+    git add "$project_path/.state/api-docs.md" "$project_path/.state/user-guide.md" "$project_path/.state/changelog.md"
     git commit -m "docs[documentation-specialist]: create API docs, user guides, and documentation
 
 Changes:
@@ -59,13 +63,13 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/api-docs.md
-- .iflow/skills/.shared-state/user-guide.md
-- .iflow/skills/.shared-state/changelog.md
+- $project_path/.state/api-docs.md
+- $project_path/.state/user-guide.md
+- $project_path/.state/changelog.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
     ```
-12. Update `pipeline-status.md` with completion status
+12. Update `$project_path/.state/pipeline-status.md` with completion status

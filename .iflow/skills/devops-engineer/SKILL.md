@@ -35,17 +35,21 @@ The DevOps Engineer sets up CI/CD pipelines, manages infrastructure, and handles
 - `infrastructure-setup.md` - Set up infrastructure
 
 ## Execution Flow
-1. Read `architecture-spec.md`, `implementation.md`
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read `$project_path/.state/architecture-spec.md`, `$project_path/.state/implementation.md`
 2. Design CI/CD pipeline
 3. Set up containerization
 4. Configure infrastructure as code
 5. Set up monitoring and logging
 6. Deploy to environments
 7. Configure scaling
-8. Update `deployment-status.md`
+8. Update `$project_path/.state/deployment-status.md`
 9. Commit changes using git with full metadata:
    ```bash
-   git add .iflow/skills/.shared-state/deployment-status.md
+   git add "$project_path/.state/deployment-status.md"
    git commit -m "feat[devops-engineer]: set up CI/CD and manage deployments
 
 Changes:
@@ -60,11 +64,11 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/deployment-status.md
+- $project_path/.state/deployment-status.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
    ```
-10. Update `pipeline-status.md` with completion status
+10. Update `$project_path/.state/pipeline-status.md` with completion status

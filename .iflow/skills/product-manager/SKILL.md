@@ -30,15 +30,19 @@ The Product Manager is responsible for feature roadmap planning, prioritization,
 - `feature-planning.md` - Plan and prioritize features
 
 ## Execution Flow
-1. Read `project-spec.md`
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read `$project_path/.state/project-spec.md`
 2. Analyze requirements
 3. Prioritize features using MoSCoW or RICE
 4. Create user stories in INVEST format
 5. Define acceptance criteria for each story
-6. Update `project-spec.md`
+6. Update `$project_path/.state/project-spec.md`
 7. Commit changes using git with full metadata:
    ```bash
-   git add .iflow/skills/.shared-state/project-spec.md
+   git add "$project_path/.state/project-spec.md"
    git commit -m "docs[product-manager]: prioritize features and create user stories
 
 Changes:
@@ -51,11 +55,11 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/project-spec.md
+- $project_path/.state/project-spec.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
    ```
-8. Update `pipeline-status.md` with completion status
+8. Update `$project_path/.state/pipeline-status.md` with completion status

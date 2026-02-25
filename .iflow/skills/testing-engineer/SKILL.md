@@ -36,7 +36,11 @@ The Testing Engineer develops automated tests, sets up test frameworks, and ensu
 - `test-automation.md` - Set up test automation
 
 ## Execution Flow
-1. Read `implementation.md`, `implementation-plan.md`
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read `$project_path/.state/implementation.md`, `$project_path/.state/implementation-plan.md`
 2. Design test strategy
 3. Set up test frameworks
 4. Write unit tests
@@ -45,11 +49,11 @@ The Testing Engineer develops automated tests, sets up test frameworks, and ensu
 7. Set up test automation
 8. Execute tests
 9. Measure coverage
-10. Update `test-plan.md`
-11. Update `test-results.md`
+10. Update `$project_path/.state/test-plan.md`
+11. Update `$project_path/.state/test-results.md`
 12. Commit changes using git with full metadata:
     ```bash
-    git add .iflow/skills/.shared-state/test-plan.md .iflow/skills/.shared-state/test-results.md
+    git add "$project_path/.state/test-plan.md" "$project_path/.state/test-results.md"
     git commit -m "test[testing-engineer]: write automated tests and test frameworks
 
 Changes:
@@ -63,12 +67,12 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/test-plan.md
-- .iflow/skills/.shared-state/test-results.md
+- $project_path/.state/test-plan.md
+- $project_path/.state/test-results.md
 
 Verification:
 - Tests: passed
 - Coverage: ≥80%
 - TDD: compliant"
     ```
-13. Update `pipeline-status.md` with completion status
+13. Update `$project_path/.state/pipeline-status.md` with completion status

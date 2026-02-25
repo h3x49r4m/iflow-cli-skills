@@ -33,17 +33,21 @@ The Tech Lead is responsible for system architecture decisions, code standards, 
 - `architecture-design.md` - Design system architecture
 
 ## Execution Flow
-1. Read `project-spec.md`, `design-spec.md`, `implementation-plan.md`
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read `$project_path/.state/project-spec.md`, `$project_path/.state/design-spec.md`, `$project_path/.state/implementation-plan.md`
 2. Analyze requirements and constraints
 3. Design system architecture
 4. Select technology stack
 5. Define design patterns
 6. Document API specifications
 7. Specify database schema
-8. Update `architecture-spec.md`
+8. Update `$project_path/.state/architecture-spec.md`
 9. Commit changes using git with full metadata:
    ```bash
-   git add .iflow/skills/.shared-state/architecture-spec.md
+   git add "$project_path/.state/architecture-spec.md"
    git commit -m "feat[tech-lead]: design system architecture and tech stack
 
 Changes:
@@ -58,11 +62,11 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/architecture-spec.md
+- $project_path/.state/architecture-spec.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
    ```
-10. Update `pipeline-status.md` with completion status
+10. Update `$project_path/.state/pipeline-status.md` with completion status

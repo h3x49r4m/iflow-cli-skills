@@ -50,7 +50,11 @@ The Software Engineer implements both frontend and backend features, handling th
 - `bug-fixing.md` - Fix bugs
 
 ## Execution Flow
-1. Read `design-spec.md`, `architecture-spec.md`, `implementation-plan.md`
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read `$project_path/.state/design-spec.md`, `$project_path/.state/architecture-spec.md`, `$project_path/.state/implementation-plan.md`
 2. Set up project structure (frontend and backend)
 3. Implement UI components
 4. Implement API endpoints
@@ -64,11 +68,11 @@ The Software Engineer implements both frontend and backend features, handling th
 12. Ensure accessibility
 13. Optimize performance
 14. Write tests
-15. Update `implementation.md`
-16. Update `api-docs.md`
+15. Update `$project_path/.state/implementation.md`
+16. Update `$project_path/.state/api-docs.md`
 17. Commit changes using git with full metadata:
     ```bash
-    git add .iflow/skills/.shared-state/implementation.md
+    git add "$project_path/.state/implementation.md"
     git commit -m "feat[software-engineer]: implement full-stack features
 
 Changes:
@@ -84,11 +88,11 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/implementation.md
+- $project_path/.state/implementation.md
 
 Verification:
 - Tests: passed
 - Coverage: ≥80%
 - TDD: compliant"
     ```
-18. Update `pipeline-status.md` with completion status
+18. Update `$project_path/.state/pipeline-status.md` with completion status

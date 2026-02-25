@@ -37,7 +37,11 @@ The QA Engineer performs manual testing, creates test cases, and validates quali
 - `uat-execution.md` - Execute user acceptance testing
 
 ## Execution Flow
-1. Read `test-plan.md`, `test-results.md`, `project-spec.md`
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read `$project_path/.state/test-plan.md`, `$project_path/.state/test-results.md`, `$project_path/.state/project-spec.md`
 2. Review automated test results
 3. Create manual test cases
 4. Execute manual testing
@@ -45,11 +49,11 @@ The QA Engineer performs manual testing, creates test cases, and validates quali
 6. Validate acceptance criteria
 7. Conduct UAT
 8. Track and report bugs
-9. Update `quality-report.md`
-10. Update `test-results.md`
+9. Update `$project_path/.state/quality-report.md`
+10. Update `$project_path/.state/test-results.md`
 11. Commit changes using git with full metadata:
     ```bash
-    git add .iflow/skills/.shared-state/quality-report.md .iflow/skills/.shared-state/test-results.md
+    git add "$project_path/.state/quality-report.md" "$project_path/.state/test-results.md"
     git commit -m "test[qa-engineer]: validate quality and perform manual testing
 
 Changes:
@@ -64,12 +68,12 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/quality-report.md
-- .iflow/skills/.shared-state/test-results.md
+- $project_path/.state/quality-report.md
+- $project_path/.state/test-results.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
     ```
-12. Update `pipeline-status.md` with completion status
+12. Update `$project_path/.state/pipeline-status.md` with completion status

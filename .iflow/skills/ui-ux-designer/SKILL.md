@@ -31,16 +31,20 @@ The UI/UX Designer creates wireframes, prototypes, and visual designs. They ensu
 - `design-creation.md` - Create UI/UX designs
 
 ## Execution Flow
-1. Read `project-spec.md`
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read `$project_path/.state/project-spec.md`
 2. Analyze user stories and requirements
 3. Create wireframes
 4. Develop interactive prototypes
 5. Define design system
 6. Ensure accessibility compliance
-7. Update `design-spec.md`
+7. Update `$project_path/.state/design-spec.md`
 8. Commit changes using git with full metadata:
    ```bash
-   git add .iflow/skills/.shared-state/design-spec.md
+   git add "$project_path/.state/design-spec.md"
    git commit -m "feat[ui-ux-designer]: create UI/UX designs and prototypes
 
 Changes:
@@ -54,11 +58,11 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/design-spec.md
+- $project_path/.state/design-spec.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
    ```
-9. Update `pipeline-status.md` with completion status
+9. Update `$project_path/.state/pipeline-status.md` with completion status

@@ -32,7 +32,11 @@ The Security Engineer performs code security reviews, vulnerability scanning, an
 - `security-validation.md` - Validate security posture
 
 ## Execution Flow
-1. Read all implementation documents
+
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+
+1. Read all implementation documents from `$project_path/.state/`
 2. Perform SAST scans
 3. Perform DAST scans
 4. Scan dependencies
@@ -41,10 +45,10 @@ The Security Engineer performs code security reviews, vulnerability scanning, an
 7. Review encryption and data protection
 8. Document findings
 9. Provide remediation recommendations
-10. Update `security-report.md`
+10. Update `$project_path/.state/security-report.md`
 11. Commit changes using git with full metadata:
     ```bash
-    git add .iflow/skills/.shared-state/security-report.md
+    git add "$project_path/.state/security-report.md"
     git commit -m "test[security-engineer]: validate security and scan for vulnerabilities
 
 Changes:
@@ -59,11 +63,11 @@ Changes:
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
-- .iflow/skills/.shared-state/security-report.md
+- $project_path/.state/security-report.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
     ```
-12. Update `pipeline-status.md` with completion status
+12. Update `$project_path/.state/pipeline-status.md` with completion status

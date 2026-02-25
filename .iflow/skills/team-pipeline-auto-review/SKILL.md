@@ -13,16 +13,24 @@ Automated code review pipeline that performs comprehensive analysis on projects,
 ## Configuration
 Defined in `config.json`
 
+## Input Parameters
+
+- `project_path` - Path to the project directory (required)
+- `project_name` - Name of the project (required)
+- `pipeline_type` - Type of pipeline: auto-review (required)
+- `branch` - Branch to compare against (default: main)
+- `strict` - Enable strict mode (fail on warnings)
+
 ## State Contracts
 
 ### Read
-- `quality-report.md` - Previous quality reports (if exists)
-- `test-results.md` - Previous test results (if exists)
-- `security-report.md` - Previous security reports (if exists)
+- `{project_path}/.state/quality-report.md` - Previous quality reports (if exists)
+- `{project_path}/.state/test-results.md` - Previous test results (if exists)
+- `{project_path}/.state/security-report.md` - Previous security reports (if exists)
 
 ### Write
-- `pipeline-status.md` - Pipeline execution status
-- `quality-report.md` - Consolidated review report
+- `{project_path}/.state/pipeline-status.md` - Pipeline execution status
+- `{project_path}/.state/quality-report.md` - Consolidated review report
 
 ## Execution
 Orchestrates review stages in parallel where possible, consolidates findings, and generates comprehensive review report with pass/fail decision based on quality gates.
@@ -98,21 +106,23 @@ Skill(skill: "team-pipeline-auto-review", target: "pr/123")
 
 ## Input Parameters
 
-- `project_path` - Path to project (default: current directory)
+- `project_path` - Path to the project directory (required)
+- `project_name` - Name of the project (required)
+- `pipeline_type` - Type of pipeline: auto-review (required)
 - `target` - Target to review (directory, PR, commit)
 - `branch` - Branch to compare against (default: main)
 - `strict` - Enable strict mode (fail on warnings)
 
 ## Output
 
-- **Review Report** (`quality-report.md`)
+- **Review Report** (`{project_path}/.state/quality-report.md`)
   - Executive summary
   - Detailed findings per stage
   - Severity levels (critical, high, medium, low)
   - Actionable recommendations
   - Pass/fail status
 
-- **Pipeline Status** (`pipeline-status.md`)
+- **Pipeline Status** (`{project_path}/.state/pipeline-status.md`)
   - Stage completion status
   - Overall pipeline status
   - Issues and blockers
