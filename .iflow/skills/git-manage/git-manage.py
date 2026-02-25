@@ -448,6 +448,26 @@ Git diff output:
 {diff_output if diff_output else 'No diff available (new files)'}
 
 Generate the commit message now. Remember: The "Changes:" section MUST be detailed with specific bullet points explaining what changed and why.:"""
+        
+        # Import Task tool to call LLM
+        try:
+            # Call the Task tool directly via the available function
+            task_result = task(
+                subagent_type="general-purpose",
+                prompt=prompt,
+                description="Generate commit message"
+            )
+            
+            # Parse the response to extract commit message
+            commit_message = self._parse_llm_response(task_result)
+            
+            # Parse components from the message
+            return self._parse_commit_message_components(commit_message, files)
+            
+        except Exception as e:
+            # Fallback to simple pattern-based detection if Task not available
+            print(f"Warning: LLM not available ({e}), using pattern-based detection")
+            return self._fallback_commit_detection(files)
     
     def _parse_llm_response(self, response: str) -> str:
         """Parse LLM response to extract clean commit message."""
@@ -739,17 +759,9 @@ def main():
             print(output)
             sys.exit(code)
         
-        # Use LLM to generate commit message (or fallback to provided args)
-        if args.type and args.description:
-            # Use provided values
-            commit_type = args.type
-            commit_scope = args.scope
-            commit_description = args.description
-            commit_body = args.body
-        else:
-            # Use LLM to generate commit message
-            print('\nAnalyzing changes and generating commit message...\n')
-            commit_type, commit_description, commit_scope, commit_body = git.generate_commit_message_with_llm(args.files)
+        # Always use LLM to generate commit message
+        print('\nAnalyzing changes and generating commit message...\n')
+        commit_type, commit_description, commit_scope, commit_body = git.generate_commit_message_with_llm(args.files)
         
         # Show commit information
         print(f'Commit information:')
@@ -762,7 +774,7 @@ def main():
             print(f'  - {f}')
         print()
         
-        # Commit with generated or provided metadata
+        # Commit with LLM-generated message
         code, output = git.commit(
             commit_type, commit_scope, commit_description,
             commit_body, args.no_verify
