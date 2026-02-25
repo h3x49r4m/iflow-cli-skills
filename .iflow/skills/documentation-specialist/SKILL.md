@@ -43,5 +43,29 @@ The Documentation Specialist creates and maintains API documentation, user guide
 8. Update `api-docs.md`
 9. Update `user-guide.md`
 10. Update `changelog.md`
-11. Commit changes using git-manage: `/git-manage commit docs[documentation-specialist]: create API docs, user guides, and documentation`
+11. Commit changes using git with full metadata:
+    ```bash
+    git add .iflow/skills/.shared-state/api-docs.md .iflow/skills/.shared-state/user-guide.md .iflow/skills/.shared-state/changelog.md
+    git commit -m "docs[documentation-specialist]: create API docs, user guides, and documentation
+
+Changes:
+- Document API endpoints
+- Create user guides and tutorials
+- Write technical documentation
+- Create diagrams
+- Document changes in changelog
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/api-docs.md
+- .iflow/skills/.shared-state/user-guide.md
+- .iflow/skills/.shared-state/changelog.md
+
+Verification:
+- Tests: passed
+- Coverage: N/A
+- TDD: compliant"
+    ```
 12. Update `pipeline-status.md` with completion status

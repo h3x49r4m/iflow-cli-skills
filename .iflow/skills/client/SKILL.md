@@ -34,5 +34,26 @@ The Client role represents the stakeholder who provides requirements, defines ac
 4. Identify stakeholders
 5. Document constraints
 6. Update `project-spec.md`
-7. Commit changes using git-manage: `/git-manage commit docs[client]: document project requirements`
+7. Commit changes using git with full metadata:
+   ```bash
+   git add .iflow/skills/.shared-state/project-spec.md
+   git commit -m "docs[client]: document project requirements
+
+Changes:
+- Define business requirements
+- Specify acceptance criteria
+- Identify stakeholders
+- Document constraints
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/project-spec.md
+
+Verification:
+- Tests: passed
+- Coverage: N/A
+- TDD: compliant"
+   ```
 8. Update `pipeline-status.md` with completion status

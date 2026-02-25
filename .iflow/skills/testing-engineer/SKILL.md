@@ -47,5 +47,28 @@ The Testing Engineer develops automated tests, sets up test frameworks, and ensu
 9. Measure coverage
 10. Update `test-plan.md`
 11. Update `test-results.md`
-12. Commit changes using git-manage: `/git-manage commit test[testing-engineer]: write automated tests and test frameworks`
+12. Commit changes using git with full metadata:
+    ```bash
+    git add .iflow/skills/.shared-state/test-plan.md .iflow/skills/.shared-state/test-results.md
+    git commit -m "test[testing-engineer]: write automated tests and test frameworks
+
+Changes:
+- Set up test frameworks and automation
+- Write unit tests for all modules
+- Write integration tests
+- Set up E2E tests
+- Measure and improve test coverage
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/test-plan.md
+- .iflow/skills/.shared-state/test-results.md
+
+Verification:
+- Tests: passed
+- Coverage: ≥80%
+- TDD: compliant"
+    ```
 13. Update `pipeline-status.md` with completion status

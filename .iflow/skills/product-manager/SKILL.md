@@ -36,5 +36,26 @@ The Product Manager is responsible for feature roadmap planning, prioritization,
 4. Create user stories in INVEST format
 5. Define acceptance criteria for each story
 6. Update `project-spec.md`
-7. Commit changes using git-manage: `/git-manage commit docs[product-manager]: prioritize features and create user stories`
+7. Commit changes using git with full metadata:
+   ```bash
+   git add .iflow/skills/.shared-state/project-spec.md
+   git commit -m "docs[product-manager]: prioritize features and create user stories
+
+Changes:
+- Prioritize features by business value
+- Create user stories in INVEST format
+- Define acceptance criteria
+- Update project specification
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/project-spec.md
+
+Verification:
+- Tests: passed
+- Coverage: N/A
+- TDD: compliant"
+   ```
 8. Update `pipeline-status.md` with completion status

@@ -42,5 +42,28 @@ The Security Engineer performs code security reviews, vulnerability scanning, an
 8. Document findings
 9. Provide remediation recommendations
 10. Update `security-report.md`
-11. Commit changes using git-manage: `/git-manage commit test[security-engineer]: validate security and scan for vulnerabilities`
+11. Commit changes using git with full metadata:
+    ```bash
+    git add .iflow/skills/.shared-state/security-report.md
+    git commit -m "test[security-engineer]: validate security and scan for vulnerabilities
+
+Changes:
+- Perform SAST scans
+- Perform DAST scans
+- Scan dependencies for vulnerabilities
+- Review authentication/authorization
+- Check for common vulnerabilities
+- Review encryption and data protection
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/security-report.md
+
+Verification:
+- Tests: passed
+- Coverage: N/A
+- TDD: compliant"
+    ```
 12. Update `pipeline-status.md` with completion status

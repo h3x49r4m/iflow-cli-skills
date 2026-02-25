@@ -66,5 +66,29 @@ The Software Engineer implements both frontend and backend features, handling th
 14. Write tests
 15. Update `implementation.md`
 16. Update `api-docs.md`
-17. Commit changes using git-manage: `/git-manage commit feat[software-engineer]: implement full-stack features`
+17. Commit changes using git with full metadata:
+    ```bash
+    git add .iflow/skills/.shared-state/implementation.md
+    git commit -m "feat[software-engineer]: implement full-stack features
+
+Changes:
+- Implement frontend components and state management
+- Implement backend API endpoints and business logic
+- Integrate frontend with backend
+- Ensure responsive design and accessibility
+- Write unit and integration tests (TDD)
+- Follow clean code principles (SOLID, DRY, KISS)
+- Keep functions short and focused
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/implementation.md
+
+Verification:
+- Tests: passed
+- Coverage: ≥80%
+- TDD: compliant"
+    ```
 18. Update `pipeline-status.md` with completion status

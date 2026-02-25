@@ -41,5 +41,28 @@ The Tech Lead is responsible for system architecture decisions, code standards, 
 6. Document API specifications
 7. Specify database schema
 8. Update `architecture-spec.md`
-9. Commit changes using git-manage: `/git-manage commit feat[tech-lead]: design system architecture and tech stack`
+9. Commit changes using git with full metadata:
+   ```bash
+   git add .iflow/skills/.shared-state/architecture-spec.md
+   git commit -m "feat[tech-lead]: design system architecture and tech stack
+
+Changes:
+- Design system architecture and components
+- Select technology stack
+- Define design patterns (SOLID, Clean Architecture)
+- Design API specifications
+- Design database schema
+- Document security strategy
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/architecture-spec.md
+
+Verification:
+- Tests: passed
+- Coverage: N/A
+- TDD: compliant"
+   ```
 10. Update `pipeline-status.md` with completion status

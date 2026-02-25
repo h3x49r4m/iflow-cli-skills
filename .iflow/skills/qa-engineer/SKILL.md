@@ -47,5 +47,29 @@ The QA Engineer performs manual testing, creates test cases, and validates quali
 8. Track and report bugs
 9. Update `quality-report.md`
 10. Update `test-results.md`
-11. Commit changes using git-manage: `/git-manage commit test[qa-engineer]: validate quality and perform manual testing`
+11. Commit changes using git with full metadata:
+    ```bash
+    git add .iflow/skills/.shared-state/quality-report.md .iflow/skills/.shared-state/test-results.md
+    git commit -m "test[qa-engineer]: validate quality and perform manual testing
+
+Changes:
+- Create manual test cases
+- Execute manual testing
+- Perform exploratory testing
+- Validate acceptance criteria
+- Conduct UAT
+- Track and report bugs
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/quality-report.md
+- .iflow/skills/.shared-state/test-results.md
+
+Verification:
+- Tests: passed
+- Coverage: N/A
+- TDD: compliant"
+    ```
 12. Update `pipeline-status.md` with completion status

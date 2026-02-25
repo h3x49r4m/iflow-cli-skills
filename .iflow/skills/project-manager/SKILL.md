@@ -37,5 +37,27 @@ The Project Manager is responsible for sprint planning, timeline tracking, resou
 5. Estimate timeline and milestones
 6. Identify dependencies and risks
 7. Update `implementation-plan.md`
-8. Commit changes using git-manage: `/git-manage commit docs[project-manager]: plan sprint and allocate resources`
+8. Commit changes using git with full metadata:
+   ```bash
+   git add .iflow/skills/.shared-state/implementation-plan.md
+   git commit -m "docs[project-manager]: plan sprint and allocate resources
+
+Changes:
+- Break down features into tasks
+- Create sprint backlog
+- Allocate resources
+- Estimate timeline and milestones
+- Identify dependencies and risks
+
+---
+Branch: $(git rev-parse --abbrev-ref HEAD)
+
+Files changed:
+- .iflow/skills/.shared-state/implementation-plan.md
+
+Verification:
+- Tests: passed
+- Coverage: N/A
+- TDD: compliant"
+   ```
 9. Update `pipeline-status.md` with completion status
