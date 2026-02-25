@@ -1,6 +1,6 @@
-# iFlow CLI Skills
+# Nova
 
-A comprehensive collection of iFlow CLI skills for software development team orchestration.
+A comprehensive iFlow CLI skills for software development team orchestration.
 
 ## Overview
 
