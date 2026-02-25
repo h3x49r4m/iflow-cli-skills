@@ -47,5 +47,5 @@ The Testing Engineer develops automated tests, sets up test frameworks, and ensu
 9. Measure coverage
 10. Update `test-plan.md`
 11. Update `test-results.md`
-12. Commit changes using git-manage: `git-manage commit test[testing-engineer]: write automated tests and test frameworks`
+12. Commit changes using git-manage: `/git-manage commit test[testing-engineer]: write automated tests and test frameworks`
 13. Update `pipeline-status.md` with completion status

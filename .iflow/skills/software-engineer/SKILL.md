@@ -66,5 +66,5 @@ The Software Engineer implements both frontend and backend features, handling th
 14. Write tests
 15. Update `implementation.md`
 16. Update `api-docs.md`
-17. Commit changes using git-manage: `git-manage commit feat[software-engineer]: implement full-stack features`
+17. Commit changes using git-manage: `/git-manage commit feat[software-engineer]: implement full-stack features`
 18. Update `pipeline-status.md` with completion status

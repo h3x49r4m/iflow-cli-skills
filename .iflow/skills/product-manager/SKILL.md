@@ -36,5 +36,5 @@ The Product Manager is responsible for feature roadmap planning, prioritization,
 4. Create user stories in INVEST format
 5. Define acceptance criteria for each story
 6. Update `project-spec.md`
-7. Commit changes using git-manage: `git-manage commit docs[product-manager]: prioritize features and create user stories`
+7. Commit changes using git-manage: `/git-manage commit docs[product-manager]: prioritize features and create user stories`
 8. Update `pipeline-status.md` with completion status

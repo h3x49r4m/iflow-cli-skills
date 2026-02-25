@@ -34,5 +34,5 @@ The Client role represents the stakeholder who provides requirements, defines ac
 4. Identify stakeholders
 5. Document constraints
 6. Update `project-spec.md`
-7. Commit changes using git-manage: `git-manage commit docs[client]: document project requirements`
+7. Commit changes using git-manage: `/git-manage commit docs[client]: document project requirements`
 8. Update `pipeline-status.md` with completion status

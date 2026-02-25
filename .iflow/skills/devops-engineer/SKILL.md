@@ -43,5 +43,5 @@ The DevOps Engineer sets up CI/CD pipelines, manages infrastructure, and handles
 6. Deploy to environments
 7. Configure scaling
 8. Update `deployment-status.md`
-9. Commit changes using git-manage: `git-manage commit feat[devops-engineer]: set up CI/CD and manage deployments`
+9. Commit changes using git-manage: `/git-manage commit feat[devops-engineer]: set up CI/CD and manage deployments`
 10. Update `pipeline-status.md` with completion status

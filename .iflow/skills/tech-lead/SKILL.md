@@ -41,5 +41,5 @@ The Tech Lead is responsible for system architecture decisions, code standards, 
 6. Document API specifications
 7. Specify database schema
 8. Update `architecture-spec.md`
-9. Commit changes using git-manage: `git-manage commit feat[tech-lead]: design system architecture and tech stack`
+9. Commit changes using git-manage: `/git-manage commit feat[tech-lead]: design system architecture and tech stack`
 10. Update `pipeline-status.md` with completion status

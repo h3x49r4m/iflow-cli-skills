@@ -42,5 +42,5 @@ The Security Engineer performs code security reviews, vulnerability scanning, an
 8. Document findings
 9. Provide remediation recommendations
 10. Update `security-report.md`
-11. Commit changes using git-manage: `git-manage commit test[security-engineer]: validate security and scan for vulnerabilities`
+11. Commit changes using git-manage: `/git-manage commit test[security-engineer]: validate security and scan for vulnerabilities`
 12. Update `pipeline-status.md` with completion status

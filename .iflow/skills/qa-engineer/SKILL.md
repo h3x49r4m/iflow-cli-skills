@@ -47,5 +47,5 @@ The QA Engineer performs manual testing, creates test cases, and validates quali
 8. Track and report bugs
 9. Update `quality-report.md`
 10. Update `test-results.md`
-11. Commit changes using git-manage: `git-manage commit test[qa-engineer]: validate quality and perform manual testing`
+11. Commit changes using git-manage: `/git-manage commit test[qa-engineer]: validate quality and perform manual testing`
 12. Update `pipeline-status.md` with completion status

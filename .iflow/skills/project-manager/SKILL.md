@@ -37,5 +37,5 @@ The Project Manager is responsible for sprint planning, timeline tracking, resou
 5. Estimate timeline and milestones
 6. Identify dependencies and risks
 7. Update `implementation-plan.md`
-8. Commit changes using git-manage: `git-manage commit docs[project-manager]: plan sprint and allocate resources`
+8. Commit changes using git-manage: `/git-manage commit docs[project-manager]: plan sprint and allocate resources`
 9. Update `pipeline-status.md` with completion status

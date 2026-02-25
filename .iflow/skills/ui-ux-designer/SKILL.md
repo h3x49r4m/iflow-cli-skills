@@ -38,5 +38,5 @@ The UI/UX Designer creates wireframes, prototypes, and visual designs. They ensu
 5. Define design system
 6. Ensure accessibility compliance
 7. Update `design-spec.md`
-8. Commit changes using git-manage: `git-manage commit feat[ui-ux-designer]: create UI/UX designs and prototypes`
+8. Commit changes using git-manage: `/git-manage commit feat[ui-ux-designer]: create UI/UX designs and prototypes`
 9. Update `pipeline-status.md` with completion status

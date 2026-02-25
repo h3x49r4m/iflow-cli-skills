@@ -43,5 +43,5 @@ The Documentation Specialist creates and maintains API documentation, user guide
 8. Update `api-docs.md`
 9. Update `user-guide.md`
 10. Update `changelog.md`
-11. Commit changes using git-manage: `git-manage commit docs[documentation-specialist]: create API docs, user guides, and documentation`
+11. Commit changes using git-manage: `/git-manage commit docs[documentation-specialist]: create API docs, user guides, and documentation`
 12. Update `pipeline-status.md` with completion status
