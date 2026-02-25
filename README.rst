@@ -547,33 +547,216 @@ Automatically triggered when conversation-only interaction is needed:
 
 tdd-enforce
 ~~~~~~~~~~~
-Ensures Test-Driven Development (TDD) workflow is followed throughout the development process.
+Comprehensive enforcement system that ensures Test-Driven Development (TDD) workflow, project convention compliance, code conciseness, and code quality standards are maintained throughout the development process.
 
-**Version:** 1.0.0
+**Version:** 2.0.0
+
+**Purpose:**
+
+Provides unified enforcement of TDD workflow, project conventions, code conciseness, and code quality in a single comprehensive tool.
 
 **Features:**
 
-- **TDD Cycle Enforcement**: Red-Green-Refactor cycle verification
-- **Test Coverage Validation**: Ensures adequate test coverage before implementation
-- **Quality Gates**: Blocks non-TDD compliant development
-- **Integration**: Works seamlessly with git-manage for pre-commit validation
+**TDD Enforcement:**
+- **Test-First Lock**: Prevents implementation without corresponding tests
+- **TDD Cycle Verification**: Validates Red-Green-Refactor steps
+- **Test Structure Validation**: Arrange-Act-Assert pattern, single assertion per test
+- **Coverage Thresholds**: ≥90% lines, ≥80% branches (configurable)
+- **Critical Coverage**: 100% for integration flow and safety constraints
+- **Implementation Restriction**: Cannot modify behavior without test updates
+- **Recursion Detection**: Blocks all recursive algorithms (direct, indirect, tail)
+- **Infinite Loop Detection**: Blocks while(true), for(;;), unbounded loops
+- **Loop Bounding**: Requires explicit termination, max iterations, and timeouts
+- **Property-Based Testing**: Validates edge cases with property tests
 
-**TDD Workflow:**
+**Convention Enforcement:**
+- **Naming Conventions**: snake_case functions, PascalCase classes, UPPER_SNAKE_CASE constants
+- **Code Structure**: Max 50 lines per function, max 10 complexity, max 5 parameters, max 4 nesting
+- **Import Organization**: Standard library → third-party → local, sorted alphabetically
+- **Type Hints**: Required for all functions with strict mode
+- **Docstrings**: Google-style for all public functions
 
-1. **Red**: Write a failing test
-2. **Green**: Write minimal code to pass the test
-3. **Refactor**: Improve code while keeping tests passing
+**Code Conciseness Enforcement:**
+- **Clean Code Principles**: DRY, KISS, YAGNI, Single Responsibility, Early Returns
+- **Comprehensions**: Prefer list/dict/set comprehensions over loops
+- **Built-in Functions**: Use sum(), max(), min(), any(), all() instead of manual implementation
+- **Minimal Variables**: Max 3 intermediate variables per function
+- **One-Liners**: Suggest for simple operations
+- **Early Returns**: Reduce nesting depth with guard clauses
+- **Ternary Operators**: For simple conditional assignments
+
+**Code Quality Enforcement:**
+- **Duplicate Code Detection**: Identical/similar code blocks (≥80% similarity)
+- **Magic Literals**: Hardcoded numbers/strings (2+ occurrences, extract to constants)
+- **Dead Code Elimination**: Unused imports, variables, functions, classes
+- **Code Smells**: God functions, feature envy, data clumps, primitive obsession
+- **Complex Conditionals**: Nested if/else (>3 levels), complex boolean expressions
 
 **Usage:**
 
-Automatically enforced during development when ``dev-team`` skill is active. Also integrates with ``git-manage`` pre-commit checks.
+.. code-block:: text
 
-**Quality Standards:**
+    # Run TDD enforcement check
+    /tdd-enforce
 
-- All features must have tests written first
-- Test coverage must be maintained at ≥90%
-- All tests must pass before commits
-- No implementation without corresponding tests
+    # Run in watch mode for real-time feedback
+    /tdd-enforce watch
+
+**Output Format:**
+
+```
+TDD Compliance Report
+=====================
+
+Overall Score: 87% (52/60 checks passed)
+
+TDD CYCLE
+---------
+✓ Test Creation Phase (PASS)
+✓ Test Failure (Red) (PASS)
+✓ Minimal Implementation (Green) (PASS)
+✗ Refactoring Phase (FAIL)
+
+TEST COVERAGE
+-------------
+Component Coverage: 92% ✓
+Integration Flow Coverage: 100% ✓
+Safety Constraint Coverage: 95% ✗
+
+CONVENTION COMPLIANCE
+----------------------
+Naming Conventions: 95% ✓
+Code Structure: 88% ✓
+Import Organization: 100% ✓
+Type Hints: 100% ✓
+Docstrings: 90% ✓
+
+CODE CONCISENESS
+----------------
+Overall Score: 92% ✓
+
+CODE QUALITY
+------------
+Duplicate Code: 100% ✓
+Magic Literals: 95% ✓
+Dead Code: 100% ✓
+Code Smells: 98% ✓
+Complex Conditionals: 90% ✓
+
+RECURSION AND INFINITE LOOPS
+-----------------------------
+✗ Recursive function detected (FAIL)
+✓ All loops have explicit termination (PASS)
+✗ Infinite loop pattern detected (FAIL)
+```
+
+**Configuration:**
+
+All rules are configurable in ``.iflow/skills/tdd-enforce/config.json``:
+
+.. code-block:: json
+
+    {
+      "tdd": {
+        "enforceTestFirst": true,
+        "requireTestFailure": true,
+        "requireMinimalImplementation": true,
+        "requireRefactoring": true,
+        "coverageThresholds": {
+          "lines": 90,
+          "branches": 80,
+          "functions": 90,
+          "statements": 90
+        },
+        "criticalCoverage": {
+          "integrationFlow": 100,
+          "safetyConstraints": 100
+        }
+      },
+      "conventions": {
+        "naming": {
+          "enforceSnakeCase": true,
+          "enforcePascalCase": true,
+          "minNameLength": 3,
+          "forbiddenNames": ["temp", "data", "info", "obj", "var", "item"]
+        },
+        "structure": {
+          "maxFunctionLines": 50,
+          "maxComplexity": 10,
+          "maxParameters": 5,
+          "maxNestingDepth": 4
+        }
+      },
+      "conciseness": {
+        "enabled": true,
+        "preferComprehensions": true,
+        "preferBuiltins": true,
+        "maxIntermediateVariables": 3
+      },
+      "quality": {
+        "duplicateCode": {
+          "enabled": true,
+          "minSimilarityScore": 0.8,
+          "minLinesForDuplicate": 5
+        },
+        "magicLiterals": {
+          "enabled": true,
+          "minOccurrences": 2,
+          "ignoreValues": [0, 1, -1, "", "null", "false", "true"]
+        },
+        "deadCode": {
+          "enabled": true,
+          "checkUnusedImports": true,
+          "checkUnusedVariables": true
+        }
+      }
+    }
+
+**Integration:**
+
+- Automatically enforced during development when ``dev-team`` skill is active
+- Integrates with ``git-manage`` pre-commit checks
+- Works with ``refactor`` skill for code quality improvements
+
+**Exit Codes:**
+
+- ``0`` - All checks passed
+- ``1`` - Critical violations found (build fails)
+- ``2`` - Warnings only (build can continue)
+- ``3`` - TDD cycle incomplete
+- ``4`` - Convention violations detected
+- ``5`` - Code quality issues detected
+- ``6`` - Coverage below threshold
+
+**Best Practices:**
+
+1. Always write tests first
+2. Ensure tests fail before implementation
+3. Write minimal implementation to pass
+4. Refactor after green phase
+5. Keep tests independent and focused
+6. Maintain high coverage (≥90% by default)
+7. Update tests when behavior changes
+8. Never use recursive algorithms - use iterative solutions
+9. Always bound loops with explicit conditions and limits
+10. Avoid while(true), for(;;), and infinite loops
+11. Follow naming conventions (snake_case, PascalCase, UPPER_SNAKE_CASE)
+12. Keep functions small (≤50 lines, ≤10 complexity)
+13. Use built-in functions and comprehensions for concise code
+14. Extract magic literals to named constants
+15. Remove dead code and duplicates
+
+**Anti-Patterns to Avoid:**
+
+- Recursive functions (use iterative solutions)
+- Infinite loops (while true, for (;;))
+- Over-nesting (use early returns to flatten)
+- Verbose loops (use comprehensions)
+- Manual implementations of built-in functions
+- Forbidden variable names (temp, data, info, obj, var, item)
+- Magic numbers and strings
+- Duplicate code
+- Over-engineered solutions
 
 Skill System Architecture
 ------------------------
