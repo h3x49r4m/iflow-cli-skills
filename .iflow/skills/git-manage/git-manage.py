@@ -372,16 +372,17 @@ class GitManage:
         file_context = self.analyze_files(files)
         branch = self.get_current_branch()
         
-        # Build comprehensive prompt for LLM
+        # Build comprehensive prompt for LLM with emphasis on detailed Changes section
         prompt = f"""You are a git commit message generator. Analyze the following file changes and generate a conventional commit message following this EXACT format:
 
-<type>[<scope>]: <description>
+<type>[<scope>]: <short description>
 
 Changes:
-- <specific change 1>
-- <specific change 2>
-- <specific change 3>
-- ... (list all meaningful changes)
+- <specific change 1 with details>
+- <specific change 2 with details>
+- <specific change 3 with details>
+- <specific change 4 with details>
+- ... (list ALL meaningful changes with context and details)
 
 ---
 Branch: {branch}
@@ -401,15 +402,44 @@ CRITICAL RULES:
 1. Use conventional commit types: feat, fix, docs, style, refactor, test, chore, perf, ci, build
 2. Scope should be the relevant module/component/skill being modified
 3. Description should be concise (50 chars max)
-4. Changes section should list specific, actionable changes (not generic statements)
-5. Each change in Changes section should start with a verb (add, update, fix, remove, improve, etc.)
-6. For "Verification": 
+4. **YOU MUST include a detailed "Changes:" section** - this is the most important part
+5. **Changes section MUST have at least 3-5 bullet points** with specific details
+6. Each change in Changes section should start with a verb (add, update, fix, remove, improve, refactor, implement, etc.)
+7. **Provide context in each bullet point** - don't just say "update file", explain WHAT was updated and WHY
+8. Include specific function names, parameters, or configuration values that changed
+9. For "Verification": 
    - Tests: "passed" if test files modified, "skipped" if no test changes, "N/A" if not applicable
    - Coverage: "N/A" unless coverage data available
    - Architecture: "✓ compliant" unless architecture violations detected
    - TDD: "✓ compliant" if following TDD, otherwise "N/A"
-7. Do NOT include any conversational text outside the commit message format
-8. Do NOT add any explanations, only output the commit message
+10. Do NOT include any conversational text outside the commit message format
+11. Do NOT add any explanations, only output the commit message
+
+EXAMPLE of a good commit message:
+
+docs: update README for tdd-enforce v2.0.0 with expanded scope
+
+Changes:
+- Update tdd-enforce version to 2.0.0
+- Document comprehensive enforcement capabilities
+- Add TDD enforcement section (test-first, cycle verification, coverage, recursion detection, infinite loop detection)
+- Add convention enforcement section (naming, structure, imports, type hints, docstrings)
+- Add code conciseness enforcement section (clean code principles, comprehensions, built-ins)
+- Add code quality enforcement section (duplicates, magic literals, dead code, code smells)
+- Update configuration example
+- Add integration and exit codes
+- Add best practices and anti-patterns
+- Reflect dev-enforce integration into tdd-enforce
+
+---
+Branch: main
+
+Files changed:
+- README.rst
+
+Verification:
+- Tests: skipped
+- Coverage: N/A
 
 Files being committed:
 {file_context}
@@ -417,29 +447,7 @@ Files being committed:
 Git diff output:
 {diff_output if diff_output else 'No diff available (new files)'}
 
-Generate the commit message now:"""
-        
-        # Import Task tool to call LLM
-        try:
-            from tool import Task  # Assuming Task tool is available
-            
-            # Call general-purpose agent to generate commit message
-            task_response = Task(
-                subagent_type="general-purpose",
-                prompt=prompt,
-                description="Generate commit message"
-            )
-            
-            # Parse the response to extract commit message
-            commit_message = self._parse_llm_response(task_response)
-            
-            # Parse components from the message
-            return self._parse_commit_message_components(commit_message, files)
-            
-        except ImportError:
-            # Fallback to simple pattern-based detection if Task not available
-            print("Warning: LLM not available, using pattern-based detection")
-            return self._fallback_commit_detection(files)
+Generate the commit message now. Remember: The "Changes:" section MUST be detailed with specific bullet points explaining what changed and why.:"""
     
     def _parse_llm_response(self, response: str) -> str:
         """Parse LLM response to extract clean commit message."""
