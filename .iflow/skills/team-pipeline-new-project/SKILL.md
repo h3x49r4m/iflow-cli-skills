@@ -107,6 +107,8 @@ Client → Product Manager → Project Manager
 
 ## Usage
 
+### Starting a New Project
+
 ```bash
 # Feature-by-feature iteration (default)
 Skill(skill: "team-pipeline-new-project", project_path: "./workspace/myapp", project_name: "MyApp")
@@ -114,6 +116,43 @@ Skill(skill: "team-pipeline-new-project", project_path: "./workspace/myapp", pro
 # All-at-once mode
 Skill(skill: "team-pipeline-new-project", project_path: "./workspace/myapp", project_name: "MyApp", iteration_mode: "all-at-once")
 ```
+
+### Managing an Existing Project
+
+For projects with existing state in `{project_path}/.state/pipeline-status.md`:
+
+```bash
+# Show current pipeline status
+/team-pipeline-new-project status
+
+# Resume from where pipeline stopped
+/team-pipeline-new-project continue
+
+# Restart from a specific stage
+/team-pipeline-new-project reset 7
+
+# Restart from beginning
+/team-pipeline-new-project reset
+```
+
+**Status Command Output:**
+- Current stage number and name
+- Current feature being processed
+- Completed features count and list
+- Remaining features count and list
+- Overall progress percentage
+- Pipeline state (running, paused, completed, failed)
+
+**Continue Command:**
+- Reads `{project_path}/.state/pipeline-status.md`
+- Resumes from last completed stage/feature
+- Continues pipeline execution
+
+**Reset Command:**
+- `reset [stage_id]` - Restart from specified stage (1-11)
+- `reset` - Restart from beginning (stage 1)
+- Clears progress from specified stage onward
+- Preserves completed stages before reset point
 
 ## Error Handling
 - If a role fails for a feature, pipeline pauses and reports error
