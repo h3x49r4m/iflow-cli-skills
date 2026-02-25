@@ -42,6 +42,8 @@ When starting a new project, the Client role:
 - `project_path` - Path to the project directory (required)
 - `project_name` - Name of the project (required)
 - `pipeline_type` - Type of pipeline: new-project, new-feature, fix-bug (required)
+- `iteration_mode` - Iteration mode: feature (default) or all-at-once (optional)
+- `current_feature` - Current feature being processed (optional, for iteration mode)
 
 1. **Initialize Project State**
    ```bash
@@ -52,34 +54,42 @@ When starting a new project, the Client role:
    fi
    ```
 
-2. Initialize `pipeline-status.md` with project context
+2. **Initialize Pipeline Status**
+   - Set pipeline name to `new-project`
+   - Set current feature to first feature (if iteration mode)
 
-3. Receive project request
+3. **Receive project request**
 4. Define business requirements
 5. Specify acceptance criteria
 6. Identify stakeholders
 7. Document constraints
 8. Update `$project_path/.state/project-spec.md`
-9. Commit changes using git with full metadata:
-   ```bash
-   git add "$project_path/.state/project-spec.md"
-   git commit -m "docs[client]: document project requirements
+9. **Track Feature List**
+   - Extract all features from requirements
+   - Create feature completion tracker
+   - Update `$project_path/.state/pipeline-status.md` with feature list and current feature
+10. Commit changes using git with full metadata:
+    ```bash
+    git add "$project_path/.state/project-spec.md" "$project_path/.state/pipeline-status.md"
+    git commit -m "docs[client]: document project requirements and feature list
 
 Changes:
 - Define business requirements
 - Specify acceptance criteria
 - Identify stakeholders
 - Document constraints
+- Create feature completion tracker for iteration
 
 ---
 Branch: $(git rev-parse --abbrev-ref HEAD)
 
 Files changed:
 - $project_path/.state/project-spec.md
+- $project_path/.state/pipeline-status.md
 
 Verification:
 - Tests: passed
 - Coverage: N/A
 - TDD: compliant"
-   ```
-10. Update `$project_path/.state/pipeline-status.md` with completion status
+    ```
+11. Update `$project_path/.state/pipeline-status.md` with completion status for current stage
