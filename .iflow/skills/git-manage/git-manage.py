@@ -204,7 +204,7 @@ class GitManage:
         
         return {'valid': False, 'message': message}
     
-    def generate_commit_message(self, type_: str, scope: Optional[str], 
+    def generate_commit_message(self, type_: str, scope: Optional[str],
                                 description: str, body: Optional[str] = None,
                                 files_changed: Optional[List[str]] = None,
                                 test_results: Optional[str] = None,
@@ -217,45 +217,39 @@ class GitManage:
             header = f"{type_}[{scope}]: {description}"
         else:
             header = f"{type_}: {description}"
-        
+
         message = [header]
-        
-        # Body (can include Changes section if provided)
+
+        # Body - use as-is when provided (LLM-generated with detailed Changes section)
         if body:
             message.append('')
             message.append(body)
-        
-        # Always add separator and metadata when there are files to commit
-        if files_changed:
+
+        # Only add minimal metadata if no body was provided and files exist
+        # This allows LLM-generated messages to be fully descriptive without forced templates
+        if not body and files_changed:
             message.append('')
             message.append('---')
             message.append('Branch: ' + self.get_current_branch())
-            
-            # Files changed list
             message.append('')
             message.append('Files changed:')
             for file_path in files_changed:
                 message.append(f'- {file_path}')
-            
-            # Verification section - always include when there are files
             message.append('')
             message.append('Verification:')
             if test_results:
                 message.append(f'- Tests: {test_results}')
             else:
                 message.append('- Tests: N/A')
-            
             if coverage is not None:
                 message.append(f'- Coverage: {coverage:.1f}%')
             else:
                 message.append('- Coverage: N/A')
-            
-            # Only show Architecture/TDD compliance when checks are actually run
             if architecture_check:
                 message.append('- Architecture: ✓ compliant')
             if tdd_check:
                 message.append('- TDD: ✓ compliant')
-        
+
         return '\n'.join(message)
     
     def commit(self, type_: str, scope: Optional[str], description: str,
