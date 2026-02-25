@@ -337,84 +337,193 @@ class GitManage:
         else:
             return code, f'Failed to stage files:\n{stderr}'
     
-    def detect_commit_type(self, files: List[str]) -> str:
-        """Auto-detect commit type based on file patterns."""
-        for file_path in files:
-            # Documentation files
-            if any(doc in file_path for doc in ['SKILL.md', 'README.rst', 'README.md', 'CHANGELOG.md', 'CHANGELOG.rst']):
-                return 'docs'
-            # Test files
-            if any(test in file_path for test in ['.test.', 'test_', '_test.', 'tests/']):
-                return 'test'
-            # Configuration files
-            if any(config in file_path for config in ['config.json', '.env', 'package.json', 'Cargo.toml', 'requirements.txt']):
-                return 'chore'
-            # CI/CD files
-            if any(ci in file_path for ci in ['.github/', '.gitlab-ci.yml', '.travis.yml', 'Jenkinsfile']):
-                return 'ci'
-        
-        # Default to feat for new files, fix for modifications
-        return 'feat'
+    def get_file_diffs(self, files: List[str]) -> str:
+        """Get diff output for the specified files."""
+        code, stdout, _ = self.run_git_command(['diff', '--cached'] + files)
+        if code == 0:
+            return stdout if stdout else ''
+        return ''
     
-    def detect_scope(self, files: List[str]) -> Optional[str]:
-        """Auto-detect scope from file paths."""
-        # Look for skill/project names in paths
+    def analyze_files(self, files: List[str]) -> str:
+        """Analyze files to provide context for LLM."""
+        context = []
         for file_path in files:
-            if '/skills/' in file_path:
-                # Extract skill name from path like .iflow/skills/refactor/SKILL.md
+            full_path = self.repo_root / file_path
+            if full_path.exists():
+                context.append(f"File: {file_path}")
+                context.append(f"Type: {'directory' if full_path.is_dir() else 'file'}")
+                if full_path.is_file():
+                    # Try to read first few lines to understand content
+                    try:
+                        with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                            lines = f.readlines()[:5]  # First 5 lines
+                            if lines:
+                                context.append(f"Content preview:\n{''.join(lines)}")
+                    except:
+                        pass
+                context.append("---")
+        return '\n'.join(context)
+    
+    def generate_commit_message_with_llm(self, files: List[str]) -> Tuple[str, str, Optional[str], Optional[str]]:
+        """Generate commit message using LLM analysis of file changes."""
+        
+        # Get diff and context
+        diff_output = self.get_file_diffs(files)
+        file_context = self.analyze_files(files)
+        branch = self.get_current_branch()
+        
+        # Build comprehensive prompt for LLM
+        prompt = f"""You are a git commit message generator. Analyze the following file changes and generate a conventional commit message following this EXACT format:
+
+<type>[<scope>]: <description>
+
+Changes:
+- <specific change 1>
+- <specific change 2>
+- <specific change 3>
+- ... (list all meaningful changes)
+
+---
+Branch: {branch}
+
+Files changed:
+- <file1>
+- <file2>
+- ...
+
+Verification:
+- Tests: <passed/skipped/N/A>
+- Coverage: <percentage/N/A>
+- Architecture: ✓ compliant/N/A
+- TDD: ✓ compliant/N/A
+
+CRITICAL RULES:
+1. Use conventional commit types: feat, fix, docs, style, refactor, test, chore, perf, ci, build
+2. Scope should be the relevant module/component/skill being modified
+3. Description should be concise (50 chars max)
+4. Changes section should list specific, actionable changes (not generic statements)
+5. Each change in Changes section should start with a verb (add, update, fix, remove, improve, etc.)
+6. For "Verification": 
+   - Tests: "passed" if test files modified, "skipped" if no test changes, "N/A" if not applicable
+   - Coverage: "N/A" unless coverage data available
+   - Architecture: "✓ compliant" unless architecture violations detected
+   - TDD: "✓ compliant" if following TDD, otherwise "N/A"
+7. Do NOT include any conversational text outside the commit message format
+8. Do NOT add any explanations, only output the commit message
+
+Files being committed:
+{file_context}
+
+Git diff output:
+{diff_output if diff_output else 'No diff available (new files)'}
+
+Generate the commit message now:"""
+        
+        # Import Task tool to call LLM
+        try:
+            from tool import Task  # Assuming Task tool is available
+            
+            # Call general-purpose agent to generate commit message
+            task_response = Task(
+                subagent_type="general-purpose",
+                prompt=prompt,
+                description="Generate commit message"
+            )
+            
+            # Parse the response to extract commit message
+            commit_message = self._parse_llm_response(task_response)
+            
+            # Parse components from the message
+            return self._parse_commit_message_components(commit_message, files)
+            
+        except ImportError:
+            # Fallback to simple pattern-based detection if Task not available
+            print("Warning: LLM not available, using pattern-based detection")
+            return self._fallback_commit_detection(files)
+    
+    def _parse_llm_response(self, response: str) -> str:
+        """Parse LLM response to extract clean commit message."""
+        # Remove any markdown code blocks if present
+        if '```' in response:
+            lines = response.split('\n')
+            in_code_block = False
+            clean_lines = []
+            for line in lines:
+                if line.strip().startswith('```'):
+                    in_code_block = not in_code_block
+                    continue
+                if not in_code_block:
+                    clean_lines.append(line)
+            response = '\n'.join(clean_lines)
+        
+        # Remove any conversational text before the commit message
+        lines = response.split('\n')
+        commit_start = 0
+        for i, line in enumerate(lines):
+            # Look for conventional commit pattern
+            if re.match(r'^(feat|fix|docs|style|refactor|test|chore|perf|ci|build)(\[[^\]]+\])?:', line.strip()):
+                commit_start = i
+                break
+        
+        return '\n'.join(lines[commit_start:]) if commit_start > 0 else response
+    
+    def _parse_commit_message_components(self, commit_message: str, files: List[str]) -> Tuple[str, str, Optional[str], Optional[str]]:
+        """Parse commit message into type, scope, description, and body."""
+        lines = commit_message.strip().split('\n')
+        
+        # Parse header line
+        header = lines[0].strip()
+        match = re.match(r'^(\w+)(?:\[([^\]]+)\])?: (.+)$', header)
+        
+        if match:
+            commit_type = match.group(1)
+            scope = match.group(2)
+            description = match.group(3)
+        else:
+            # Fallback
+            commit_type = 'chore'
+            scope = None
+            description = header[:50]
+        
+        # Extract body (everything after header until "---" or end)
+        body_lines = []
+        for line in lines[1:]:
+            if line.strip() == '---':
+                break
+            body_lines.append(line)
+        
+        body = '\n'.join(body_lines).strip() if body_lines else None
+        
+        return commit_type, description, scope, body
+    
+    def _fallback_commit_detection(self, files: List[str]) -> Tuple[str, str, Optional[str], Optional[str]]:
+        """Fallback pattern-based detection when LLM is not available."""
+        # Simple pattern-based detection
+        commit_type = 'chore'
+        scope = None
+        description = f'update {len(files)} file(s)'
+        
+        for file_path in files:
+            if any(doc in file_path for doc in ['SKILL.md', 'README.rst', 'README.md']):
+                commit_type = 'docs'
+                if 'README' in file_path:
+                    description = 'update README documentation'
+                else:
+                    description = 'update skill documentation'
+                break
+            elif any(test in file_path for test in ['.test.', 'test_', '_test.', 'tests/']):
+                commit_type = 'test'
+                description = f'update tests ({len(files)} files)'
+                break
+            elif '/skills/' in file_path:
                 parts = file_path.split('/skills/')
                 if len(parts) > 1:
-                    skill_name = parts[1].split('/')[0]
-                    if skill_name and skill_name not in ['dev-team', 'git-manage', 'tdd-enforce']:
-                        return skill_name
+                    scope = parts[1].split('/')[0]
+                    commit_type = 'feat'
+                    description = f'update {scope} skill'
+                break
         
-        # Look for major directory names
-        for file_path in files:
-            parts = file_path.split('/')
-            if len(parts) >= 2:
-                # Check second-level directory
-                potential_scope = parts[1]
-                if potential_scope and potential_scope not in ['.iflow', '.git', 'node_modules', '__pycache__']:
-                    return potential_scope
-        
-        return None
-    
-    def generate_description(self, files: List[str], commit_type: str) -> str:
-        """Auto-generate commit description based on files changed."""
-        # Extract file names for description
-        file_names = [Path(f).name for f in files]
-        
-        # Check for common patterns
-        if commit_type == 'docs':
-            if any(name == 'README.rst' or name == 'README.md' for name in file_names):
-                return 'update README documentation'
-            elif any(name == 'SKILL.md' for name in file_names):
-                return 'update skill documentation'
-            else:
-                return f'update documentation ({len(files)} files)'
-        
-        elif commit_type == 'test':
-            return f'add/update tests ({len(files)} files)'
-        
-        elif commit_type == 'chore':
-            if any('config' in f for f in files):
-                return 'update configuration'
-            else:
-                return f'update project files ({len(files)} files)'
-        
-        elif commit_type == 'ci':
-            return 'update CI/CD configuration'
-        
-        else:  # feat, fix, refactor
-            # Check if adding new skill
-            if any('/skills/' in f for f in files):
-                skill_name = self.detect_scope(files)
-                if skill_name:
-                    return f'add {skill_name} skill'
-            
-            # Default description
-            action = 'add' if commit_type == 'feat' else commit_type
-            return f'{action} changes ({len(files)} files)'
+        return commit_type, description, scope, None
     
     def status(self) -> Tuple[int, str]:
         """Show git status with additional information."""
@@ -622,27 +731,33 @@ def main():
             print(output)
             sys.exit(code)
         
-        # Auto-detect commit metadata if not provided
-        commit_type = args.type or git.detect_commit_type(args.files)
-        commit_scope = args.scope or git.detect_scope(args.files)
-        commit_description = args.description or git.generate_description(args.files, commit_type)
+        # Use LLM to generate commit message (or fallback to provided args)
+        if args.type and args.description:
+            # Use provided values
+            commit_type = args.type
+            commit_scope = args.scope
+            commit_description = args.description
+            commit_body = args.body
+        else:
+            # Use LLM to generate commit message
+            print('\nAnalyzing changes and generating commit message...\n')
+            commit_type, commit_description, commit_scope, commit_body = git.generate_commit_message_with_llm(args.files)
         
-        # Show auto-detected commit info
-        if not args.type or not args.description:
-            print(f'\nAuto-detected commit information:')
-            print(f'  Type: {commit_type}')
-            if commit_scope:
-                print(f'  Scope: {commit_scope}')
-            print(f'  Description: {commit_description}')
-            print(f'\nFiles to commit: {len(args.files)}')
-            for f in args.files:
-                print(f'  - {f}')
-            print()
+        # Show commit information
+        print(f'Commit information:')
+        print(f'  Type: {commit_type}')
+        if commit_scope:
+            print(f'  Scope: {commit_scope}')
+        print(f'  Description: {commit_description}')
+        print(f'\nFiles to commit: {len(args.files)}')
+        for f in args.files:
+            print(f'  - {f}')
+        print()
         
-        # Commit with detected or provided metadata
+        # Commit with generated or provided metadata
         code, output = git.commit(
             commit_type, commit_scope, commit_description,
-            args.body, args.no_verify
+            commit_body, args.no_verify
         )
     elif args.command == 'diff':
         code, output = git.diff(staged=args.staged)
