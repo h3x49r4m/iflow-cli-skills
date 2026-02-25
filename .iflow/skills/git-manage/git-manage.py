@@ -218,13 +218,14 @@ class GitManage:
         else:
             header = f"{type_}: {description}"
 
-        # If body is provided, use it completely as-is (LLM-generated)
-        # The LLM should include any metadata sections (---, Branch:, Files changed:, Verification:) if needed
-        if body:
-            return f"{header}\n\n{body}"
-
-        # Minimal fallback when no body provided
         message = [header]
+
+        # Body (LLM-generated with detailed Changes section)
+        if body:
+            message.append('')
+            message.append(body)
+
+        # Always add metadata sections when there are files to commit
         if files_changed:
             message.append('')
             message.append('---')
@@ -235,41 +236,63 @@ class GitManage:
                 message.append(f'- {file_path}')
             message.append('')
             message.append('Verification:')
-            message.append('- Tests: N/A')
-            message.append('- Coverage: N/A')
+            if test_results:
+                message.append(f'- Tests: {test_results}')
+            else:
+                message.append('- Tests: N/A')
+            if coverage is not None:
+                message.append(f'- Coverage: {coverage:.1f}%')
+            else:
+                message.append('- Coverage: N/A')
+            if architecture_check:
+                message.append('- Architecture: ✓ compliant')
+            if tdd_check:
+                message.append('- TDD: ✓ compliant')
 
         return '\n'.join(message)
     
     def commit(self, type_: str, scope: Optional[str], description: str,
                body: Optional[str] = None, no_verify: bool = False) -> Tuple[int, str]:
         """Create a commit with formatted message."""
-        
+
         # Check if there are staged changes
         staged_files = self.get_staged_files()
         if not staged_files:
             return 4, 'No changes to commit. Use git add to stage files.'
-        
+
         # Validate commit type
         if type_ not in self.COMMIT_TYPES:
             return 1, f'Invalid commit type: {type_}. Valid types: {", ".join(self.COMMIT_TYPES.keys())}'
-        
+
+        # Validate body format if provided
+        if body:
+            # Check for required "Changes:" section
+            if 'Changes:' not in body:
+                return 8, 'Commit body must include a "Changes:" section. Please regenerate with LLM.'
+
+            # Check for at least one bullet point after Changes:
+            changes_section = body.split('Changes:')[1].split('---')[0] if '---' in body else body.split('Changes:')[1]
+            bullet_points = [line for line in changes_section.split('\n') if line.strip().startswith('-')]
+            if len(bullet_points) < 1:
+                return 9, 'Commit body "Changes:" section must have at least one bullet point. Please regenerate with LLM.'
+
         # Check branch protection
         protected, msg = self.check_branch_protection()
         if protected:
             return 7, msg
-        
+
         # Detect secrets
         if self.config['detect_secrets']:
             has_secrets, secrets = self.detect_secrets(staged_files)
             if has_secrets:
                 return 5, f'Secrets detected in staged files:\n' + '\n'.join(secrets)
-        
+
         # Run pre-commit checks
         test_status = 'skipped'
         coverage = None
         architecture_check = False
         tdd_check = False
-        
+
         if not no_verify and self.config['pre_commit_checks']:
             # Run tests
             if self.config['run_tests']:
@@ -277,18 +300,18 @@ class GitManage:
                 if code != 0:
                     return 1, f'Tests failed:\n{output}'
                 test_status = 'passed'
-            
+
             # Check coverage
             if self.config['check_coverage']:
                 code, line_cov, branch_cov = self.check_coverage()
                 if line_cov < self.config['coverage_threshold']:
                     return 6, f'Coverage below threshold: {line_cov:.1f}% < {self.config["coverage_threshold"]}%'
                 coverage = line_cov
-            
+
             # Track whether checks were actually run
             architecture_check = self.config.get('run_architecture_check', False)
             tdd_check = self.config.get('run_tdd_check', False)
-        
+
         # Generate commit message
         message = self.generate_commit_message(
             type_, scope, description, body,
@@ -298,10 +321,10 @@ class GitManage:
             architecture_check=architecture_check,
             tdd_check=tdd_check
         )
-        
+
         # Create commit
         code, stdout, stderr = self.run_git_command(['commit', '-m', message])
-        
+
         if code == 0:
             return 0, f'Commit successful:\n{stdout}'
         else:
