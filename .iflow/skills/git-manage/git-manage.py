@@ -534,9 +534,14 @@ def main():
     add_parser = subparsers.add_parser('add', help='Stage files for commit')
     add_parser.add_argument('files', nargs='+', help='Files to stage')
     
-    # Commit command - disabled in standalone mode, requires iFlow CLI with LLM
-    commit_parser = subparsers.add_parser('commit', help='Create a commit (requires iFlow CLI with LLM)')
+    # Commit command
+    commit_parser = subparsers.add_parser('commit', help='Create a commit')
     commit_parser.add_argument('files', nargs='+', help='Files to commit')
+    commit_parser.add_argument('--type', help='Commit type (from LLM)')
+    commit_parser.add_argument('--scope', help='Commit scope (from LLM)')
+    commit_parser.add_argument('--description', help='Commit description (from LLM)')
+    commit_parser.add_argument('--body', help='Commit body with Changes section (from LLM)')
+    commit_parser.add_argument('--no-verify', action='store_true', help='Skip pre-commit checks')
     
     # Diff command
     diff_parser = subparsers.add_parser('diff', help='Show changes')
@@ -579,9 +584,35 @@ def main():
     elif args.command == 'add':
         code, output = git.add_files(args.files)
     elif args.command == 'commit':
-        # Commit command requires LLM - this should be handled by iFlow CLI
-        # The skill only provides data collection via collect_commit_context()
-        code, output = 1, 'Commit command requires LLM. Use iFlow CLI to commit: /git-manage commit'
+        # Check if LLM-generated parameters are provided
+        if args.type and args.description:
+            # LLM has generated the commit message, proceed with commit
+            code, output = git.commit(
+                args.type, args.scope, args.description,
+                args.body, args.no_verify
+            )
+        else:
+            # No LLM parameters provided, output context for LLM generation
+            # Stage files first
+            code, output = git.add_files(args.files)
+            if code != 0:
+                print(output)
+                sys.exit(code)
+
+            # Collect context for LLM
+            context = git.collect_commit_context(args.files)
+
+            # Convert bytes to string for JSON serialization
+            if isinstance(context.get('diff'), bytes):
+                context['diff'] = context['diff'].decode('utf-8')
+
+            # Output context in JSON format for iFlow CLI
+            import json
+            print(json.dumps({
+                'context': context,
+                'instruction': 'Generate a conventional commit message with detailed Changes section. Then call: git.commit(type, scope, description, body)'
+            }))
+            code = 0
     elif args.command == 'diff':
         code, output = git.diff(staged=args.staged)
     elif args.command == 'log':
