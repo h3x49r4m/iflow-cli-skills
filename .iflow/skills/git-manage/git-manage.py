@@ -337,6 +337,85 @@ class GitManage:
         else:
             return code, f'Failed to stage files:\n{stderr}'
     
+    def detect_commit_type(self, files: List[str]) -> str:
+        """Auto-detect commit type based on file patterns."""
+        for file_path in files:
+            # Documentation files
+            if any(doc in file_path for doc in ['SKILL.md', 'README.rst', 'README.md', 'CHANGELOG.md', 'CHANGELOG.rst']):
+                return 'docs'
+            # Test files
+            if any(test in file_path for test in ['.test.', 'test_', '_test.', 'tests/']):
+                return 'test'
+            # Configuration files
+            if any(config in file_path for config in ['config.json', '.env', 'package.json', 'Cargo.toml', 'requirements.txt']):
+                return 'chore'
+            # CI/CD files
+            if any(ci in file_path for ci in ['.github/', '.gitlab-ci.yml', '.travis.yml', 'Jenkinsfile']):
+                return 'ci'
+        
+        # Default to feat for new files, fix for modifications
+        return 'feat'
+    
+    def detect_scope(self, files: List[str]) -> Optional[str]:
+        """Auto-detect scope from file paths."""
+        # Look for skill/project names in paths
+        for file_path in files:
+            if '/skills/' in file_path:
+                # Extract skill name from path like .iflow/skills/refactor/SKILL.md
+                parts = file_path.split('/skills/')
+                if len(parts) > 1:
+                    skill_name = parts[1].split('/')[0]
+                    if skill_name and skill_name not in ['dev-team', 'git-manage', 'tdd-enforce']:
+                        return skill_name
+        
+        # Look for major directory names
+        for file_path in files:
+            parts = file_path.split('/')
+            if len(parts) >= 2:
+                # Check second-level directory
+                potential_scope = parts[1]
+                if potential_scope and potential_scope not in ['.iflow', '.git', 'node_modules', '__pycache__']:
+                    return potential_scope
+        
+        return None
+    
+    def generate_description(self, files: List[str], commit_type: str) -> str:
+        """Auto-generate commit description based on files changed."""
+        # Extract file names for description
+        file_names = [Path(f).name for f in files]
+        
+        # Check for common patterns
+        if commit_type == 'docs':
+            if any(name == 'README.rst' or name == 'README.md' for name in file_names):
+                return 'update README documentation'
+            elif any(name == 'SKILL.md' for name in file_names):
+                return 'update skill documentation'
+            else:
+                return f'update documentation ({len(files)} files)'
+        
+        elif commit_type == 'test':
+            return f'add/update tests ({len(files)} files)'
+        
+        elif commit_type == 'chore':
+            if any('config' in f for f in files):
+                return 'update configuration'
+            else:
+                return f'update project files ({len(files)} files)'
+        
+        elif commit_type == 'ci':
+            return 'update CI/CD configuration'
+        
+        else:  # feat, fix, refactor
+            # Check if adding new skill
+            if any('/skills/' in f for f in files):
+                skill_name = self.detect_scope(files)
+                if skill_name:
+                    return f'add {skill_name} skill'
+            
+            # Default description
+            action = 'add' if commit_type == 'feat' else commit_type
+            return f'{action} changes ({len(files)} files)'
+    
     def status(self) -> Tuple[int, str]:
         """Show git status with additional information."""
         code, stdout, stderr = self.run_git_command(['status', '--short'])
@@ -489,9 +568,10 @@ def main():
     
     # Commit command
     commit_parser = subparsers.add_parser('commit', help='Create a commit')
-    commit_parser.add_argument('type', help='Commit type (feat, fix, etc.)')
-    commit_parser.add_argument('description', help='Commit description')
-    commit_parser.add_argument('--scope', help='Commit scope')
+    commit_parser.add_argument('files', nargs='+', help='Files to commit (auto-detects type/description)')
+    commit_parser.add_argument('--type', help='Commit type (feat, fix, etc.) - auto-detected if not provided')
+    commit_parser.add_argument('--description', help='Commit description - auto-generated if not provided')
+    commit_parser.add_argument('--scope', help='Commit scope - auto-detected if not provided')
     commit_parser.add_argument('--body', help='Commit body')
     commit_parser.add_argument('--no-verify', action='store_true', help='Skip pre-commit checks')
     
@@ -536,8 +616,32 @@ def main():
     elif args.command == 'add':
         code, output = git.add_files(args.files)
     elif args.command == 'commit':
+        # Stage files first
+        code, output = git.add_files(args.files)
+        if code != 0:
+            print(output)
+            sys.exit(code)
+        
+        # Auto-detect commit metadata if not provided
+        commit_type = args.type or git.detect_commit_type(args.files)
+        commit_scope = args.scope or git.detect_scope(args.files)
+        commit_description = args.description or git.generate_description(args.files, commit_type)
+        
+        # Show auto-detected commit info
+        if not args.type or not args.description:
+            print(f'\nAuto-detected commit information:')
+            print(f'  Type: {commit_type}')
+            if commit_scope:
+                print(f'  Scope: {commit_scope}')
+            print(f'  Description: {commit_description}')
+            print(f'\nFiles to commit: {len(args.files)}')
+            for f in args.files:
+                print(f'  - {f}')
+            print()
+        
+        # Commit with detected or provided metadata
         code, output = git.commit(
-            args.type, args.scope, args.description,
+            commit_type, commit_scope, commit_description,
             args.body, args.no_verify
         )
     elif args.command == 'diff':
