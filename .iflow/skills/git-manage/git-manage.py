@@ -218,16 +218,14 @@ class GitManage:
         else:
             header = f"{type_}: {description}"
 
-        message = [header]
-
-        # Body - use as-is when provided (LLM-generated with detailed Changes section)
+        # If body is provided, use it completely as-is (LLM-generated)
+        # The LLM should include any metadata sections (---, Branch:, Files changed:, Verification:) if needed
         if body:
-            message.append('')
-            message.append(body)
+            return f"{header}\n\n{body}"
 
-        # Only add minimal metadata if no body was provided and files exist
-        # This allows LLM-generated messages to be fully descriptive without forced templates
-        if not body and files_changed:
+        # Minimal fallback when no body provided
+        message = [header]
+        if files_changed:
             message.append('')
             message.append('---')
             message.append('Branch: ' + self.get_current_branch())
@@ -237,18 +235,8 @@ class GitManage:
                 message.append(f'- {file_path}')
             message.append('')
             message.append('Verification:')
-            if test_results:
-                message.append(f'- Tests: {test_results}')
-            else:
-                message.append('- Tests: N/A')
-            if coverage is not None:
-                message.append(f'- Coverage: {coverage:.1f}%')
-            else:
-                message.append('- Coverage: N/A')
-            if architecture_check:
-                message.append('- Architecture: ✓ compliant')
-            if tdd_check:
-                message.append('- TDD: ✓ compliant')
+            message.append('- Tests: N/A')
+            message.append('- Coverage: N/A')
 
         return '\n'.join(message)
     
