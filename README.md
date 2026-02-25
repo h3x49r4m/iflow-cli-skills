@@ -4,7 +4,7 @@ A comprehensive collection of iFlow CLI skills for software development team orc
 
 ## Overview
 
-This project provides a complete development team simulation with 11 role-based skills and 3 pipeline orchestrators. Each role has specific responsibilities, skills, and workflows, all sharing a common state directory for seamless collaboration.
+This project provides a complete development team simulation with 11 role-based skills and 4 pipeline orchestrators. Each role has specific responsibilities, skills, and workflows, all sharing a common state directory for seamless collaboration.
 
 ## Skills
 
@@ -22,11 +22,12 @@ This project provides a complete development team simulation with 11 role-based 
 10. **Security Engineer** - Security validation and scanning
 11. **Documentation Specialist** - Documentation creation
 
-### Pipeline Orchestrators (3)
+### Pipeline Orchestrators (4)
 
 1. **team-pipeline-new-project** - Full end-to-end pipeline for new projects
 2. **team-pipeline-new-feature** - Streamlined pipeline for adding features
 3. **team-pipeline-fix-bug** - Focused pipeline for bug fixes
+4. **team-pipeline-auto-review** - Automated code review pipeline for PRs and commits
 
 ## Architecture
 
@@ -77,6 +78,7 @@ Activate a pipeline to orchestrate multiple roles:
 iflow skill team-pipeline-new-project
 iflow skill team-pipeline-new-feature
 iflow skill team-pipeline-fix-bug
+iflow skill team-pipeline-auto-review
 ```
 
 ## State Management
@@ -88,12 +90,14 @@ All skills share a common state directory (`.shared-state/`). Each role:
 3. **Performs** role-specific tasks
 4. **Updates** owned documents in shared state
 5. **Reports** completion status in `pipeline-status.md`
+6. **Commits** changes using git with full metadata format
 
 ## Documentation
 
 - `docs/roles.md` - Role definitions and responsibilities
 - `docs/skills.md` - Detailed skills for each role
 - `docs/iflow_skills_design.md` - Complete architecture and design documentation
+- `docs/team_flow.md` - Visual team flow diagram
 
 ## Pipelines
 
@@ -117,6 +121,20 @@ Focused pipeline for rapid bug fixing.
 **Stages:**
 1. client (optional) → 2. tech-lead → 3. software-engineer → 4. testing-engineer → 5. qa-engineer → 6. devops-engineer (if critical) → 7. documentation-specialist (if needed)
 
+### Auto Review Pipeline
+
+Automated code review pipeline for comprehensive quality checks.
+
+**Stages (Parallel Execution):**
+1. code-analysis → 2. security-scan → 3. test-suite → 4. tdd-compliance → 5. code-quality → 6. architecture-review → 7. documentation-check
+
+**Quality Gates:**
+- Test coverage ≥ 80%
+- Zero critical security vulnerabilities
+- Code complexity ≤ 10
+- TDD compliance ≥ 90%
+- Zero test failures
+
 ## Key Features
 
 - **Single Source of Truth:** All state in one directory
@@ -128,6 +146,31 @@ Focused pipeline for rapid bug fixing.
 - **Flexibility:** Mix single-role and pipeline workflows
 - **Consistency:** State contracts ensure consistency
 - **Scalability:** Easy to add new roles or pipelines
+- **Automated Commits:** Full git metadata in every commit
+
+## Commit Format
+
+All commits use the git-manage format with full metadata:
+
+```
+<type>[<scope>]: <description>
+
+Changes:
+- <change 1>
+- <change 2>
+
+---
+Branch: <branch-name>
+
+Files changed:
+- <file1>
+- <file2>
+
+Verification:
+- Tests: passed/skipped/N/A
+- Coverage: <percentage>%/N/A
+- TDD: compliant
+```
 
 ## License
 
