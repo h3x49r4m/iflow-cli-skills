@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
+from pipeline_manager import PipelineUpdateManager
 
 
 class BranchStatus(Enum):
@@ -237,6 +238,7 @@ class GitFlow:
         self.dependency_graph = DependencyGraph()
         self.load_workflow_state()
         self.load_branch_states()
+        self.pipeline_update_manager = PipelineUpdateManager('git-flow', self.skill_dir)
     
     def load_config(self):
         default_config = {
@@ -993,6 +995,23 @@ def main():
     
     subparsers.add_parser('history', help='Show review history')
     
+    # Pipeline update commands
+    check_updates_parser = subparsers.add_parser('check-updates', help='Check for pipeline updates')
+    
+    update_parser = subparsers.add_parser('update', help='Update pipeline to new version')
+    update_parser.add_argument('--to', help='Target version')
+    update_parser.add_argument('--dry-run', action='store_true', help='Preview changes without applying')
+    
+    rollback_parser = subparsers.add_parser('rollback', help='Rollback pipeline to previous version')
+    rollback_parser.add_argument('--to', required=True, help='Target version')
+    rollback_parser.add_argument('--backup', help='Restore from specific backup')
+    
+    versions_parser = subparsers.add_parser('versions', help='List available pipeline versions')
+    
+    backups_parser = subparsers.add_parser('backups', help='List available backups')
+    backups_parser.add_argument('--delete', help='Delete specific backup')
+    backups_parser.add_argument('--cleanup', type=int, help='Delete old backups keeping N most recent')
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -1021,6 +1040,45 @@ def main():
         code, output = git_flow.phase_next()
     elif args.command == 'history':
         code, output = git_flow.history()
+    elif args.command == 'check-updates':
+        has_updates, latest = git_flow.pipeline_update_manager.check_for_updates()
+        if has_updates:
+            code, output = 0, f'Update available: {latest}\nCurrent version: {git_flow.pipeline_update_manager.get_current_version()}'
+        else:
+            code, output = 0, f'No updates available. Current version: {git_flow.pipeline_update_manager.get_current_version()}'
+    elif args.command == 'update':
+        target_version = args.to or git_flow.pipeline_update_manager.list_versions()[-1]
+        state = git_flow.workflow_state.to_dict() if git_flow.workflow_state else {}
+        code, output = git_flow.pipeline_update_manager.update_to_version(target_version, state, args.dry_run)
+    elif args.command == 'rollback':
+        state = git_flow.workflow_state.to_dict() if git_flow.workflow_state else {}
+        code, output = git_flow.pipeline_update_manager.rollback_to_version(args.to, state, args.backup)
+    elif args.command == 'versions':
+        versions = git_flow.pipeline_update_manager.list_versions()
+        current = git_flow.pipeline_update_manager.get_current_version()
+        output_lines = ['Available versions:']
+        for v in versions:
+            marker = ' (current)' if v == current else ''
+            output_lines.append(f'  - {v}{marker}')
+        code, output = 0, '\n'.join(output_lines)
+    elif args.command == 'backups':
+        if args.delete:
+            success = git_flow.pipeline_update_manager.backup_manager.delete_backup(args.delete)
+            if success:
+                code, output = 0, f'Deleted backup: {args.delete}'
+            else:
+                code, output = 1, f'Failed to delete backup: {args.delete}'
+        elif args.cleanup:
+            deleted = git_flow.pipeline_update_manager.backup_manager.cleanup_old_backups(args.cleanup)
+            code, output = 0, f'Cleaned up {deleted} old backups'
+        else:
+            backups = git_flow.pipeline_update_manager.backup_manager.list_backups()
+            output_lines = ['Available backups:']
+            for backup in backups:
+                output_lines.append(f"  - {backup['backup_id']}")
+                output_lines.append(f"    Version: {backup.get('state_version', 'unknown')}")
+                output_lines.append(f"    Timestamp: {backup.get('timestamp', 'unknown')}")
+            code, output = 0, '\n'.join(output_lines)
     else:
         code, output = 1, f'Unknown command: {args.command}'
     
