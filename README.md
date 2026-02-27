@@ -29,6 +29,11 @@ This project provides a complete development team simulation with 11 role-based 
 3. **team-pipeline-fix-bug** - Focused pipeline for bug fixes
 4. **team-pipeline-auto-review** - Automated code review pipeline for PRs and commits
 
+### Core Infrastructure Skills (2)
+
+1. **git-manage** - Standardized git operations with safety checks and best practices
+2. **git-flow** - Gate-based workflow orchestration with role-based branching, review/approval gates, phase tracking, and reversible approvals
+
 ## Architecture
 
 ```
@@ -56,6 +61,144 @@ This project provides a complete development team simulation with 11 role-based 
     ├── SKILL.md
     ├── config.json
     └── .state/              # Symlink to .shared-state/
+```
+
+## Git-Flow Workflow
+
+Git-flow provides a gate-based workflow orchestration system with role-based branching, review/approval gates, phase tracking, and reversible approvals.
+
+### Key Features
+
+- **Role-Based Branching:** Auto-creates feature branches for each role
+- **Gate Control:** Review and approval before merging to main
+- **Phase Tracking:** Automatic workflow progression through 8 default phases
+- **Dependency Management:** Tracks branch relationships and cascading effects
+- **Reversible Approvals:** Full unapproval support with cascade revert
+- **State Persistence:** Tracks workflow state across sessions
+
+### Default Phases
+
+1. Requirements Gathering (Client) - Required
+2. Architecture Design (Tech Lead) - Required
+3. Implementation (Software Engineer) - Required
+4. Testing (QA Engineer) - Required
+5. Design (UI/UX Designer) - Optional
+6. Documentation (Documentation Specialist) - Optional
+7. Security Review (Security Engineer) - Optional
+8. Deployment (DevOps Engineer) - Required
+
+### Git-Flow Commands
+
+```bash
+# Start a new workflow
+/git-flow start <feature-name>
+
+# Commit changes (auto-creates role-based branches)
+/git-flow commit [files...]
+
+# Review dashboard
+/git-flow review
+
+# Approve and merge
+/git-flow approve <branch> [--comment "text"]
+
+# Reject with reason
+/git-flow reject <branch> --reason "text"
+
+# Request changes
+/git-flow request-changes <branch> --comment "text"
+
+# Unapprove and revert
+/git-flow unapprove <branch> [--cascade]
+
+# View status
+/git-flow status
+
+# Advance to next phase
+/git-flow phase-next
+
+# View history
+/git-flow history
+```
+
+### Pipeline Updates
+
+Git-flow supports versioning and updates with migration support:
+
+```bash
+# Check for updates
+/git-flow check-updates
+
+# Update pipeline
+/git-flow update [--to version] [--dry-run]
+
+# Rollback
+/git-flow rollback --to version [--backup id]
+
+# List versions
+/git-flow versions
+
+# Manage backups
+/git-flow backups [--delete id] [--cleanup N]
+```
+
+## Version Management
+
+### Pipeline Versioning
+
+Pipelines use semantic versioning with automatic migration support:
+
+- **Version Registry:** Each pipeline maintains version history
+- **Migration Scripts:** Automatic state migrations between versions
+- **Rollback Support:** Restore to previous versions with backups
+- **Schema Validation:** Ensure state integrity after updates
+
+### Skill Versioning
+
+Skills have their own versioning system with capability tracking:
+
+- **Semantic Versioning:** Each skill has `major.minor.patch` version
+- **Capability Matrix:** Track capabilities per version
+- **Compatibility Checking:** Validate skill-pipeline compatibility
+- **Update Management:** Safe skill upgrades with migration paths
+
+### Software Engineer Skill Versions
+
+**v1.0.0** - Full-Stack Development
+- Backend: REST/GraphQL APIs, databases, authentication
+- Frontend: React/Vue/Angular, state management, responsive design
+- Requirements: Python ≥3.8, Node ≥14, 2GB RAM
+
+**v2.0.0** - Expanded Capabilities
+- All v1.0.0 features plus:
+- Graphics: WebGL, Three.js, 2D/3D rendering, shaders
+- ML: TensorFlow, PyTorch, model training/deployment, MLOps
+- Data Science: Pandas, NumPy, data processing, visualization
+- Requirements: Python ≥3.10, Node ≥16, 4GB RAM, GPU (optional)
+
+### Skill Management Commands
+
+```bash
+# List all skills
+python3 .iflow/skills/skill_cli.py list
+
+# Skill information
+python3 .iflow/skills/skill_cli.py info <skill-name>
+
+# List skill versions
+python3 .iflow/skills/skill_cli.py versions <skill-name>
+
+# Check for updates
+python3 .iflow/skills/skill_cli.py check-updates [--skill <name>]
+
+# Check pipeline compatibility
+python3 .iflow/skills/skill_cli.py check-compatibility <config-file>
+
+# Find skills by capability
+python3 .iflow/skills/skill_cli.py find <capability>
+
+# Validate workflow state
+python3 .iflow/skills/skill_cli.py validate-state <state-file>
 ```
 
 ## Usage
@@ -90,7 +233,47 @@ All skills share a common state directory (`.shared-state/`). Each role:
 3. **Performs** role-specific tasks
 4. **Updates** owned documents in shared state
 5. **Reports** completion status in `pipeline-status.md`
-6. **Commits** changes using git with full metadata format
+6. **Commits** changes using git-manage with full metadata format
+
+### Git-Manage Commands
+
+Git-manage provides standardized git operations with safety checks:
+
+```bash
+# View status
+/git-manage status
+
+# Stage files
+/git-manage add <files...>
+
+# Create commit (with LLM-generated message)
+/git-manage commit <files...>
+
+# View changes
+/git-manage diff [staged]
+
+# View history
+/git-manage log [oneline|full|n=N]
+
+# Undo last commit
+/git-manage undo [soft|hard]
+
+# Amend last commit
+/git-manage amend [description]
+
+# Stash operations
+/git-manage stash save <message>
+/git-manage stash pop
+/git-manage stash list
+
+# Push to remote
+/git-manage push [remote] [branch]
+
+# Branch operations
+/git-manage branch create <name>
+/git-manage branch switch <name>
+/git-manage branch delete <name>
+```
 
 ## Documentation
 
@@ -147,8 +330,11 @@ Automated code review pipeline for comprehensive quality checks.
 - **Consistency:** State contracts ensure consistency
 - **Scalability:** Easy to add new roles or pipelines
 - **Automated Commits:** Full git metadata in every commit
-
-## Commit Format
+- **Gate-Based Workflow:** Review/approval gates with git-flow
+- **Version Management:** Semantic versioning for pipelines and skills
+- **Safe Updates:** Migration support with rollback capabilities
+- **Skill Capabilities:** Track and manage skill capabilities per version
+- **Compatibility Checking:** Validate skill-pipeline compatibility
 
 All commits use the git-manage format with full metadata:
 
