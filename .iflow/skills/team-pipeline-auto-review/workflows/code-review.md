@@ -1,138 +1,217 @@
-# Code Review Workflow
+# Automated Code Review Workflow
 
 ## Objective
-Execute automated code review pipeline with parallel quality checks and generate comprehensive report.
+Perform comprehensive automated code review for pull requests and commits.
 
-## Steps
+## Overview
+This workflow orchestrates automated code review processes including linting, static analysis, security scanning, and quality validation. It ensures code quality and security before merging.
 
-1. **Initialize Review**
-   - Read pipeline configuration from `config.json`
-   - Identify target (project directory, PR, commit)
-   - Determine comparison baseline (branch, commit hash)
-   - Initialize review report structure
+## Execution Flow
 
-2. **Execute Stages in Parallel**
-   
-   All stages execute concurrently for maximum efficiency:
+**Input Parameters:**
+- `project_path` - Path to the project directory (required)
+- `pr_number` - Pull request number (optional, for PR-specific review)
+- `branch` - Branch to review (optional, defaults to current branch)
+- `commit_hash` - Specific commit to review (optional)
 
-   - **Code Analysis** (software-engineer)
-     - Run static analysis tools
-     - Calculate code complexity metrics
-     - Detect code smells and anti-patterns
-     - Identify duplicate code blocks
-     - Generate complexity report
+## Review Stages
 
-   - **Security Scan** (security-engineer)
-     - Run SAST tools
-     - Scan dependencies for vulnerabilities
-     - Detect secrets and sensitive data
-     - Check for common security issues
-     - Generate security report
+### Stage 1: Linting
+1. Run project-specific linters (ESLint, Pylint, Rubocop, etc.)
+2. Check code style and formatting
+3. Identify potential code smells
+4. Generate lint report
 
-   - **Test Suite** (testing-engineer)
-     - Run unit tests
-     - Run integration tests
-     - Measure code coverage
-     - Track test execution time
-     - Generate test report
+**Tools:** ESLint, Pylint, Rubocop, Flake8, ShellCheck
+**Output:** Lint report with issues and severity
 
-   - **TDD Compliance** (software-engineer)
-     - Verify test files exist for implementation
-     - Check test coverage per module
-     - Validate test-first approach
-     - Identify untested code paths
-     - Generate TDD compliance report
+### Stage 2: Static Analysis
+1. Run static analysis tools (SonarQube, CodeQL, DeepScan)
+2. Analyze code complexity and maintainability
+3. Identify potential bugs and vulnerabilities
+4. Check code duplication
+5. Generate analysis report
 
-   - **Code Quality** (software-engineer)
-     - Run linter
-     - Check code formatting
-     - Validate style guide compliance
-     - Check for best practices violations
-     - Generate quality report
+**Tools:** SonarQube, CodeQL, DeepScan, Semgrep
+**Output:** Static analysis report with quality metrics
 
-   - **Architecture Review** (tech-lead)
-     - Verify SOLID principles
-     - Validate design patterns
-     - Check architecture compliance
-     - Analyze dependencies
-     - Generate architecture report
+### Stage 3: Security Scanning
+1. Scan for hardcoded secrets and credentials
+2. Run dependency vulnerability scanners
+3. Check for common security issues (OWASP Top 10)
+4. Validate security best practices
+5. Generate security report
 
-   - **Documentation Check** (documentation-specialist)
-     - Verify API documentation completeness
-     - Check code comments coverage
-     - Validate README updates
-     - Check changelog entries
-     - Generate documentation report
+**Tools:** Snyk, Dependabot, GitGuardian, OWASP Dependency-Check
+**Output:** Security scan report with vulnerabilities
 
-3. **Consolidate Findings**
-   - Collect all stage reports
-   - Normalize severity levels
-   - Deduplicate findings
-   - Prioritize by severity and impact
-   - Group findings by category
+### Stage 4: Test Validation
+1. Run all automated tests
+2. Verify test coverage meets thresholds
+3. Check test results and failures
+4. Identify flaky tests
+5. Generate test report
 
-4. **Evaluate Quality Gates**
-   - Compare metrics against thresholds
-   - Determine pass/fail status
-   - Identify critical blockers
-   - Flag warnings
-   - Generate gate decision
+**Tools:** Jest, Pytest, JUnit, Coverage tools
+**Output:** Test results with coverage metrics
 
-5. **Generate Review Report**
-   - Create executive summary
-   - Include detailed findings per stage
-   - Add severity classifications
-   - Provide actionable recommendations
-   - Include pass/fail decision
+### Stage 5: Code Quality Metrics
+1. Calculate code quality scores
+2. Measure technical debt
+3. Track code complexity trends
+4. Generate quality dashboard
+5. Provide improvement recommendations
 
-6. **Update State**
-   - Update `quality-report.md` with full review report
-   - Update `pipeline-status.md` with execution status
-   - Record any issues or blockers
-   - Document next steps
+**Tools:** SonarQube, CodeClimate, Codacy
+**Output:** Quality metrics and recommendations
 
-7. **Commit Changes**
-   - Use `/git-manage commit` to commit review artifacts
-   - Commit with review summary in message
-   - Include report status in commit metadata
+## Review Gates
+
+### Must Pass
+- All linting errors must be resolved (warnings may be allowed based on config)
+- No critical security vulnerabilities
+- All tests must pass
+- Code coverage must meet minimum threshold (default: 80%)
+
+### Should Pass
+- Static analysis score above threshold
+- No high-severity issues
+- Technical debt within acceptable limits
+
+### May Pass with Approval
+- Medium-severity issues with documented justification
+- Coverage slightly below threshold with approval
+
+## Configuration
+
+### Review Configuration File
+Create `.iflow/review-config.json`:
+
+```json
+{
+  "linting": {
+    "enabled": true,
+    "tools": ["eslint", "pylint"],
+    "failOnError": true,
+    "allowWarnings": false
+  },
+  "staticAnalysis": {
+    "enabled": true,
+    "tools": ["sonarqube"],
+    "qualityGate": "B",
+    "failOnError": false
+  },
+  "security": {
+    "enabled": true,
+    "tools": ["snyk", "gitguardian"],
+    "failOnCritical": true,
+    "failOnHigh": false
+  },
+  "testing": {
+    "enabled": true,
+    "coverageThreshold": {
+      "lines": 80,
+      "branches": 75,
+      "functions": 80,
+      "statements": 80
+    },
+    "failOnTestFailure": true
+  }
+}
+```
+
+## Usage
+
+### Review Current Branch
+```bash
+Skill(skill: "team-pipeline-auto-review", project_path: "./myapp")
+```
+
+### Review Pull Request
+```bash
+Skill(skill: "team-pipeline-auto-review", project_path: "./myapp", pr_number: 123)
+```
+
+### Review Specific Commit
+```bash
+Skill(skill: "team-pipeline-auto-review", project_path: "./myapp", commit_hash: "abc123")
+```
 
 ## Output
 
-- **Quality Report** (`quality-report.md`)
-  - Executive summary
-  - Detailed findings by stage
-  - Severity levels (critical, high, medium, low)
-  - Actionable recommendations
-  - Pass/fail decision
+### Review Report
+- Overall review status (PASS/FAIL/WARNING)
+- Linting results with issues
+- Static analysis results with metrics
+- Security scan results with vulnerabilities
+- Test results with coverage
+- Code quality metrics
+- Recommendations for improvement
 
-- **Pipeline Status** (`pipeline-status.md`)
-  - Stage completion status
-  - Overall pipeline status
-  - Issues and blockers
-  - Quality gate results
-
-## Quality Gates
-
-Review passes only if all required quality gates are met:
-
-- Test coverage ≥ 80%
-- Zero critical security vulnerabilities
-- Code complexity ≤ 10
-- TDD compliance ≥ 90%
-- Zero test failures
-
-## Example Execution
-
-```bash
-# Review entire project
-Skill(skill: "team-pipeline-auto-review")
-
-# Review specific directory
-Skill(skill: "team-pipeline-auto-review", project_path: "./src")
-
-# Review PR
-Skill(skill: "team-pipeline-auto-review", target: "pr/123")
-
-# Strict mode (fail on warnings)
-Skill(skill: "team-pipeline-auto-review", strict: true)
+### Commit Comment
+Automatic comment on commit/PR with review summary:
 ```
+## Automated Code Review Results
+
+**Status:** ✅ PASS
+
+### Linting
+- 0 errors, 2 warnings
+
+### Security
+- 0 vulnerabilities found
+
+### Testing
+- All tests passed
+- Coverage: 85% (target: 80%)
+
+### Quality Metrics
+- Code Quality: A
+- Technical Debt: 30min
+- Complexity: Low
+
+### Recommendations
+- Consider reducing cyclomatic complexity in auth.py:45
+```
+
+## Error Handling
+
+### Linting Failures
+- Block commit if failOnError is true
+- Allow commit with warnings if allowWarnings is true
+- Provide fix suggestions where possible
+
+### Security Failures
+- Block commit on critical vulnerabilities
+- Warn on high-severity vulnerabilities
+- Document all vulnerabilities with remediation steps
+
+### Test Failures
+- Block commit if any test fails
+- Show failing tests with error messages
+- Suggest running tests locally before committing
+
+### Coverage Failures
+- Block commit if coverage below threshold
+- Show coverage breakdown by file
+- Suggest tests for uncovered code
+
+## Integration
+
+### With git-flow
+- Runs automatically on `/git-flow commit`
+- Results attached to commit message
+- Blocks merge if review fails
+
+### With CI/CD
+- Integrates with GitHub Actions, GitLab CI, Jenkins
+- Results posted as PR comments
+- Status checks on commits
+
+## Exit Codes
+
+- `0` - Review passed
+- `1` - Review failed (blocking issues)
+- `2` - Review warning (non-blocking issues)
+- `3` - Configuration error
+- `4` - Tool execution error

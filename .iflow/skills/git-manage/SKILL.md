@@ -397,3 +397,26 @@ This skill uses:
 - Pattern matching for secrets detection
 - Conventional commits parser for message validation
 - `config.json` for customizable thresholds and hooks
+
+## Error Handling
+
+### Common Errors
+- **Pre-Commit Check Failures**: Tests fail, TDD violations, or coverage below threshold
+- **Secret Detection**: Secrets detected in staged files
+- **Branch Protection**: Attempting to commit to protected branch
+- **Merge Conflicts**: Conflicts during merge or rebase operations
+- **Invalid Commit Hash**: Specified commit hash doesn't exist
+
+### Rollback Scenarios
+- **Commit Reversal**: Use `undo` command to revert last commit (soft or hard)
+- **Stash Recovery**: Use `stash pop` or `stash list` to recover stashed changes
+- **Branch Recovery**: Use `git reflog` to recover deleted branches
+- **Reset Recovery**: Use backup stash created before destructive operations
+
+### Recovery Procedures
+1. **Check Git Status**: Verify current state with `git status`
+2. **Review Changes**: Use `git diff` to review staged and unstaged changes
+3. **Use Stash**: Stash changes before destructive operations
+4. **Backup Before Reset**: Always create backup stash before `reset --hard`
+5. **Verify Commit Hash**: Use `git log` to verify commit hash before operations
+6. **Test Locally**: Run tests and checks before pushing changes

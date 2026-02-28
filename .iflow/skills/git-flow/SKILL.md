@@ -275,3 +275,24 @@ Workflow state is persisted in:
 - Phase transitions can be automatic or manual based on configuration
 - Unapproval with cascade reverts all dependent branches in reverse merge order
 - All review events are logged for full audit trail
+
+## Error Handling
+
+### Common Errors
+- **Branch Already Exists**: If branch already exists, switch to existing branch or use force option
+- **Merge Conflicts**: Resolve conflicts manually or use automated conflict resolution tools
+- **Protected Branch Violation**: Cannot commit directly to protected branches, use feature branches
+- **Missing Workflow State**: If workflow state is corrupted, restore from backup or reinitialize
+
+### Rollback Scenarios
+- **Merge Errors**: If merge fails, abort merge, fix conflicts, and retry
+- **Unapproval Failures**: If unapproval fails, manually revert commits and update state
+- **Phase Transition Errors**: If phase transition fails, manually update phase and retry
+- **State Corruption**: If workflow state is corrupted, restore from git history or backup
+
+### Recovery Procedures
+1. **Check Git Status**: Verify current git state and resolve any issues
+2. **Backup Current State**: Create backup of workflow state before making changes
+3. **Use Git Reflog**: Use `git reflog` to recover lost commits if needed
+4. **Restore from Backup**: Restore workflow state from backup if corrupted
+5. **Reinitialize Workflow**: If state is unrecoverable, reinitialize workflow from scratch

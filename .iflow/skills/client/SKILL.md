@@ -93,3 +93,22 @@ Verification:
 - TDD: compliant"
     ```
 11. Update `$project_path/.state/pipeline-status.md` with completion status for current stage
+
+## Error Handling
+
+### Common Errors
+- **Missing State Directory**: If `.state/` directory doesn't exist, create it and copy templates
+- **Invalid Project Path**: Verify project path exists and is accessible
+- **Template Copy Failure**: Ensure templates directory exists and has read permissions
+- **Git Commit Failure**: Check git status and resolve conflicts before committing
+
+### Rollback Scenarios
+- **Incomplete Requirements**: If requirements are incomplete, document what's missing and continue with partial requirements
+- **Feature Extraction Failure**: If feature list cannot be extracted, create empty feature list and allow manual addition
+- **State File Corruption**: If state files become corrupted, restore from git history or recreate from templates
+
+### Recovery Procedures
+1. **Check State Directory**: Verify `.state/` directory exists and contains required files
+2. **Validate Templates**: Ensure all template files are present and valid
+3. **Git Recovery**: Use `git status` and `git restore` to recover corrupted files
+4. **Manual Intervention**: If automated processes fail, allow manual completion of affected steps

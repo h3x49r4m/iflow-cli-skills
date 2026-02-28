@@ -96,3 +96,24 @@ Verification:
 - TDD: compliant"
     ```
 18. Update `$project_path/.state/pipeline-status.md` with completion status
+
+## Error Handling
+
+### Common Errors
+- **Missing State Documents**: If required state files don't exist, create them from templates
+- **Build Failures**: Fix compilation errors, update dependencies, resolve conflicts
+- **Test Failures**: Debug failing tests, fix implementation, update test expectations
+- **Integration Issues**: Resolve API mismatches, fix data format issues, update contracts
+
+### Rollback Scenarios
+- **Implementation Reverts**: If implementation introduces bugs, revert to last working commit and fix issues
+- **Test Coverage Drops**: If coverage falls below threshold, add tests or remove unused code
+- **Breaking Changes**: If changes break existing functionality, revert and refactor properly
+- **Deployment Failures**: Rollback to previous stable version and investigate issues
+
+### Recovery Procedures
+1. **Check Dependencies**: Ensure all dependencies are installed and compatible
+2. **Run Tests Locally**: Verify tests pass before committing
+3. **Use Feature Flags**: Deploy changes behind feature flags for gradual rollout
+4. **Monitor Production**: Watch for errors and performance issues after deployment
+5. **Have Rollback Plan**: Always have a rollback plan ready for each deployment
