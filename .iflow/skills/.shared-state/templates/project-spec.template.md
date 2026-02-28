@@ -1,40 +1,135 @@
 # Project Specification
 
 **Owner:** Product Manager
-**Contributors:** Client, Project Manager
+**Contributors:** Client, Tech Lead
 
-## Project Overview
+## Overview
 
-*Project description and high-level overview.*
+*Project overview and goals.*
+
+## Objectives
+
+*Primary and secondary objectives.*
+
+### Primary Objectives
+
+{{#each primary_objectives}}
+- {{this}}
+{{/each}}
+
+### Secondary Objectives
+
+{{#each secondary_objectives}}
+- {{this}}
+{{/each}}
+
+## Scope
+
+*Project scope and boundaries.*
+
+### In Scope
+
+{{#each in_scope}}
+- {{this}}
+{{/each}}
+
+### Out of Scope
+
+{{#each out_scope}}
+- {{this}}
+{{/each}}
 
 ## Requirements
 
 ### Functional Requirements
 
-*List of functional requirements with priority levels.*
+{{#each functional_requirements}}
+- **FR{{@index}}:** {{description}}
+  - Priority: {{priority}}
+  - Acceptance Criteria: {{acceptance_criteria}}
+{{/each}}
 
 ### Non-Functional Requirements
 
-*Performance, security, scalability requirements.*
+{{#each non_functional_requirements}}
+- **NFR{{@index}}:** {{description}}
+  - Category: {{category}} (performance/security/scalability/etc.)
+  - Metric: {{metric}}
+{{/each}}
 
-## Features
+## User Stories
 
-### Feature List
+{{#each user_stories}}
+- **US{{@index}}:** As a {{role}}, I want to {{action}}, so that {{benefit}}.
+  - Priority: {{priority}}
+  - Acceptance Criteria:
+    {{#each acceptance_criteria}}
+    - {{this}}
+    {{/each}}
+{{/each}}
 
-*Prioritized list of features.*
+## Personas
 
-### User Stories
+{{#each personas}}
+### {{name}}
 
-*User stories in INVEST format.*
-
-## Acceptance Criteria
-
-*Definition of done for each feature.*
+**Role:** {{role}}
+**Description:** {{description}}
+**Goals:**
+{{#each goals}}
+- {{this}}
+{{/each}}
+**Pain Points:**
+{{#each pain_points}}
+- {{this}}
+{{/each}}
+{{/each}}
 
 ## Constraints
 
-*Technical, budget, timeline constraints.*
+### Technical Constraints
+
+{{#each technical_constraints}}
+- {{this}}
+{{/each}}
+
+### Budget Constraints
+
+{{#each budget_constraints}}
+- {{this}}
+{{/each}}
+
+### Timeline Constraints
+
+{{#each timeline_constraints}}
+- {{this}}
+{{/each}}
 
 ## Stakeholders
 
-*List of stakeholders and their roles.*
+{{#each stakeholders}}
+- **{{name}}** ({{role}})
+  - Email: {{email}}
+  - Expectations: {{expectations}}
+{{/each}}
+
+## Success Criteria
+
+{{#each success_criteria}}
+- {{this}}
+{{/each}}
+
+## Assumptions and Risks
+
+### Assumptions
+
+{{#each assumptions}}
+- {{this}}
+{{/each}}
+
+### Risks
+
+{{#each risks}}
+- **{{name}}** ({{probability}} - {{impact}})
+  - Mitigation: {{mitigation}}
+{{/each}}

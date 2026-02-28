@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Placeholder migration file for git-flow v1.0.0
+Placeholder migration file for team-pipeline-auto-review v1.0.0
 This file exists for migration system compatibility.
 Future migrations can be added here.
 """
@@ -20,16 +20,13 @@ def validate(state: dict) -> tuple[bool, list[str]]:
     """
     errors = []
     
-    if 'feature' not in state:
-        errors.append("Missing required field: feature")
+    if 'review_type' not in state:
+        errors.append("Missing required field: review_type")
     
     if 'status' not in state:
         errors.append("Missing required field: status")
     
-    if 'current_phase' not in state:
-        errors.append("Missing required field: current_phase")
-    
-    if 'phases' not in state:
-        errors.append("Missing required field: phases")
+    if 'checks' not in state:
+        errors.append("Missing required field: checks")
     
     return (len(errors) == 0, errors)

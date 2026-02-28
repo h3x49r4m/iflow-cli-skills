@@ -1,37 +1,56 @@
 # Pipeline Status
 
-**Owner:** Orchestrator
-**Access:** All roles (read-only)
+**Pipeline:** {{pipeline_name}}
+**Feature:** {{feature_name}}
+**Started:** {{start_date}}
+**Last Updated:** {{last_updated}}
 
-## Current Pipeline
+## Current Status
 
-*Pipeline name: new-project | new-feature | fix-bug*
+**Phase:** {{current_phase}}/{{total_phases}} - {{current_phase_name}}
+**Status:** {{status}}
+**Progress:** {{progress_percentage}}%
 
-## Stage Status
+## Phase Progress
 
-| Stage | Role | Status | Start Time | End Time |
-|-------|------|--------|------------|----------|
-| 1 | client | pending | - | - |
-| 2 | product-manager | pending | - | - |
-| 3 | project-manager | pending | - | - |
-| 4 | ui-ux-designer | pending | - | - |
-| 5 | tech-lead | pending | - | - |
-| 6 | software-engineer-frontend | pending | - | - |
-| 7 | software-engineer-backend | pending | - | - |
-| 8 | testing-engineer | pending | - | - |
-| 9 | qa-engineer | pending | - | - |
-| 10 | devops-engineer | pending | - | - |
-| 11 | security-engineer | pending | - | - |
-| 12 | documentation-specialist | pending | - | - |
+{{#each phases}}
+- [{{#if completed}}x{{else}} {{/if}}] Phase {{order}}: {{name}} ({{role}})
+  {{#if started_at}}Started: {{started_at}}{{/if}}
+  {{#if completed_at}}Completed: {{completed_at}}{{/if}}
+  {{#if blocked}}⚠ BLOCKED{{/if}}
+{{/each}}
 
-## Overall Status
+## Active Branches
 
-*Current status: pending | in-progress | completed | failed*
+{{#each branches}}
+- **{{name}}** ({{role}})
+  - Status: {{status}}
+  - Phase: {{phase}}
+  - Commits: {{commit_count}}
+  {{#if approved_by}}Approved by: {{approved_by}} ({{approved_at}}){{/if}}
+{{/each}}
+
+## Skills Used
+
+{{#each skills_used}}
+- **{{name}}**: {{version}}
+{{/each}}
 
 ## Issues
 
-*Any issues or blockers encountered.*
+{{#if issues}}
+{{#each issues}}
+- [{{severity}}] {{title}}
+  - Description: {{description}}
+  - Assigned to: {{assigned_to}}
+  - Status: {{status}}
+{{/each}}
+{{else}}
+No issues reported.
+{{/if}}
 
 ## Next Steps
 
-*Recommended next actions.*
+1. {{next_step_1}}
+2. {{next_step_2}}
+3. {{next_step_3}}

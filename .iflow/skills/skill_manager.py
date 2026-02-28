@@ -91,16 +91,17 @@ class SkillVersionManager:
     
     def check_version_compatibility(self, required_version: str, operator: str = ">=") -> bool:
         """Check if current version meets requirement."""
+        comparison = self._compare_versions(self.current_version, required_version)
         if operator == ">=":
-            return self._compare_versions(self.current_version, required_version) >= 0
+            return comparison >= 0
         elif operator == "==":
-            return self._compare_versions(self.current_version, required_version) == 0
+            return comparison == 0
         elif operator == "<=":
-            return self._compare_versions(self.current_version, required_version) <= 0
+            return comparison <= 0
         elif operator == ">":
-            return self._compare_versions(self.current_version, required_version) > 0
+            return comparison > 0
         elif operator == "<":
-            return self._compare_versions(self.current_version, required_version) < 0
+            return comparison < 0
         return False
     
     def find_compatible_version(self, min_version: Optional[str] = None, 

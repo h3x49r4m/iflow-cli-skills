@@ -1,63 +1,103 @@
-# Frontend Implementation
+# Implementation Documentation
 
-**Owner:** Software Engineer (Frontend)
-**Reviewer:** Tech Lead
+**Owner:** Software Engineer
+**Contributors:** Tech Lead, Testing Engineer
 
-## Component Architecture
+## Overview
 
-*Component hierarchy and structure.*
+*Implementation overview and approach.*
 
-## State Management
+## Architecture Decisions
 
-*State management approach and store structure.*
+*Technical decisions made during implementation.*
 
-## API Integration
+## Component Structure
 
-*API client configuration and endpoints.*
+*List of components and their responsibilities.*
 
-## Styling
+### {{component_name}}
 
-*CSS framework and styling approach.*
+*Component description.*
 
-## Performance Optimization
+- **File:** `{{file_path}}`
+- **Purpose:** {{purpose}}
+- **Dependencies:** {{dependencies}}
 
-*Lazy loading, code splitting, memoization.*
+## Implementation Details
+
+*Detailed implementation notes.*
+
+### {{feature_name}}
+
+*Feature implementation details.*
+
+- **Files Modified:**
+  - `{{file_1}}`
+  - `{{file_2}}`
+- **Changes:**
+  - {{change_1}}
+  - {{change_2}}
+
+## Code Patterns
+
+*Design patterns and coding standards used.*
+
+## API Changes
+
+*Changes to API endpoints, if applicable.*
+
+### {{endpoint_name}}
+
+**Endpoint:** `{{method}} {{path}}`
+
+**Description:** {{description}}
+
+**Request:**
+```json
+{{request_example}}
+```
+
+**Response:**
+```json
+{{response_example}}
+```
+
+## Database Changes
+
+*Database schema changes, if applicable.*
+
+### {{table_name}}
+
+**Type:** {{type}} (table/collection/index)
+
+**Changes:**
+- {{change_1}}
+- {{change_2}}
 
 ## Testing
 
-*Frontend test coverage and strategy.*
+*Testing approach and coverage.*
 
-## Deployment
+- Unit tests: {{unit_test_coverage}}%
+- Integration tests: {{integration_test_coverage}}%
+- E2E tests: {{e2e_test_coverage}}%
 
-*Build configuration and deployment settings.*# Backend Implementation
+## Performance Considerations
 
-**Owner:** Software Engineer (Backend)
-**Reviewer:** Tech Lead
+*Performance optimizations and considerations.*
 
-## API Endpoints
+## Security Considerations
 
-*List of API endpoints with methods and schemas.*
+*Security measures implemented.*
 
-## Business Logic
+## Deployment Notes
 
-*Core business logic and services.*
+*Notes for deployment.*
 
-## Database Implementation
+## Known Issues
 
-*Database models, queries, migrations.*
+*Known issues and workarounds.*
 
-## Authentication & Authorization
+## Future Improvements
 
-*Auth implementation and role-based access.*
-
-## Caching Strategy
-
-*Cache implementation and invalidation.*
-
-## Error Handling
-
-*Error handling and logging strategy.*
-
-## Testing
-
-*Backend test coverage and strategy.*
+*Planned improvements and enhancements.*
