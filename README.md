@@ -1,233 +1,438 @@
 # Nova
 
-A comprehensive skills-based development system for iFlow CLI that orchestrates team workflows through role-based skills, shared state management, and versioned capabilities.
+A comprehensive skills-based development system for the iFlow CLI, featuring 12 role-based skills, 3 pipeline orchestrators, and advanced git workflow automation.
 
 ## Overview
 
-iFlow CLI Skills provides a structured development team of 12 role-based skills and 3 pipeline orchestrators that collaborate through a shared state directory. Each role has defined responsibilities, state contracts, and workflows that enable seamless collaboration in software development projects.
+iFlow CLI Skills transforms software development into a collaborative, role-based workflow where specialized AI agents work together through orchestrated pipelines. The system uses a shared state directory for seamless collaboration, supports version management, and includes gate-based workflow orchestration with reversible approvals.
 
 ## Features
 
-- **12 Role-Based Skills**: Client, Product Manager, Project Manager, UI/UX Designer, Tech Lead, Software Engineer, Testing Engineer, QA Engineer, DevOps Engineer, Security Engineer, Documentation Specialist, and Git Flow orchestrator
-- **3 Pipeline Orchestrators**: New Project, New Feature, and Bug Fix pipelines
-- **Shared State Management**: Single source of truth with 14 state documents
-- **Version Management**: Semantic versioning for skills with capability tracking and compatibility checking
-- **Git Flow Integration**: Gate-based workflow orchestration with role-based branching, review/approval gates, phase tracking, and reversible approvals
-- **State-First Approach**: Every role reads state, performs work, and updates state
+### 🎭 Role-Based Skills
+12 specialized development roles, each with specific responsibilities and state contracts:
+- **Client** - Requirements provider and stakeholder
+- **Product Manager** - Feature planning and prioritization
+- **Project Manager** - Sprint planning and resource allocation
+- **UI/UX Designer** - Design creation and user experience
+- **Tech Lead** - Architecture design and technical strategy
+- **Software Engineer** - Full-stack implementation
+- **Testing Engineer** - Test automation and frameworks
+- **QA Engineer** - Quality validation and manual testing
+- **DevOps Engineer** - CI/CD and infrastructure
+- **Security Engineer** - Security validation and scanning
+- **Documentation Specialist** - Documentation creation
 
-## Architecture
+### 🚀 Pipeline Orchestrators
+3 automated pipelines that coordinate multiple roles:
+- **New Project Pipeline** - Complete development lifecycle from scratch
+- **New Feature Pipeline** - Streamlined feature development for existing projects
+- **Bug Fix Pipeline** - Rapid bug fixing workflow
 
-```
-.iflow/
-├── skills/                          # All skills and pipelines
-│   ├── client/                      # Role: Requirements provider
-│   ├── product-manager/             # Role: Feature planning
-│   ├── project-manager/             # Role: Sprint planning
-│   ├── ui-ux-designer/              # Role: Design creation
-│   ├── tech-lead/                   # Role: Architecture design
-│   ├── software-engineer/           # Role: Full-stack implementation
-│   ├── testing-engineer/            # Role: Test automation
-│   ├── qa-engineer/                 # Role: Quality validation
-│   ├── devops-engineer/             # Role: CI/CD and infrastructure
-│   ├── security-engineer/           # Role: Security validation
-│   ├── documentation-specialist/    # Role: Documentation creation
-│   ├── git-flow/                    # Workflow orchestration
-│   ├── git-manage/                  # Git operations
-│   ├── team-pipeline-new-project/   # Pipeline: New projects
-│   ├── team-pipeline-new-feature/   # Pipeline: New features
-│   ├── team-pipeline-fix-bug/       # Pipeline: Bug fixes
-│   ├── team-pipeline-auto-review/   # Pipeline: Code review
-│   └── .shared-state/               # Shared state directory
-│       ├── project-spec.md
-│       ├── design-spec.md
-│       ├── architecture-spec.md
-│       ├── implementation-plan.md
-│       ├── implementation.md
-│       ├── test-plan.md
-│       ├── test-results.md
-│       ├── quality-report.md
-│       ├── security-report.md
-│       ├── deployment-status.md
-│       ├── api-docs.md
-│       ├── user-guide.md
-│       ├── changelog.md
-│       └── pipeline-status.md
-└── skill_manager.py                 # Version management system
-```
+### 🔄 Git Workflow Automation
+- **git-flow** - Gate-based workflow orchestration with role-based branching, review/approval gates, phase tracking, and reversible approvals
+- **git-manage** - Standardized git operations with safety checks, TDD enforcement, and conventional commits
 
-## Roles
+### 📦 Version Management
+Comprehensive version management infrastructure with:
+- Semantic versioning for all skills
+- Capability declarations per version
+- Breaking change tracking
+- Dependency resolution
+- Compatibility checking between skills and pipelines
 
-### Stakeholder Layer
+### 📊 Shared State System
+Centralized state directory with 14 state documents:
+- `project-spec.md` - Project requirements and features
+- `design-spec.md` - UI/UX designs and prototypes
+- `architecture-spec.md` - System architecture and tech stack
+- `implementation-plan.md` - Task breakdown and timeline
+- `implementation.md` - Full-stack implementation details
+- `test-plan.md` - Test strategy and test cases
+- `test-results.md` - Test execution results
+- `quality-report.md` - Quality validation and bug reports
+- `security-report.md` - Security analysis and vulnerabilities
+- `deployment-status.md` - Deployment history and environment status
+- `api-docs.md` - API documentation and schemas
+- `user-guide.md` - User documentation and tutorials
+- `changelog.md` - Change history and version notes
+- `pipeline-status.md` - Pipeline progress and stage status
 
-- **Client** - Requirements provider and acceptance criteria definition
+## Installation
 
-### Product & Planning
+### Prerequisites
+- Python 3.14+
+- iFlow CLI installed and configured
+- Git installed and configured
 
-- **Product Manager** - Feature roadmap planning, prioritization, and user story creation
-- **Project Manager** - Sprint planning, timeline tracking, and resource allocation
+### Setup
 
-### Design
-
-- **UI/UX Designer** - Wireframe creation, prototypes, and visual design systems
-
-### Technical Leadership
-
-- **Tech Lead** - System architecture decisions, code standards, and technical strategy
-
-### Engineering
-
-- **Software Engineer** - Full-stack implementation, API design, and database schema design
-
-### Quality & Operations
-
-- **Testing Engineer** - Unit and integration test development, test automation, and TDD practices
-- **QA Engineer** - Manual testing execution, test case creation, and UAT
-- **DevOps Engineer** - CI/CD pipeline design, container orchestration, and cloud infrastructure
-- **Security Engineer** - Code security reviews, vulnerability scanning, and security best practices
-- **Documentation Specialist** - API documentation, user guides, and technical documentation
-
-### Workflow Orchestration
-
-- **Git Flow** - Gate-based workflow orchestration with role-based branching, review/approval gates, phase tracking, and reversible approvals
-- **Git Manage** - Standardized git operations with safety checks and best practices
-
-## Pipelines
-
-### New Project Pipeline
-Full end-to-end pipeline for creating new projects from scratch. Executes all 11 roles sequentially to deliver a complete, production-ready application.
-
-### New Feature Pipeline
-Streamlined pipeline for adding features to existing projects. Optimized sequence for feature development cycles.
-
-### Bug Fix Pipeline
-Focused pipeline for fixing bugs. Rapid cycle for critical fixes and hotfixes.
-
-### Auto Review Pipeline
-Automated code review pipeline for pull requests and commits.
-
-## Version Management
-
-The skill version management system provides:
-
-- **Semantic Versioning**: Track skill versions with major, minor, and patch releases
-- **Capability Tracking**: Define and track capabilities for each skill version
-- **Compatibility Checking**: Verify skill compatibility with pipeline requirements
-- **Dependency Resolution**: Resolve skill version requirements and dependencies
-- **Breaking Change Tracking**: Track breaking changes between versions
-- **Upgrade Path Planning**: Suggest upgrade paths between versions
-
-### Skill Structure
-
-Each skill can have versioned capabilities:
-
-```
-.iflow/skills/{skill}/
-├── SKILL.md                    # Skill definition
-├── config.json                 # Current version configuration
-├── versions/                   # Versioned capabilities
-│   ├── 1.0.0/
-│   │   ├── capabilities.json   # Version 1.0.0 capabilities
-│   │   └── schema.json         # Version 1.0.0 schema
-│   └── 2.0.0/
-│       ├── capabilities.json   # Version 2.0.0 capabilities
-│       ├── breaking_changes.json # Breaking changes
-│       └── migrations/
-│           └── from_1_0_0.py   # Migration from 1.0.0
-└── workflows/                  # Skill workflows
-    └── {workflow}.md
-```
-
-## Git Flow
-
-Git Flow provides gate-based workflow orchestration with:
-
-- **Role-Based Branching**: Automatic branch naming based on role (e.g., `tech-lead/feature-abc123`)
-- **Review/Approval Gates**: Branch must be reviewed and approved before merging
-- **Phase Tracking**: Track workflow phases (Requirements, Architecture, Implementation, Testing, etc.)
-- **Reversible Approvals**: Unapprove branches with cascade reversion of dependent branches
-- **State Persistence**: Workflow state persisted across sessions
-
-### Git Flow Commands
-
+1. Clone the repository:
 ```bash
-/git-flow start <feature-name>          # Initialize workflow
-/git-flow commit [files...]             # Commit changes
-/git-flow review                        # Show pending reviews
-/git-flow approve <branch>              # Approve and merge branch
-/git-flow reject <branch> --reason "..." # Reject branch
-/git-flow request-changes <branch>      # Request modifications
-/git-flow unapprove <branch>            # Unapprove branch
-/git-flow status                        # Show workflow status
-/git-flow phase-next                    # Advance to next phase
-/git-flow history                       # Show review history
+git clone git@github.com:h3x49r4m/nova.git
+cd nova
 ```
 
-## State Documents
+2. Verify skill structure:
+```bash
+ls .iflow/skills/
+```
 
-| Document | Owner | Purpose |
-|----------|-------|---------|
-| project-spec.md | Product Manager | Project requirements, features, acceptance criteria |
-| design-spec.md | UI/UX Designer | UI/UX designs, wireframes, prototypes |
-| architecture-spec.md | Tech Lead | System architecture, tech stack, patterns |
-| implementation-plan.md | Project Manager | Task breakdown, timeline, resource allocation |
-| implementation.md | Software Engineer | Full-stack implementation details |
-| test-plan.md | Testing Engineer | Test strategy, test cases, automation plan |
-| test-results.md | Testing Engineer | Test execution results, coverage reports |
-| quality-report.md | QA Engineer | Quality validation, bug reports, UAT results |
-| security-report.md | Security Engineer | Security analysis, vulnerability scan results |
-| deployment-status.md | DevOps Engineer | Deployment history, environment status |
-| api-docs.md | Documentation Specialist | API documentation, endpoints, schemas |
-| user-guide.md | Documentation Specialist | User documentation, tutorials, guides |
-| changelog.md | Documentation Specialist | Change history, version notes |
-| pipeline-status.md | Orchestrator | Pipeline progress, stage status |
+3. Check skill status:
+```bash
+python3 .iflow/skills/skill_cli.py list
+```
 
 ## Usage
 
-### Single Role Activation
+### Activating Skills
 
-Activate a single role to work independently:
+#### Single Role Activation
+Activate a specific role to work independently:
 
 ```bash
+# Activate as Client
 iflow skill client
+
+# Activate as Tech Lead
 iflow skill tech-lead
+
+# Activate as Software Engineer
 iflow skill software-engineer
 ```
 
-### Pipeline Execution
+**Workflow:**
+1. Role reads `.shared-state/` directory
+2. Understands context and previous work
+3. Performs its specialized tasks
+4. Updates specific documents in `.shared-state/`
+5. Updates `pipeline-status.md` with completion status
 
+#### Pipeline Execution
 Activate a pipeline to orchestrate multiple roles:
 
 ```bash
+# New project pipeline (full development lifecycle)
 iflow skill team-pipeline-new-project
+
+# New feature pipeline (add features to existing project)
 iflow skill team-pipeline-new-feature
+
+# Bug fix pipeline (rapid bug fixing)
 iflow skill team-pipeline-fix-bug
-iflow skill team-pipeline-auto-review
 ```
 
-### Git Flow Workflow
+**Workflow:**
+1. Orchestrator reads `config.json` for role sequence
+2. Executes roles in defined sequence
+3. Each role reads state, performs work, updates state
+4. Orchestrator tracks progress via `pipeline-status.md`
+5. Pipeline completes when all roles finish
+
+### Git Workflow
+
+#### Git-Flow Workflow
+
+**Start a new feature workflow:**
+```bash
+/git-flow start "User Authentication"
+```
+
+**Commit changes:**
+```bash
+/git-flow commit src/auth.py
+```
+
+**Review pending branches:**
+```bash
+/git-flow review
+```
+
+**Approve a branch:**
+```bash
+/git-flow approve tech-lead/auth-architecture
+```
+
+**Reject a branch:**
+```bash
+/git-flow reject software-engineer/auth-api --reason "Tests failing"
+```
+
+**View workflow status:**
+```bash
+/git-flow status
+```
+
+**Advance to next phase:**
+```bash
+/git-flow phase-next
+```
+
+#### Git-Manage Workflow
+
+**Check status with test results:**
+```bash
+/git-manage status
+```
+
+**Stage and commit changes:**
+```bash
+/git-manage add src/auth.py
+/git-manage commit feat: implement user authentication
+```
+
+**View changes:**
+```bash
+/git-manage diff
+```
+
+**Undo last commit:**
+```bash
+/git-manage undo soft
+```
+
+**Push to remote:**
+```bash
+/git-manage push origin feat/authentication
+```
+
+### Version Management
+
+**List all skills:**
+```bash
+python3 .iflow/skills/skill_cli.py list
+```
+
+**Check skill version:**
+```bash
+python3 .iflow/skills/skill_cli.py info software-engineer
+```
+
+**Check compatibility:**
+```bash
+python3 .iflow/skills/skill_cli.py check team-pipeline-new-feature
+```
+
+## Architecture
+
+### Directory Structure
+
+```
+.iflow/
+├── skills/                          # All skills (roles + pipelines)
+│   ├── client/                      # Role skill
+│   ├── product-manager/             # Role skill
+│   ├── project-manager/             # Role skill
+│   ├── ui-ux-designer/              # Role skill
+│   ├── tech-lead/                   # Role skill
+│   ├── software-engineer/           # Role skill
+│   ├── testing-engineer/            # Role skill
+│   ├── qa-engineer/                 # Role skill
+│   ├── devops-engineer/             # Role skill
+│   ├── security-engineer/           # Role skill
+│   ├── documentation-specialist/    # Role skill
+│   ├── git-flow/                    # Git workflow orchestrator
+│   ├── git-manage/                  # Git operations skill
+│   ├── team-pipeline-new-project/   # Pipeline orchestrator
+│   ├── team-pipeline-new-feature/   # Pipeline orchestrator
+│   └── team-pipeline-fix-bug/       # Pipeline orchestrator
+│
+└── .shared-state/                   # Shared state directory
+    ├── project-spec.md
+    ├── design-spec.md
+    ├── architecture-spec.md
+    ├── implementation-plan.md
+    ├── implementation.md
+    ├── test-plan.md
+    ├── test-results.md
+    ├── quality-report.md
+    ├── security-report.md
+    ├── deployment-status.md
+    ├── api-docs.md
+    ├── user-guide.md
+    ├── changelog.md
+    ├── pipeline-status.md
+    └── templates/                   # Document templates
+```
+
+### Role Skill Structure
+
+```
+.iflow/skills/{role}/
+├── SKILL.md                          # Role definition + state contracts
+├── config.json                       # Role configuration
+├── versions/                         # Version management
+│   └── {version}/
+│       ├── capabilities.json         # Capability declarations
+│       ├── breaking_changes.json     # Breaking changes tracking
+│       └── migrations/               # Migration scripts
+└── workflows/                        # Role workflows
+    └── {workflow-name}.md
+```
+
+### Pipeline Orchestrator Structure
+
+```
+.iflow/skills/{pipeline}/
+├── SKILL.md                          # Pipeline definition
+├── config.json                       # Pipeline configuration (role sequence)
+└── versions/                         # Version management
+    └── {version}/
+        ├── capabilities.json
+        ├── breaking_changes.json
+        └── migrations/
+```
+
+## Workflows
+
+### New Project Workflow
+
+```
+Client → Product Manager → Project Manager → UI/UX Designer → Tech Lead → 
+Software Engineer → Testing Engineer → QA Engineer → DevOps Engineer → 
+Security Engineer → Documentation Specialist
+```
+
+**Duration:** Complete development lifecycle
+
+### New Feature Workflow
+
+```
+Client (optional) → Product Manager → Project Manager → UI/UX Designer → 
+Tech Lead → Software Engineer → Testing Engineer → QA Engineer → 
+DevOps Engineer (if needed) → Security Engineer → Documentation Specialist
+```
+
+**Duration:** Feature development cycle
+
+### Bug Fix Workflow
+
+```
+Client (optional) → Tech Lead → Software Engineer → Testing Engineer → 
+QA Engineer → DevOps Engineer (if critical hotfix) → Documentation Specialist (if needed)
+```
+
+**Duration:** Rapid bug fix cycle
+
+## State-First Approach
+
+Every role follows this pattern:
+
+1. **READ STATE** - Read relevant documents from `.shared-state/`
+2. **ANALYZE CONTEXT** - Understand previous work, requirements, constraints
+3. **PERFORM WORK** - Execute role-specific tasks
+4. **UPDATE STATE** - Write updated documents to `.shared-state/`
+5. **REPORT STATUS** - Update `pipeline-status.md`
+
+### State Contracts
+
+Each role's `SKILL.md` defines:
+- **READ contracts** - What documents to read before starting
+- **WRITE contracts** - What documents to update after completing
+- **Validation rules** - Rules for state consistency
+
+## Configuration
+
+### Skill Configuration
+
+Each skill can be configured via `config.json`:
+
+```json
+{
+  "version": "1.0.0",
+  "capabilities": ["capability1", "capability2"],
+  "compatible_pipelines": ["*"],
+  "dependencies": {}
+}
+```
+
+### Git-Flow Configuration
+
+Edit `.iflow/skills/git-flow/config.json`:
+
+```json
+{
+  "workflow": {
+    "auto_detect_role": true,
+    "auto_create_branch": true,
+    "auto_phase_transition": true,
+    "require_all_phases": false,
+    "allow_parallel_phases": false
+  },
+  "merge": {
+    "strategy": "rebase-merge",
+    "delete_branch_after_merge": true,
+    "require_dependencies_merged": true
+  },
+  "unapproval": {
+    "allow_unapprove_after_merge": true,
+    "default_action": "cascade-revert",
+    "require_cascade_confirmation": true
+  }
+}
+```
+
+### Git-Manage Configuration
+
+Edit `.iflow/skills/git-manage/config.json`:
+
+```json
+{
+  "preCommit": {
+    "testCommand": "pytest tests/ -v --cov",
+    "coverageThreshold": {
+      "lines": 90,
+      "branches": 80
+    },
+    "runTddCheck": true
+  }
+}
+```
+
+## Testing
+
+Run the test suite:
 
 ```bash
-# Initialize workflow
-/git-flow start "User Authentication"
+python3 .iflow/skills/tests/run_tests.py
+```
 
-# Commit changes (auto-creates branch if on main)
-/git-flow commit requirements.md
+Run specific tests:
 
-# Review and approve branches
-/git-flow review
-/git-flow approve client/requirements-abc123
-
-# Continue through phases
-/git-flow phase-next
+```bash
+python3 -m pytest .iflow/skills/tests/test_skill_manager.py -v
 ```
 
 ## Documentation
 
-- [Design Document](docs/iflow_skills_design.md) - Complete architecture and design specification
-- [Roles](docs/roles.md) - Detailed role definitions and responsibilities
-- [Skills](docs/skills.md) - Specific skills for each role
-- [Team Flow](docs/team_flow.md) - Visual representation of team structure and workflow
+- [Design Document](docs/iflow_skills_design.md) - Architecture and design specifications
+- [Roles](docs/roles.md) - Role definitions and responsibilities
+- [Skills](docs/skills.md) - Skill capabilities and requirements
+- [Team Flow](docs/team_flow.md) - Visual workflow diagram
+
+## Benefits
+
+1. **Single Source of Truth** - All state in one directory
+2. **Independent Roles** - Roles can work alone or in pipelines
+3. **State Persistence** - State survives across sessions
+4. **Easy Resumption** - Resume from any stage
+5. **Clear Ownership** - Each document has an owner
+6. **Traceability** - Full audit trail via state documents
+7. **Flexibility** - Mix single-role and pipeline workflows
+8. **Consistency** - State contracts ensure consistency
+9. **Scalability** - Easy to add new roles or pipelines
+10. **Collaboration** - Shared state enables cross-role communication
+
+## Contributing
+
+1. Follow the existing code structure and conventions
+2. Add appropriate tests for new features
+3. Update documentation for any API changes
+4. Ensure all tests pass before submitting
 
 ## License
 
-Apache License 2.0 - see [LICENSE](LICENSE) for details.
+See [LICENSE](LICENSE) file for details.
+
+## Support
+
+For issues, questions, or contributions, please refer to the project repository.
