@@ -56,7 +56,7 @@ def run_git_command(
             full_command,
             cwd=cwd,
             capture_output=capture,
-            text=not capture,
+            text=True,
             timeout=timeout
         )
         
