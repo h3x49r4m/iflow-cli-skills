@@ -8,10 +8,20 @@ import argparse
 import json
 import os
 import re
-import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+
+# Import shared git command utility
+sys.path.insert(0, str(Path(__file__).parent.parent / 'utils'))
+from git_command import (
+    run_git_command,
+    get_current_branch,
+    validate_branch_name,
+    validate_file_path,
+    GitCommandError,
+    GitCommandTimeout
+)
 
 
 class GitManage:
@@ -66,7 +76,11 @@ class GitManage:
             'branch_protection': True,
             'protected_branches': ['main', 'master', 'production'],
             'coverage_threshold': self.COVERAGE_THRESHOLD,
-            'branch_coverage_threshold': self.BRANCH_COVERAGE_THRESHOLD
+            'branch_coverage_threshold': self.BRANCH_COVERAGE_THRESHOLD,
+            'coverage_thresholds': {
+                'lines': self.COVERAGE_THRESHOLD,
+                'branches': self.BRANCH_COVERAGE_THRESHOLD
+            }
         }
         
         if self.config_file.exists():
@@ -74,29 +88,31 @@ class GitManage:
                 with open(self.config_file, 'r') as f:
                     user_config = json.load(f)
                     self.config.update(user_config)
+                    
+                    # Merge coverage thresholds if provided
+                    if 'coverage_thresholds' in user_config:
+                        self.config['coverage_thresholds'].update(user_config['coverage_thresholds'])
+                        # Update legacy thresholds for backward compatibility
+                        self.config['coverage_threshold'] = self.config['coverage_thresholds'].get('lines', self.COVERAGE_THRESHOLD)
+                        self.config['branch_coverage_threshold'] = self.config['coverage_thresholds'].get('branches', self.BRANCH_COVERAGE_THRESHOLD)
             except (json.JSONDecodeError, IOError):
                 pass
     
-    def run_git_command(self, command: List[str], capture: bool = True) -> Tuple[int, str, str]:
+    def run_git_command(self, command: List[str], capture: bool = True, timeout: Optional[int] = 120) -> Tuple[int, str, str]:
         """Run a git command and return exit code, stdout, stderr."""
         try:
-            result = subprocess.run(
-                ['git'] + command,
-                cwd=self.repo_root,
-                capture_output=capture,
-                text=not capture
-            )
-            if capture:
-                return result.returncode, result.stdout, result.stderr
-            return result.returncode, '', ''
-        except FileNotFoundError:
-            return 1, '', 'Git not found in PATH'
+            return run_git_command(command, cwd=self.repo_root, timeout=timeout, capture=capture)
+        except GitCommandError as e:
+            return e.returncode, '', e.message
+        except GitCommandTimeout as e:
+            return 124, '', str(e)
     
     def get_current_branch(self) -> str:
         """Get current branch name."""
-        code, stdout, _ = self.run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'])
-        output = stdout.strip() if isinstance(stdout, str) else stdout.decode('utf-8').strip()
-        return output if code == 0 else 'unknown'
+        try:
+            return get_current_branch(self.repo_root)
+        except Exception:
+            return 'unknown'
     
     def get_staged_files(self) -> List[str]:
         """Get list of staged files."""
@@ -155,16 +171,25 @@ class GitManage:
         return result.returncode, result.stdout
     
     def check_coverage(self) -> Tuple[int, float, float]:
-        """Check test coverage."""
+        """Check test coverage with configurable thresholds."""
         if not self.config['check_coverage']:
             return 0, 100.0, 100.0
         
+        # Get configured thresholds
+        thresholds = self.config.get('coverage_thresholds', {})
+        line_threshold = thresholds.get('lines', self.COVERAGE_THRESHOLD)
+        branch_threshold = thresholds.get('branches', self.BRANCH_COVERAGE_THRESHOLD)
+        
         # Run coverage check
-        result = subprocess.run(
-            ['pytest', 'tests/', '--cov', '--cov-report=json'],
-            cwd=self.repo_root,
-            capture_output=True
-        )
+        try:
+            result = subprocess.run(
+                ['pytest', 'tests/', '--cov', '--cov-report=json'],
+                cwd=self.repo_root,
+                capture_output=True,
+                timeout=120
+            )
+        except subprocess.TimeoutExpired:
+            return 1, 0.0, 0.0
         
         if result.returncode != 0:
             return 0, 0.0, 0.0
@@ -174,8 +199,9 @@ class GitManage:
         if coverage_file.exists():
             with open(coverage_file, 'r') as f:
                 data = json.load(f)
-                return 0, data.get('totals', {}).get('percent_covered', 0), \
-                       data.get('totals', {}).get('percent_covered', 0)
+                line_coverage = data.get('totals', {}).get('percent_covered', 0)
+                branch_coverage = data.get('totals', {}).get('branch_percent_covered', line_coverage)
+                return 0, line_coverage, branch_coverage
         
         return 0, 0.0, 0.0
     

@@ -8,7 +8,6 @@ phase tracking, and reversible approvals. Delegates git operations to git-manage
 import argparse
 import json
 import os
-import subprocess
 import sys
 import re
 from datetime import datetime
@@ -16,6 +15,18 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from enum import Enum
 from pipeline_manager import PipelineUpdateManager
+
+# Import shared git command utility
+sys.path.insert(0, str(Path(__file__).parent.parent / 'utils'))
+from git_command import (
+    run_git_command,
+    get_current_branch,
+    validate_branch_name,
+    GitCommandError,
+    GitCommandTimeout
+)
+from file_lock import write_locked_json, read_locked_json, FileLockError
+from schema_validator import validate_workflow_state, validate_branch_state, SchemaValidationError
 
 
 class BranchStatus(Enum):
@@ -324,49 +335,75 @@ class GitFlow:
             self.phases = [Phase.from_dict(p) for p in default_phases]
     
     def load_workflow_state(self):
+        """Load workflow state with file locking and schema validation."""
         if self.workflow_state_file.exists():
             try:
-                with open(self.workflow_state_file, 'r') as f:
-                    data = json.load(f)
-                    self.workflow_state = WorkflowState.from_dict(data)
-            except (json.JSONDecodeError, IOError):
+                data = read_locked_json(self.workflow_state_file)
+                
+                # Validate against schema
+                schema_dir = self.repo_root / '.iflow' / 'schemas'
+                is_valid, errors = validate_workflow_state(data, schema_dir)
+                
+                if not is_valid:
+                    print(f"Warning: Workflow state validation failed: {errors}")
+                    # Continue loading despite validation errors for backward compatibility
+                
+                self.workflow_state = WorkflowState.from_dict(data)
+            except (json.JSONDecodeError, IOError, FileLockError):
                 self.workflow_state = None
     
     def load_branch_states(self):
+        """Load branch states with file locking and schema validation."""
         if self.workflow_state and self.branch_states_file.exists():
             try:
-                with open(self.branch_states_file, 'r') as f:
-                    data = json.load(f)
-                    for branch_name, branch_data in data.items():
-                        branch = BranchState.from_dict(branch_data)
-                        self.workflow_state.branches[branch_name] = branch
-            except (json.JSONDecodeError, IOError):
+                data = read_locked_json(self.branch_states_file)
+                
+                # Validate against schema
+                schema_dir = self.repo_root / '.iflow' / 'schemas'
+                
+                for branch_name, branch_data in data.items():
+                    is_valid, errors = validate_branch_state(branch_data, schema_dir)
+                    
+                    if not is_valid:
+                        print(f"Warning: Branch state validation failed for {branch_name}: {errors}")
+                        # Continue loading despite validation errors for backward compatibility
+                    
+                    branch = BranchState.from_dict(branch_data)
+                    self.workflow_state.branches[branch_name] = branch
+            except (json.JSONDecodeError, IOError, FileLockError):
                 pass
     
     def save_workflow_state(self):
+        """Save workflow state with file locking."""
         if self.workflow_state:
             self.workflow_state.updated_at = datetime.now().isoformat()
-            with open(self.workflow_state_file, 'w') as f:
-                json.dump(self.workflow_state.to_dict(), f, indent=2)
+            try:
+                write_locked_json(self.workflow_state_file, self.workflow_state.to_dict())
+            except FileLockError as e:
+                print(f"Warning: Failed to save workflow state: {e}")
     
     def save_branch_states(self):
+        """Save branch states with file locking."""
         if self.workflow_state:
-            with open(self.branch_states_file, 'w') as f:
-                json.dump({k: v.to_dict() for k, v in self.workflow_state.branches.items()}, f, indent=2)
+            try:
+                write_locked_json(
+                    self.branch_states_file,
+                    {k: v.to_dict() for k, v in self.workflow_state.branches.items()}
+                )
+            except FileLockError as e:
+                print(f"Warning: Failed to save branch states: {e}")
     
-    def run_git_command(self, command: List[str]) -> Tuple[int, str, str]:
+    def run_git_command(self, command: List[str], timeout: Optional[int] = 120) -> Tuple[int, str, str]:
+        """Run a git command with timeout handling."""
         try:
-            result = subprocess.run(
-                ['git'] + command,
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True
-            )
-            return result.returncode, result.stdout, result.stderr
-        except FileNotFoundError:
-            return 1, '', 'Git not found in PATH'
+            return run_git_command(command, cwd=self.repo_root, timeout=timeout)
+        except GitCommandError as e:
+            return e.returncode, '', e.message
+        except GitCommandTimeout as e:
+            return 124, '', str(e)
     
-    def run_git_manage(self, args: List[str]) -> Tuple[int, str, str]:
+    def run_git_manage(self, args: List[str], timeout: Optional[int] = 120) -> Tuple[int, str, str]:
+        """Run git-manage script with timeout handling."""
         git_manage_path = self.config.get("git_manage", {}).get("command_path", ".iflow/skills/git-manage/git-manage.py")
         git_manage_script = self.repo_root / git_manage_path
         
@@ -378,15 +415,21 @@ class GitFlow:
                 [sys.executable, str(git_manage_script)] + args,
                 cwd=self.repo_root,
                 capture_output=True,
-                text=True
+                text=True,
+                timeout=timeout
             )
             return result.returncode, result.stdout, result.stderr
+        except subprocess.TimeoutExpired:
+            return 124, '', f'git-manage command timed out after {timeout} seconds'
         except Exception as e:
             return 1, '', str(e)
     
     def get_current_branch(self) -> str:
-        code, stdout, _ = self.run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'])
-        return stdout.strip() if code == 0 else 'unknown'
+        """Get current branch name."""
+        try:
+            return get_current_branch(self.repo_root)
+        except Exception:
+            return 'unknown'
     
     def is_protected_branch(self, branch: str) -> bool:
         protected = self.config.get("branch_protection", {}).get("protected_branches", ["main", "master"])
@@ -415,6 +458,12 @@ class GitFlow:
         return f"{role_slug}/{feature_slug}-{short_id}"
     
     def create_branch(self, name: str) -> Tuple[int, str]:
+        """Create a new branch with validation."""
+        # Validate branch name
+        is_valid, error_msg = validate_branch_name(name)
+        if not is_valid:
+            return 1, f'Invalid branch name: {error_msg}'
+        
         code, stdout, stderr = self.run_git_command(['checkout', '-b', name])
         if code == 0:
             return 0, f'Created branch: {name}'

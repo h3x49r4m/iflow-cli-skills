@@ -8,7 +8,7 @@ import json
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Set, Any
+from typing import Dict, List, Optional, Tuple, Set, Any, Callable, Union
 from copy import deepcopy
 
 
@@ -140,6 +140,111 @@ class SkillVersionManager:
                 info['breaking_changes'] = json.load(f)
         
         return info
+    
+    def get_migration(self, from_version: str, to_version: str) -> Optional[Callable]:
+        """
+        Load a migration function from a migration file.
+        
+        Args:
+            from_version: Source version
+            to_version: Target version
+            
+        Returns:
+            Migration function or None if not found
+        """
+        migration_dir = self.versions_dir / to_version / 'migrations'
+        if not migration_dir.exists():
+            return None
+        
+        migration_file = migration_dir / f'from_{from_version.replace(".", "_")}.py'
+        if not migration_file.exists():
+            return None
+        
+        try:
+            spec: Dict[str, Any] = {}
+            with open(migration_file, 'r') as f:
+                exec(f.read(), spec)
+            
+            # Look for migrate or migrate_state function
+            if 'migrate' in spec:
+                return spec['migrate']
+            elif 'migrate_state' in spec:
+                return spec['migrate_state']
+        except Exception:
+            pass
+        
+        return None
+    
+    def execute_migration(self, state: Dict, from_version: str, to_version: str) -> Tuple[bool, Union[Dict, str]]:
+        """
+        Execute a migration from one version to another.
+        
+        Args:
+            state: Current state dictionary
+            from_version: Source version
+            to_version: Target version
+            
+        Returns:
+            Tuple of (success, result) where result is new state dict on success or error message on failure
+        """
+        migration_func = self.get_migration(from_version, to_version)
+        
+        if migration_func is None:
+            return False, f"No migration found from {from_version} to {to_version}"
+        
+        try:
+            # Execute migration
+            new_state = migration_func(deepcopy(state))
+            
+            # Validate migration output
+            if not isinstance(new_state, dict):
+                return False, f"Migration function must return a dictionary"
+            
+            return True, new_state
+        except Exception as e:
+            return False, f"Migration failed: {str(e)}"
+    
+    def get_migration_path(self, from_version: str, to_version: str) -> List[str]:
+        """
+        Get the path of versions to migrate through.
+        
+        Args:
+            from_version: Starting version
+            to_version: Target version
+            
+        Returns:
+            List of version strings to migrate through
+            
+        Raises:
+            ValueError: If no migration path exists
+        """
+        if self._compare_versions(from_version, to_version) >= 0:
+            raise ValueError(f"Target version {to_version} is not newer than {from_version}")
+        
+        path: List[str] = []
+        current = from_version
+        
+        while self._compare_versions(current, to_version) < 0:
+            # Find next version
+            next_versions = [
+                v for v in self.available_versions
+                if self._compare_versions(v, current) > 0
+            ]
+            
+            if not next_versions:
+                raise ValueError(f"No migration path from {current} to {to_version}")
+            
+            # Get the closest next version
+            next_version = min(next_versions, key=lambda v: self._parse_version(v))
+            
+            # Check if migration exists
+            if self.get_migration(current, next_version) is None:
+                raise ValueError(f"No migration from {current} to {next_version}")
+            
+            path.append(next_version)
+            current = next_version
+        
+        return path
 
 
 class SkillRegistry:
